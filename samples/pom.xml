@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Distribution License v. 1.0, which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: BSD-3-Clause
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.glassfish.tyrus</groupId>
+        <artifactId>tyrus-project</artifactId>
+        <version>2.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.glassfish.tyrus.samples</groupId>
+    <artifactId>tyrus-samples-project</artifactId>
+    <packaging>pom</packaging>
+    <name>Tyrus Samples</name>
+
+    <modules>
+        <module>auction</module>
+        <module>cdi</module>
+        <module>chat</module>
+        <module>draw</module>
+        <module>echo</module>
+        <module>echo-basic-auth</module>
+        <module>echo-https</module>
+        <module>programmatic-echo</module>
+        <module>simplelife</module>
+        <module>shared-collection</module>
+    </modules>
+
+    <profiles>
+        <profile>
+            <id>gf-tests</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <skipExec>true</skipExec>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>bundles</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-assembly-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>assemble-src-zip</id>
+                                    <phase>package</phase>
+                                    <goals>
+                                        <goal>attached</goal>
+                                    </goals>
+                                    <configuration>
+                                        <descriptors>
+                                            <descriptor>../etc/project-src-assembly.xml</descriptor>
+                                        </descriptors>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
+</project>

@@ -1,0 +1,119 @@
+<!--
+
+    Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Distribution License v. 1.0, which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: BSD-3-Clause
+
+-->
+
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+</head>
+
+<body>
+<meta charset="utf-8">
+<title>Web Socket JavaScript Basic Auth Client</title>
+<script language="javascript" type="text/javascript">
+
+    var endpointPath = "/basic-auth-echo";
+    var wsUri = getRootUri() + endpointPath;
+
+    /**
+     * Get application root uri with ws/wss protocol.
+     *
+     * @returns {string}
+     */
+    function getRootUri() {
+        var uri = "wss://" + (document.location.hostname == "" ? "localhost" : document.location.hostname) + ":" +
+                (document.location.port == "" ? "8181" : document.location.port);
+
+        var pathname = window.location.pathname;
+
+        if (endsWith(pathname, "/index.html")) {
+            uri = uri + pathname.substring(0, pathname.length - 11);
+        } else if (endsWith(pathname, "/")) {
+            uri = uri + pathname.substring(0, pathname.length - 1);
+        }
+
+        return uri;
+    }
+
+    function endsWith(str, suffix) {
+        return str.indexOf(suffix, str.length - suffix.length) !== -1;
+    }
+
+    function init() {
+        output = document.getElementById("output");
+    }
+
+    function send_echo() {
+
+        websocket = new WebSocket(wsUri);
+        websocket.onopen = function (evt) {
+            onOpen(evt)
+        };
+        websocket.onmessage = function (evt) {
+            onMessage(evt)
+        };
+        websocket.onerror = function (evt) {
+            onError(evt)
+        };
+        websocket.onclose = function (evt) {
+            onClose(evt);
+        }
+    }
+
+    function onOpen(evt) {
+        writeToScreen("CONNECTED");
+        doSend(textID.value);
+
+    }
+
+    function onMessage(evt) {
+        writeToScreen("RECEIVED: " + evt.data);
+    }
+
+    function onClose(evt) {
+        writeToScreen("CLOSED: " + evt.code + ": " + evt.reason);
+    }
+
+    function onError(evt) {
+        writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
+    }
+
+    function doSend(message) {
+        writeToScreen("SENT: " + message);
+        websocket.send(message);
+    }
+
+    function writeToScreen(message) {
+        var pre = document.createElement("p");
+        pre.style.wordWrap = "break-word";
+        pre.innerHTML = message;
+        //alert(output);
+        output.appendChild(pre);
+    }
+
+    window.addEventListener("load", init, false);
+
+</script>
+
+<h2 style="text-align: center;">Web Socket Basic Auth Client</h2>
+
+<div style="text-align: center;"><img style=" width: 64px; height: 64px;" alt="" src="HTML5_Logo_512.png"></div>
+<br/>
+
+<div style="text-align: center;">
+    <form action="">
+        <input onclick="send_echo()" value="Press me" type="button">
+        <input id="textID" name="message" label="message" value="Hello Web Sockets !" type="text"><br>
+    </form>
+</div>
+<div id="output"></div>
+</body>
+</html>

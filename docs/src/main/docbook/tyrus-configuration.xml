@@ -1,0 +1,1425 @@
+<?xml version="1.0"?>
+<!--
+
+    Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
+<!DOCTYPE chapter [<!ENTITY % ents SYSTEM "tyrus.ent" > %ents;]>
+<chapter xmlns="http://docbook.org/ns/docbook"
+         version="5.0"
+         xml:lang="en"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xsi:schemaLocation="http://docbook.org/ns/docbook http://docbook.org/xml/5.0/xsd/docbook.xsd
+                             http://www.w3.org/1999/xlink http://www.w3.org/1999/xlink.xsd"
+         xml:id="tyrus-proprietary-config">
+    <title>Tyrus proprietary configuration</title>
+
+    <para>Following settings do have influence on Tyrus behaviour and are <emphasis>NOT</emphasis> part of WebSocket
+    specification. If you are using following configurable options, your application might not be easily transferable to
+    other WebSocket API implementation.</para>
+
+    <section>
+        <title>Client-side SSL configuration</title>
+
+        <para>When accessing "wss" URLs, Tyrus client will pick up whatever keystore and truststore is actually set for current JVM instance, but
+            that might not be always convenient. WebSocket API does not have this feature (yet, see <link xlink:href="https://java.net/jira/browse/WEBSOCKET_SPEC-210">WEBSOCKET_SPEC-210</link>),
+            so Tyrus exposed two SSL configuration classes <link xlink:href="https://grizzly.java.net/docs/2.3/apidocs/org/glassfish/grizzly/ssl/SSLEngineConfigurator.html">SSLEngineConfigurator</link>
+            and <link xlink:href="https://tyrus.java.net/apidocs/&version;/org/glassfish/tyrus/client/SslEngineConfigurator.html">SslEngineConfigurator</link>
+            , which can be used for specifying all SSL parameters to be used with current client instance. The former configuration class
+            belongs to Grizzly configuration API and therefore works only with Grizzly client. The latter configuration class
+            works with both Grizzly and JDK client and offers some extensions over the Grizzly SSLEngineConfigurator
+            allowing more control of host verification during the SSL handshake. For more details
+            please refer to the following subsection dealing with host verification.
+
+            Additionally, WebSocket API does not have anything like a client, only WebSocketContainer and it does not have any properties, so you need to use Tyrus specific class -
+            <link xlink:href="https://tyrus.java.net/apidocs/&version;/org/glassfish/tyrus/client/ClientManager.html">ClientManager</link>.</para>
+
+        <programlisting language="java" linenumbering="numbered">final ClientManager client = ClientManager.createClient();
+
+System.getProperties().put("javax.net.debug", "all");
+System.getProperties().put(SSLContextConfigurator.KEY_STORE_FILE, "...");
+System.getProperties().put(SSLContextConfigurator.TRUST_STORE_FILE, "...");
+System.getProperties().put(SSLContextConfigurator.KEY_STORE_PASSWORD, "...");
+System.getProperties().put(SSLContextConfigurator.TRUST_STORE_PASSWORD, "...");
+final SSLContextConfigurator defaultConfig = new SSLContextConfigurator();
+
+defaultConfig.retrieve(System.getProperties());
+    // or setup SSLContextConfigurator using its API.
+
+SSLEngineConfigurator sslEngineConfigurator =
+    new SSLEngineConfigurator(defaultConfig, true, false, false);
+client.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR,
+    sslEngineConfigurator);
+client.connectToServer(... , ClientEndpointConfig.Builder.create().build(),
+    new URI("wss://localhost:8181/sample-echo/echo"));
+}</programlisting>
+        <para>
+            If there seems to be a problem with Tyrus SSL connection, it is strongly recommended to use -Djavax.net.debug=all
+            system property as it provides invaluable information for troubleshooting.
+        </para>
+
+        <section>
+            <title>Host verification</title>
+            <para>
+                One of the key steps when establishing SSL connections is verifying that the host on the certificate
+                sent by the server matches the host Tyrus client tries to connect to and thus preventing a possibility of
+                a man-in-the-middle attack. Host verification is turned on by default in Tyrus, which means that Tyrus
+                will automatically check that the host provided in the URI in
+                <programlisting language="java" linenumbering="numbered">client.connectToServer(... , new URI("wss://target-server:8181/application/endpoint"));
+                </programlisting> matches exactly the host the certificate has been issued for. Exact match is
+                the key word in the previous sentence as host can be either hostname or IP address and those two cannot be used
+                interchangeably. For instance when a certificate has been issued for "localhost", establishing an SSL connection
+                to "wss://127.0.0.1:8181/application/endpoint" will fail as the host does not match the one in the certificate.
+            </para>
+            <para>
+                The default host verification can be too restrictive for some cases and therefore Tyrus provides users
+                with means to to either disable the host verification (highly unrecommended in production) or to implement
+                their own host verifier. Providing custom host verifier will disable the default one. It is also important
+                to note that Grizzly specific
+                <link xlink:href="https://grizzly.java.net/docs/2.3/apidocs/org/glassfish/grizzly/ssl/SSLEngineConfigurator.html">SSLEngineConfigurator</link>
+                does not provide these options and for modifying the default host name verification policy
+                <link xlink:href="https://tyrus.java.net/apidocs/&version;/org/glassfish/tyrus/client/SslEngineConfigurator.html">SslEngineConfigurator</link>
+                must be used instead. The following sample shows how to disable host name verification:
+                <programlisting language="java" linenumbering="numbered">SslEngineConfigurator sslEngineConfigurator = new SslEngineConfigurator(new SslContextConfigurator());
+sslEngineConfigurator.setHostVerificationEnabled(false)
+client.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR, sslEngineConfigurator);
+                </programlisting>
+                The following sample shows how to register a custom host verifier:
+                <programlisting language="java" linenumbering="numbered">SslEngineConfigurator sslEngineConfigurator = new SslEngineConfigurator(new SslContextConfigurator());
+sslEngineConfigurator.setHostnameVerifier(new HostnameVerifier() {
+    @Override
+    public boolean verify(String host, SSLSession sslSession) {
+        Certificate certificate = sslSession.getPeerCertificates()[0];
+        // validate the host in the certificate
+    }
+});
+client.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR, sslEngineConfigurator);
+                </programlisting>
+            </para>
+        </section>
+    </section>
+
+    <section>
+        <title>Asynchronous connectToServer methods</title>
+        <para>WebSocketContainer.connectToServer(...) methods are by definition blocking - declared exceptions needs to
+        be thrown after connection attempt is made and it returns Session instance, which needs to be ready for sending
+        messages and invoking other methods, which require already established connection.</para>
+        <para>Existing connectToServer methods are fine for lots of uses, but it might cause issue when you are designing
+        application with highly responsible user interface. Tyrus introduces asynchronous variants to each connectToServer
+        method (prefixed with "async"), which returns Future&lt;Session&gt;. These methods do only simple check for provided
+        URL and the rest is executed in separate thread. All exceptions thrown during this phase are reported as cause
+        of ExecutionException thrown when calling Future&lt;Session&gt;.get().</para>
+        <para>Asynchronous connect methods are declared on Tyrus implementation of WebSocketContainer called ClientManager.</para>
+
+<programlisting language="java" linenumbering="numbered">ClientManager client = ClientManager.createClient();
+  final Future&lt;Session&gt; future = client.asyncConnectToServer(ClientEndpoint.class, URI.create("..."));
+  try {
+    future.get();
+  } catch (...) {
+}</programlisting>
+
+        <para>ClientManager contains async alternative to each connectToServer method.</para>
+    </section>
+
+    <section>
+        <title>Optimized broadcast</title>
+        <para>One of the typical usecases we've seen so far for WebSocket server-side endpoints is broadcasting messages
+        to all connected clients, something like:</para>
+
+<programlisting language="java" linenumbering="numbered">@OnMessage
+public void onMessage(Session session, String message) throws IOException {
+  for (Session s : session.getOpenSessions()) {
+    s.getBasicRemote().sendText(message);
+  }
+}</programlisting>
+
+        <para>Executing this code might cause serious load increase on your application server. Tyrus provides optimized
+        broadcast implementation, which takes advantage of the fact, that we are sending exactly same message to all clients,
+        so dataframe can be created and serialized only once. Furthermore, Tyrus can iterate over set of opened connections
+        faster than Session.getOpenSession().</para>
+
+<programlisting language="java" linenumbering="numbered">@OnMessage
+public void onMessage(Session session, String message) {
+  ((TyrusSession) session).broadcast(message);
+}</programlisting>
+
+        <para>Unfortunately, WebSocket API forbids anything else than Session in @OnMessage annotated method parameter,
+        so you cannot use TyrusSession there directly and you might need to perform instanceof check.</para>
+
+    </section>
+
+    <section>
+        <title>Incoming buffer size</title>
+
+        <para>Sevlet container buffers incoming WebSocket frames and there must be a size limit to precede OutOfMemory
+        Exception and potentially DDoS attacks.</para>
+
+        <para>Configuration property is named <code>"org.glassfish.tyrus.servlet.incoming-buffer-size"</code> and you can
+        set it in web.xml (this particular snipped sets the buffer size to 17000000 bytes (~16M payload):</para>
+
+        <programlisting language="xml" linenumbering="numbered">&lt;web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"&gt;
+
+  &lt;context-param&gt;
+    &lt;param-name&gt;org.glassfish.tyrus.servlet.incoming-buffer-size&lt;/param-name&gt;
+    &lt;param-value&gt;17000000&lt;/param-value&gt;
+  &lt;/context-param&gt;
+&lt;/web-app&gt;</programlisting>
+
+        <para>Default value is 4194315, which correspond to 4M plus few bytes to frame headers, so you should be able to
+        receive up to 4M long message without the need to care about this property.</para>
+
+        <para>Same issue is present on client side. There you can set this property via ClientManager:</para>
+
+        <programlisting language="java" linenumbering="numbered">ClientManager client = ClientManager.createClient();
+client.getProperties().put("org.glassfish.tyrus.incomingBufferSize", 6000000); // sets the incoming buffer size to 6000000 bytes.
+client.connectToServer( ... )</programlisting>
+    </section>
+
+    <section>
+        <title>Shared client container</title>
+
+        <para>By default, WebSocket client implementation in Tyrus re-creates client runtime whenever WebSocketContainer#connectToServer
+            is invoked. This approach gives us some perks like out-of-the-box isolation and relatively low thread count
+            (currently we have 1 selector thread and 2 worker threads). Also it gives you the ability to stop the client
+            runtime – one Session instance is tied to exactly one client runtime, so we can stop it when Session is closed.
+            This seems as a good solution for most of WebSocket client use cases – you usually use java client from
+            application which uses it for communicating with server side and you typically don’t need more than 10 instances
+            (my personal estimate is that more than 90% applications won’t use more than 1 connection). There are several
+            reasons for it – of it is just a client, it needs to preserve server resources – one WebSocket connection means
+            one TCP connection and we don’t really want clients to consume more than needed. Previous statement may be
+            invalidated by WebSocket multiplexing extension, but for now, it is still valid.</para>
+
+        <para>On the other hand, WebSocket client implementations in some other containers took another (also correct)
+            approach – they share client runtime for creating all client connections. That means they might not have this
+            strict one session one runtime policy, they cannot really give user way how he to control system resources,
+            but surely it has another advantage – it can handle much more opened connections. Thread pools are share among
+            client sessions which may or may not have some unforeseen consequences, but if its implemented correctly, it
+            should outperform Tyrus solution mentioned in previous paragraph in some use cases, like the one mentioned
+            in <link xlink:href="https://java.net/jira/browse/TYRUS-275">TYRUS-275</link> - performance tests. Reporter
+            created simple program which used WebSocket API to create clients and connect to remote endpoint and he measured
+            how many clients can he create (or in other words: how many parallel client connections can be created; I guess
+            that original test case is to measure possible number of concurrent clients on server side, but that does not
+            really matter for this post). Tyrus implementation loose compared to some other and it was exactly because it
+            did not have shared client runtime capability.</para>
+
+        <para>How can you use this feature?</para>
+
+<programlisting language="java" linenumbering="numbered">ClientManager client = ClientManager.createClient();
+
+client.getProperties().put(ClientProperties.SHARED_CONTAINER, true);</programlisting>
+
+        <para>You might also want to specify container idle timeout:</para>
+
+<programlisting language="java" linenumbering="numbered">client.getProperties().put(ClientProperties.SHARED_CONTAINER_IDLE_TIMEOUT, 5);</programlisting>
+
+        <para>Last but not least, you might want to specify thread pool sizes used by shared container (please use this feature only when you do know what are you doing. Grizzly by default does not limit max number of used threads,
+            so if you do that, please make sure thread pool size fits your purpose). Even though the default unlimited thread pool size is sufficient for the vast majority of client usages, it is also important ot note that
+            if the max. thread pool size is not specified and the clients which share the thread pool receive a large number of messages at the same moment, a new thread can be created for each of the received messages
+            which might demand large amount of system resources and might even lead to a program failure if the required resources are not available. Therefore for particularly busy clients setting the max thread pool
+            size can be only recommended. The following example shows how to set the maximal thread poll size.</para>
+
+<programlisting language="java" linenumbering="numbered">client.getProperties().put(GrizzlyClientProperties.SELECTOR_THREAD_POOL_CONFIG, ThreadPoolConfig.defaultConfig().setMaxPoolSize(3));
+client.getProperties().put(GrizzlyClientProperties.WORKER_THREAD_POOL_CONFIG, ThreadPoolConfig.defaultConfig().setMaxPoolSize(10));</programlisting>
+
+        <section>
+            <title>Custom masking key generator</title>
+            <para>
+                As a security measure, all frames originating on a websocket client have to be masked with a random 4B value, which must be generated for each frame.
+                Moreover to fully comply with the security requirements of RFC 6455, a masking key of a frame must not be predictable from masking keys of previous frames
+                and therefore Tyrus uses <code>java.security.SecureRandom</code> as a default masking key generator. While this is perfectly OK for most Tyrus client use cases,
+                usage of <code>java.security.SecureRandom</code> might prove to be a performance issue, when the client is used for instance for highly parallel stress testing,
+                as it uses a synchronized singleton as a random entropy provider in its internals.
+            </para>
+            <para>
+                To overcome the limitations mentioned above, Tyrus allows replacing the default <code>java.security.SecureRandom</code> with more scalable masking key generator.
+                Please, be aware that there might be security implications if you decide not to use a cryptographically secure random number generator
+                in production like the one in the following sample. Moreover the supplied random number generator should be also thread safe.
+                The following example shows, how a custom masking key generator can be configured:
+                <programlisting language="java" linenumbering="numbered">ClientManager client = ClientManager.createClient();
+client.getProperties().put(ClientProperties.MASKING_KEY_GENERATOR, new MaskingKeyGenerator() {
+
+    private final Random random = new Random();
+
+    @Override
+    public int nextInt() {
+        return random.nextInt();
+    }
+});</programlisting>
+            </para>
+            <para>
+                It is also important to note that the scalability issue connected to the default masking key generator is not limited to the shared container client configuration,
+                but it is discussed in this section as it is assumed that shared container is used for highly parallel clients handling a lot of traffic, where the method
+                of masking key generation starts to matter.
+            </para>
+        </section>
+    </section>
+
+    <section>
+        <title>WebSocket Extensions</title>
+
+        <para>Please note that Extensions support is considered to be experimental and any API can be changed anytime. Also,
+        you should ask yourself at least twice whether you don't want to achieve your goal by other means - WebSocket
+        Extension is very powerful and can easily break your application when not used with care or enough expertise.
+        </para>
+
+        <para>WebSocket frame used in ExtendedExtension:</para>
+
+        <programlisting language="java" linenumbering="numbered">public class Frame {
+
+    public boolean isFin() { .. }
+    public boolean isRsv1() { .. }
+    public boolean isRsv2() { .. }
+    public boolean isRsv3() { .. }
+    public boolean isMask() { .. }
+    public byte getOpcode() { .. }
+    public long getPayloadLength() { .. }
+    public int getMaskingKey() { .. }
+    public byte[] getPayloadData() { .. }
+    public boolean isControlFrame() { .. }
+
+    public static Builder builder() { .. }
+    public static Builder builder(Frame frame) { .. }
+
+    public final static class Builder {
+
+    public Builder() { .. }
+    public Builder(Frame frame) { .. }
+    public Frame build() { .. }
+    public Builder fin(boolean fin) { .. }
+    public Builder rsv1(boolean rsv1) { .. }
+    public Builder rsv2(boolean rsv2) { .. }
+    public Builder rsv3(boolean rsv3) { .. }
+    public Builder mask(boolean mask) { .. }
+    public Builder opcode(byte opcode) { .. }
+    public Builder payloadLength(long payloadLength) { .. }
+    public Builder maskingKey(int maskingKey) { .. }
+    public Builder payloadData(byte[] payloadData) { .. }
+}</programlisting>
+
+        <para>Frame is immutable, so if you want to create new one, you need to create new builder, modify what you want
+        and build it:</para>
+
+        <programlisting language="java" linenumbering="numbered">Frame newFrame = Frame.builder(originalFrame).rsv1(true).build();</programlisting>
+
+        <para>Note that there is only one convenience method: isControlFrame. Other information about frame type etc needs
+            to be evaluated directly from opcode, simply because there might not be enough information to get the correct
+            outcome or the information itself would not be very useful. For example: opcode 0×00 means continuation frame,
+            but you don’t have any chance to get the information about actual type (text or binary) without intercepting
+            data from previous frames. Consider Frame class as raw representation as possible. isControlFrame() can be also
+            gathered from opcode, but it is at least always deterministic and it will be used by most of extension
+            implementations. It is not usual to modify control frames as it might end with half closed connections or
+            unanswered ping messages.</para>
+
+        <para>ExtendedExtension representation needs to be able to handle extension parameter negotiation and actual processing
+        of incoming and outgoing frames. It also should be compatible with existing javax.websocket.Extension class, since we
+        want to re-use existing registration API and be able to return new extension instance included in response
+        from List&lt;Extension&gt; Session.getNegotiatedExtensions() call. Consider following:</para>
+
+        <programlisting language="java" linenumbering="numbered">public interface ExtendedExtension extends Extension {
+
+    Frame processIncoming(ExtensionContext context, Frame frame);
+    Frame processOutgoing(ExtensionContext context, Frame frame);
+
+    List onExtensionNegotiation(ExtensionContext context, List requestedParameters);
+    void onHandshakeResponse(ExtensionContext context, List responseParameters);
+
+    void destroy(ExtensionContext context);
+
+    interface ExtensionContext {
+
+        Map&lt;String, Object> getProperties();
+    }
+}</programlisting>
+
+        <para>ExtendedExtension is capable of processing frames and influence parameter values during the handshake.
+            Extension is used on both client and server side and since the negotiation is only place where this fact
+            applies, we needed to somehow differentiate these sides. On server side, only onExtensionNegotiation(..)
+            method is invoked and on client side onHandshakeResponse(..). Server side method is a must, client side could
+            be somehow solved by implementing ClientEndpointConfig.Configurator#afterResponse(..) or calling
+            Session.getNegotiatedExtenions(), but it won’t be as easy to get this information back to extension instance
+            and even if it was, it won’t be very elegant. Also, you might suggest replacing processIncoming and
+            processOutgoing methods by just oneprocess(Frame) method. That is also possible, but then you might have to
+            assume current direction from frame instance or somehow from ExtensionContext, which is generally not a bad
+            idea, but it resulted it slightly less readable code.</para>
+
+        <para>ExtensionContext and related lifecycle method is there because original javax.websocket.Extension is singleton
+        and ExtendedExtension must obey this fact. But it does not meet some requirements we stated previously, like per
+        connection parameter negotiation and of course processing itself will most likely have some connection state.
+        Lifecycle of ExtensionContext is defined as follows: ExtensionContext instance is created right before onExtensionNegotiation
+        (server side) or onHandshakeResponse (client side) and destroyed after destroy method invocation. Obviously, processIncoming
+        or processOutgoing cannot be called before ExtensionContext is created or after is destroyed. You can think of handshake
+        related methods as @OnOpenand destroy as @OnClose.</para>
+
+        <para>For those more familiar with WebSocket protocol: process*(ExtensionContext, Frame) is always invoked with unmasked
+        frame, you don’t need to care about it. On the other side, payload is as it was received from the wire, before any
+            validation (UTF-8 check for text messages). This fact is particularly important when you are modifying text
+            message content, you need to make sure it is properly encoded in relation to other messages, because encoding/decoding
+            process is stateful – remainder after UTF-8 coding is used as input to coding process for next message. If you
+            want just test this feature and save yourself some headaches, don’t modify text message content or try binary
+            messages instead.</para>
+
+        <section>
+            <title>ExtendedExtension sample</title>
+
+        <para>Let’s say we want to create extension which will encrypt and decrypt first byte of every binary message. Assume we have a key (one byte) and our symmetrical cipher will be XOR. (Just for simplicity (a XOR key XOR key) = a, so encrypt() and decrypt() functions are the same).</para>
+            <programlisting language="java" linenumbering="numbered">public class CryptoExtension implements ExtendedExtension {
+
+    @Override
+    public Frame processIncoming(ExtensionContext context, Frame frame) {
+         return lameCrypt(context, frame);
+    }
+
+    @Override
+    public Frame processOutgoing(ExtensionContext context, Frame frame) {
+        return lameCrypt(context, frame);
+    }
+
+    private Frame lameCrypt(ExtensionContext context, Frame frame) {
+        if(!frame.isControlFrame() &amp;&amp; (frame.getOpcode() == 0x02)) {
+            final byte[] payloadData = frame.getPayloadData();
+            payloadData[0] ^= (Byte)(context.getProperties().get("key"));
+
+            return Frame.builder(frame).payloadData(payloadData).build();
+        } else {
+            return frame;
+        }
+    }
+
+    @Override
+    public List onExtensionNegotiation(ExtensionContext context,
+                                       List requestedParameters) {
+        init(context);
+        // no params.
+        return null;
+    }
+
+    @Override
+    public void onHandshakeResponse(ExtensionContext context,
+    List responseParameters) {
+        init(context);
+    }
+
+    private void init(ExtensionContext context) {
+        context.getProperties().put("key", (byte)0x55);
+    }
+
+    @Override
+    public void destroy(ExtensionContext context) {
+        context.getProperties().clear();
+    }
+
+    @Override
+    public String getName() {
+        return "lame-crypto-extension";
+    }
+
+    @Override
+    public List getParameters() {
+        // no params.
+        return null;
+    }
+}</programlisting>
+
+        <para>You can see that ExtendedExtension is slightly more complicated that original Extension so the implementation
+            has to be also not as straightforward.. on the other hand, it does something. Sample code above shows possible
+            simplification mentioned earlier (one process method will be enough), but please take this as just sample
+            implementation. Real world case is usually more complicated.</para>
+
+        <para>Now when we have our CryptoExtension implemented, we want to use it. There is nothing new compared to standard
+            WebSocket Java API, feel free to skip this part if you are already familiar with it. Only programmatic version
+            will be demonstrated. It is possible to do it for annotated version as well, but it is little bit more complicated
+            on the server side and I want to keep the code as compact as possible.</para>
+
+        <para>Client registration</para>
+
+            <programlisting language="java" linenumbering="numbered">ArrayList extensions = new ArrayList();
+extensions.add(new CryptoExtension());
+
+final ClientEndpointConfig clientConfiguration =
+    ClientEndpointConfig.Builder.create()
+    .extensions(extensions).build();
+
+WebSocketContainer client = ContainerProvider.getWebSocketContainer();
+final Session session = client.connectToServer(new Endpoint() {
+    @Override
+    public void onOpen(Session session, EndpointConfig config) {
+        // ...
+    }
+}, clientConfiguration, URI.create(/* ... */));</programlisting>
+
+       <para>Server registration:</para>
+
+       <programlisting language="java" linenumbering="numbered">public class CryptoExtensionApplicationConfig implements ServerApplicationConfig {
+
+    @Override
+    public Set getEndpointConfigs(Set&lt;Class&lt;? extends Endpoint>> endpointClasses) {
+        Set endpointConfigs = new HashSet();
+        endpointConfigs.add(
+            ServerEndpointConfig.Builder.create(EchoEndpoint.class, "/echo")
+            .extensions(Arrays.asList(new CryptoExtension())).build()
+        );
+        return endpointConfigs;
+    }
+
+    @Override
+    public Set&lt;Class&lt;?>> getAnnotatedEndpointClasses(Set&lt;Class&lt;?>> scanned) {
+        // all scanned endpoints will be used.
+        return scanned;
+    }
+}
+
+public class EchoEndpoint extends Endpoint {
+    @Override
+    public void onOpen(Session session, EndpointConfig config) {
+        // ...
+    }
+}</programlisting>
+
+            <para>CryptoExtensionApplicationConfig will be found by servlets scanning mechanism and automatically used for
+                application configuration, no need to add anything (or even have) web.xml.</para>
+        </section>
+
+        <section>
+            <title>Per Message Deflate Extension</title>
+
+            <para>The original goal of whole extension support was to implement Permessage extension as defined in
+                draft-ietf-hybi-permessage-compression-15 and we were able to achieve that goal. Well, not completely, current
+                implementation ignores parameters. But it seems like it does not matter much, it was tested with Chrome and it
+                works fine. Also it passes newest version of Autobahn test suite, which includes tests for this extension.</para>
+
+            <para>see PerMessageDeflateExtension.java (compatible with draft-ietf-hybi-permessage-compression-15, autobahn test suite) and
+                XWebKitDeflateExtension.java (compatible with Chrome and Firefox – same as previous, just different extension name)
+                </para>
+        </section>
+    </section>
+
+    <section>
+        <title>Client reconnect</title>
+
+        <para>If you need semi-persistent client connection, you can always implement some reconnect logic by yourself,
+        but Tyrus Client offers useful feature which should be much easier to use. See short sample code:</para>
+
+        <programlisting language="java" linenumbering="numbered">ClientManager client = ClientManager.createClient();
+ClientManager.ReconnectHandler reconnectHandler = new ClientManager.ReconnectHandler() {
+
+  private int counter = 0;
+
+  @Override
+  public boolean onDisconnect(CloseReason closeReason) {
+    counter++;
+    if (counter &lt;= 3) {
+      System.out.println("### Reconnecting... (reconnect count: " + counter + ")");
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public boolean onConnectFailure(Exception exception) {
+    counter++;
+    if (counter &lt;= 3) {
+      System.out.println("### Reconnecting... (reconnect count: " + counter + ") " + exception.getMessage());
+
+      // Thread.sleep(...) or something other "sleep-like" expression can be put here - you might want
+      // to do it here to avoid potential DDoS when you don't limit number of reconnects.
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public long getDelay() {
+    return 1;
+  }
+};
+
+client.getProperties().put(ClientProperties.RECONNECT_HANDLER, reconnectHandler);
+
+client.connectToServer(...)</programlisting>
+
+        <para>ReconnectHandler contains three methods, onDisconnect, onConnectFailure and getDelay. First will be executed
+        whenever @OnClose annotated method (or Endpoint.onClose(..)) is executed on client side - this should happen when
+        established connection is lost for any reason. You can find the reason in methods parameter. Other one, called
+        onConnectFailure is invoked when client fails to connect to remote endpoint, for example due to temporary network
+        issue or current high server load. Method getDelay is called after any of previous methods returns <code>true</code>
+        and the returned value will be used to determine delay before next connection attempt. Default value is 5 seconds.</para>
+    </section>
+    <section>
+        <title>Client behind proxy</title>
+        <para>
+            Tyrus client supports traversing proxies, but it is Tyrus specific feature and its configuration is shown
+            in the following code sample:
+            <programlisting language="java" linenumbering="numbered">
+ClientManager client = ClientManager.createClient();
+client.getProperties().put(ClientProperties.PROXY_URI, "http://my.proxy.com:80");
+            </programlisting>
+            Value is expected to be proxy URI. Protocol part is currently ignored, but must be present.
+        </para>
+    </section>
+    <section>
+        <title>JDK 7 client</title>
+        <para>
+            As has been said in previous chapters both Tyrus client and server were implemented on top of Grizzly NIO framework.
+            This still remains true, but an alternative Tyrus Websocket client implementation based on Java 7 Asynchronous Channel
+            API has been available since version 1.6. There are two options how to switch between client implementations.
+            If you do not mind using Tyrus specific API, the most straightforward way is to use:
+            <programlisting language="java" linenumbering="numbered">
+final ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());
+            </programlisting>
+            You just have to make sure that the dependency on JDK client is included in your project:
+            <programlisting language="xml" linenumbering="unnumbered">
+&lt;dependency&gt;
+  &lt;groupId&gt;org.glassfish.tyrus&lt;/groupId&gt;
+  &lt;artifactId&gt;tyrus-container-jdk-client&lt;/artifactId&gt;
+  &lt;version&gt;&version;&lt;/version&gt;
+&lt;/dependency&gt;
+            </programlisting>
+            Grizzly client is the default option, so creating a client without any parameters will result in Grizzly client being used.
+        </para>
+        <para>
+            There is also an option how to use JDK client with the standard Websocket API.
+            <programlisting language="java" linenumbering="numbered">
+final WebSocketContainer client = ContainerProvider.getWebSocketContainer();
+            </programlisting>
+            The code listed above will scan class path for Websocket client implementations. A slight problem with this
+            approach is that if there is more than one client on the classpath, the first one discovered will be used.
+            Therefore if you intend to use JDK client with the standard API, you have to make sure that there is not
+            a Grizzly client on the classpath as it might be used instead.
+        </para>
+        <para>
+            The main reason why JDK client has been implemented is that it does not have any extra dependencies
+            except JDK 7 and of course some other Tyrus modules, which makes it considerable more lightweight compared
+            to Tyrus Grizzly client, which requires 1.4 MB of dependencies.
+        </para>
+        <para>
+            It is also important to note that the JDK client has been implemented in a way similar to Grizzly client
+            shared container option, which means that there is one thread pool shared among all clients.
+        </para>
+        <para>
+            Proxy configuration for JDK client is the same as for Grizzly client shown above.
+        </para>
+        <section>
+            <title>SSL configuration</title>
+            <para>
+                Alike in case of Grizzly client, accessing "wss" URLs will cause Tyrus client to pick up whatever keystore
+                and trust store is actually set for the current JVM instance. However, specifying SSL parameters
+                to be used with JDK client instance is little different from Grizzly client, because Grizzly client supports
+                both
+                <link xlink:href="https://grizzly.java.net/docs/2.3/apidocs/org/glassfish/grizzly/ssl/SSLEngineConfigurator.html">SSLEngineConfigurator</link>
+                end
+                <link xlink:href="https://grizzly.java.net/docs/2.3/apidocs/org/glassfish/grizzly/ssl/SSLContextConfigurator.html">SSLContextConfigurator</link>
+                from Grizzly project and
+                <link xlink:href="https://tyrus.java.net/apidocs/&version;/org/glassfish/tyrus/client/SslEngineConfigurator.html">SslEngineConfigurator</link>
+                and
+                <link xlink:href="https://tyrus.java.net/apidocs/&version;/org/glassfish/tyrus/client/SslContextConfigurator.html">SslContextConfigurator</link>
+                from Tyrus project, but JDK client supports only the Tyrus version of these classes.
+                The following code sample shows an example of some SSL parameters configuration for the JDK client:
+                <programlisting language="java" linenumbering="numbered">
+SslContextConfigurator sslContextConfigurator = new SslContextConfigurator();
+sslContextConfigurator.setTrustStoreFile("...");
+sslContextConfigurator.setTrustStorePassword("...");
+sslContextConfigurator.setTrustStoreType("...");
+sslContextConfigurator.setKeyStoreFile("...");
+sslContextConfigurator.setKeyStorePassword("...");
+sslContextConfigurator.setKeyStoreType("...");
+SslEngineConfigurator sslEngineConfigurator = new SslEngineConfigurator(sslContextConfigurator, true, false, false);
+
+client.getProperties().put(ClientProperties.SSL_ENGINE_CONFIGURATOR, sslEngineConfigurator);
+                </programlisting>
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Tracing support</title>
+        <para>
+            Apart from logging, Tyrus supports another useful means for debugging and diagnosing a deployed application which will
+            be referred to as tracing on the following lines. Tracing consists of including vital information about handshake
+            handling into a handshake response. The provided information includes among other things an insight into how Tyrus matches
+            handshake request URI against the URI of the deployed endpoints and how the best matching endpoint is selected.
+            The tracing information is included in a handshake response as a content of HTTP headers with
+            <code>X-Tyrus-Tracing-</code> as the header names prefix.
+            All the tracing information will also be available in the server log if the appropriate logging level is set.
+            If it is still unclear, how Tyrus tracing works, please refer to the subsection with title Tracing Examples.
+        </para>
+        <section>
+            <title>Configuration</title>
+            <para>
+                Tracing support is disabled by default. You can enable it either "globally" for all application handshake requests
+                or selectively per handshake request. The tracing support activation is controlled by setting the
+                <code>org.glassfish.tyrus.server.tracingType</code> configuration property. The property value is expected to be one of the following:
+
+                <itemizedlist>
+                    <listitem>
+                        <para>OFF - tracing support is disabled (default value).</para>
+                    </listitem>
+                    <listitem>
+                        <para>ON_DEMAND - tracing support is in a stand-by mode; it is enabled selectively per handshake, via a special
+                            X-Tyrus-Tracing-Accept HTTP header in a handshake request.</para>
+                    </listitem>
+                    <listitem>
+                        <para>ALL - tracing support is enabled for all handshake requests.</para>
+                    </listitem>
+                </itemizedlist>
+
+                The level of detail of the information provided by Tyrus tracing facility - the tracing threshold - can be customized.
+                The tracing threshold can be set at the application level via <code>org.glassfish.tyrus.server.tracingThreshold</code>
+                application configuration property in both Glassfish and Grizzly as will be shown in the following samples,
+                or at a request level, via X-Tyrus-Tracing-Threshold HTTP header in a handshake request. The request-level configuration
+                overrides any application level setting. There are 2 supported levels of detail for Tyrus tracing:
+
+                <itemizedlist>
+                    <listitem>
+                        <para>SUMMARY - very basic summary information about handshake processing</para>
+                    </listitem>
+                    <listitem>
+                        <para>TRACE - detailed information about  handshake processing (default threshold value).</para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+                <section>
+                    <title>Global configuration examples</title>
+                    <para>
+                        As has been already said, tracing is disabled by default. The following code sample shows, how <code>ON_DEMAND</code> tracing with
+                        level set to <code>SUMMARY</code> can be enabled on Grizzly server:
+                        <programlisting language="java" linenumbering="numbered">
+                            serverProperties.put(TyrusWebSocketEngine.TRACING_TYPE, ON_DEMAND);
+                            serverProperties.put(TyrusWebSocketEngine.TRACING_THRESHOLD, SUMMARY);
+                        </programlisting>
+                        Similarly <code>ALL</code> tracing with level set to <code>TRACE</code> (the default) can be enabled on Glassfish server in web.xml:
+                        <programlisting language="xml" linenumbering="numbered">&lt;web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"&gt;
+
+    &lt;context-param&gt;
+        &lt;param-name&gt;org.glassfish.tyrus.server.tracingType&lt;/param-name&gt;
+        &lt;param-value&gt;ALL&lt;/param-value&gt;
+    &lt;/context-param&gt;
+&lt;/web-app&gt;</programlisting>
+
+                        It has been also already mentioned that the tracing threshold configured on application level can be overridden per handshake request as
+                        will be shown in the following section.
+                    </para>
+                </section>
+            <section>
+                <title>Configuring tracing via handshake request headers</title>
+                <para>
+                    Whenever the tracing support is active (ON_DEMAND or ALL) you can customize the tracing behaviour by including one or more of the following request HTTP headers
+                    in the individual handshake requests:
+
+                    <itemizedlist>
+                        <listitem>
+                            <para>X-Tyrus-Tracing-Accept - used to enable the tracing support for the particular request. It is applied only when the application-level tracing support is configured to
+                                ON_DEMAND mode. The value of the header is not used by the Tyrus tracing facility and as such it can be any arbitrary (even empty) string.</para>
+                        </listitem>
+                        <listitem>
+                            <para>X-Tyrus-Tracing-Threshold - used to override the tracing threshold. Allowed values are: SUMMARY, TRACE.</para>
+                        </listitem>
+                    </itemizedlist>
+                </para>
+            </section>
+        </section>
+        <section>
+            <title>Tracing Examples</title>
+            <para>
+                An example of a handshake request to a server in <code>ON_DEMAND</code> tracing mode requesting <code>SUMMARY</code> tracing information:
+                <screen linenumbering="numbered"><![CDATA[GET /endpoint/b HTTP/1.1
+Connection: Upgrade
+Host: localhost:8025
+Origin: localhost:8025
+Sec-WebSocket-Key: YrFldD8nhRW+6hJ2K/TMqw==
+Sec-WebSocket-Version: 13
+Upgrade: websocket
+X-Tyrus-Tracing-Accept: Whatever
+X-Tyrus-Tracing-Threshold: SUMMARY]]></screen>
+                An example of a possible response to the request above:
+                <screen linenumbering="numbered"><![CDATA[HTTP/1.1 404 Not found
+x-tyrus-tracing-00 : [0 ms] Matching request URI /samples-debug/endpoint/b against /samples-debug/endpoint/{a}/b
+x-tyrus-tracing-01 : [0 ms] URIs /samples-debug/endpoint/b and /samples-debug/endpoint/{a}/b have different length
+x-tyrus-tracing-02 : [0 ms] Matching request URI /samples-debug/endpoint/b against /samples-debug/endpoint/{a}/{b}
+x-tyrus-tracing-03 : [0 ms] URIs /samples-debug/endpoint/b and /samples-debug/endpoint/{a}/{b} have different length
+x-tyrus-tracing-04 : [0 ms] Matching request URI /samples-debug/endpoint/b against /samples-debug/endpoint/a/b
+x-tyrus-tracing-05 : [1 ms] URIs /samples-debug/endpoint/b and /samples-debug/endpoint/a/b have different length
+x-tyrus-tracing-06 : [1 ms] Matching request URI /samples-debug/endpoint/b against /samples-debug/endpoint/a/a
+x-tyrus-tracing-07 : [1 ms] URIs /samples-debug/endpoint/b and /samples-debug/endpoint/a/a have different length
+x-tyrus-tracing-08 : [1 ms] Matching request URI /samples-debug/endpoint/b against /samples-debug/endpoint/a
+x-tyrus-tracing-09 : [1 ms] Segment "a" does not match
+x-tyrus-tracing-10 : [1 ms] Matching request URI /samples-debug/endpoint/b against /samples-debug/endpoint/a/{b}
+x-tyrus-tracing-11 : [1 ms] URIs /samples-debug/endpoint/b and /samples-debug/endpoint/a/{b} have different length
+x-tyrus-tracing-12 : [3 ms] Endpoints matched to the request URI: []]]></screen>
+                The time in the square brackets in the sample above is the time since the handshake request has been received.
+            </para>
+            <para>
+                An example of a possible handshake response from a server in <code>ALL</code> tracing mode with tracing threshold set to <code>TRACE</code>:
+                <screen linenumbering="numbered"><![CDATA[HTTP/1.1 101
+connection: Upgrade
+sec-websocket-accept: C8/QbF4Mx9sX31sihUcnI19yqto=
+upgrade: websocket
+x-tyrus-tracing-00 : [0 ms] Matching request URI /samples-debug/endpoint/a/b against /samples-debug/endpoint/{a}/b
+x-tyrus-tracing-01 : [0 ms] Matching request URI /samples-debug/endpoint/a/b against /samples-debug/endpoint/{a}/{b}
+x-tyrus-tracing-02 : [0 ms] Matching request URI /samples-debug/endpoint/a/b against /samples-debug/endpoint/a/b
+x-tyrus-tracing-03 : [1 ms] Matching request URI /samples-debug/endpoint/a/b against /samples-debug/endpoint/a/a
+x-tyrus-tracing-04 : [1 ms] Segment "a" does not match
+x-tyrus-tracing-05 : [1 ms] Matching request URI /samples-debug/endpoint/a/b against /samples-debug/endpoint/a
+x-tyrus-tracing-06 : [1 ms] URIs /samples-debug/endpoint/a/b and /samples-debug/endpoint/a have different length
+x-tyrus-tracing-07 : [1 ms] Matching request URI /samples-debug/endpoint/a/b against /samples-debug/endpoint/a/{b}
+x-tyrus-tracing-08 : [3 ms] Choosing better match from /samples-debug/endpoint/{a}/b and /samples-debug/endpoint/a/b
+x-tyrus-tracing-09 : [3 ms] /samples-debug/endpoint/a/b is an exact match
+x-tyrus-tracing-10 : [3 ms] Choosing better match from /samples-debug/endpoint/a/{b} and /samples-debug/endpoint/{a}/b
+x-tyrus-tracing-11 : [3 ms] /samples-debug/endpoint/a/{b} is a  better match, because it has longer exact path
+x-tyrus-tracing-12 : [3 ms] Choosing better match from /samples-debug/endpoint/a/{b} and /samples-debug/endpoint/{a}/b
+x-tyrus-tracing-13 : [3 ms] /samples-debug/endpoint/a/{b} is a  better match, because it has longer exact path
+x-tyrus-tracing-14 : [3 ms] Choosing better match from /samples-debug/endpoint/a/{b} and /samples-debug/endpoint/a/b
+x-tyrus-tracing-15 : [3 ms] /samples-debug/endpoint/a/b is an exact match
+x-tyrus-tracing-16 : [3 ms] Choosing better match from /samples-debug/endpoint/{a}/{b} and /samples-debug/endpoint/a/{b}
+x-tyrus-tracing-17 : [4 ms] /samples-debug/endpoint/a/{b} is a  better match, because it has longer exact path
+x-tyrus-tracing-18 : [4 ms] Choosing better match from /samples-debug/endpoint/{a}/{b} and /samples-debug/endpoint/{a}/b
+x-tyrus-tracing-19 : [4 ms] /samples-debug/endpoint/{a}/b is a  better match, because /samples-debug/endpoint/{a}/{b} has more variables
+x-tyrus-tracing-20 : [4 ms] Endpoints matched to the request URI: [/samples-debug/endpoint/a/b, /samples-debug/endpoint/a/{b}, /samples-debug/endpoint/{a}/b, /samples-debug/endpoint/{a}/{b}]
+x-tyrus-tracing-21 : [4 ms] Endpoint selected as a match to the handshake URI: /samples-debug/endpoint/a/b ]]></screen>
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Client handshake request and response logging</title>
+        <para>
+            Tyrus client offers a possibility, how to enable printing of handshake requests and responses to standard output without having to configure Java logging,
+            which is essential when debugging a misbehaving websocket application. This feature is particularly useful with tracing enabled. The following sample shows,
+            how the handshake logging can be enabled:
+            <programlisting language="java" linenumbering="numbered">
+                ClientManager client = ClientManager.createClient();
+                client.getProperties().put(ClientProperties.LOG_HTTP_UPGRADE, true);
+            </programlisting>
+        </para>
+    </section>
+    <section>
+        <title>JMX Monitoring</title>
+        <para>
+            Tyrus allows monitoring and accessing some runtime properties and metrics at the server side using JMX (Java management extension technology).
+            The monitoring API has been available since version 1.6 and the following properties are available at runtime
+            through MXBeans. Number of open sessions, maximal number of open session since the start of monitoring and
+            list of deployed endpoint class names and paths are available for each application. Endpoint class name and path
+            the endpoint is registered on, number of open session and maximal number of open sessions are available for each
+            endpoint. Apart from that message as well as error statistics are collected both per application and per individual endpoint.
+        </para>
+        <para>
+            The following message statistics are monitored for both sent and received messages:
+            <itemizedlist>
+                <listitem>
+                    <para>messages count</para>
+                </listitem>
+                <listitem>
+                    <para>messages count per second</para>
+                </listitem>
+                <listitem>
+                    <para>average message size</para>
+                </listitem>
+                <listitem>
+                    <para>smallest message size</para>
+                </listitem>
+                <listitem>
+                    <para>largest message size</para>
+                </listitem>
+            </itemizedlist>
+            Moreover all of them are collected separately for text, binary and control messages and apart from the statistics being available
+            for the three separate categories, total numbers summing up statistics from the three types of messages are also available.
+        </para>
+        <para>
+            As has been already mentioned above, Tyrus also monitors errors on both application and endpoint level.
+            An error is identified by the Throwable class name that has been thrown. Statistics are collected about number of times each
+            Throwable has been thrown, so a list of errors together with a number of times each error occurred is available on both application and endpoint level.
+            The monitored errors correspond to invocation of @OnError method on an annotated endpoint or its equivalent on a programmatic endpoint
+            (The invocation of @OnError method is just an analogy and an error will be monitored even if no @OnError method is provided on the endpoint).
+            Errors that occur in @OnOpen, @OnClose methods and methods handling incoming messages are monitored. Errors that occurred during handshake
+            will not be among the monitored errors.
+        </para>
+        <para>
+            The collected metrics as well as the endpoint properties mentioned above are accessible at runtime through Tyrus MXBeans.
+            As has been already mention the information is available on both application and endpoint level with each application
+            or endpoint being represented with four MXBeans. One of those MXBeans contains total message statistics for both sent and received
+            messages as well as any properties specific for applications or endpoints such as endpoint path in the case of an endpoint.
+            The other three MXBeans contain information about sent and received text, binary and control messages.
+        </para>
+        <para>
+            When a user connects to a tyrus application MBean server using an JMX client such as JConsole, they will see
+            the following structure:
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        Application 1 - MXBean containing a list of deployed endpoint class names and paths, number of open sessions,
+                        maximal number of open sessions, error and total message statistics for the application.
+                    </para>
+                    <itemizedlist>
+                        <listitem>
+                            <para>
+                                message statistics - a directory containing message statistics MXBeans
+                            </para>
+                            <itemizedlist>
+                                <listitem>
+                                    <para>
+                                        text - MXBean containing text message statistics
+                                    </para>
+                                </listitem>
+                                <listitem>
+                                    <para>
+                                        binary - MXBean containing binary message statistics
+                                    </para>
+                                </listitem>
+                                <listitem>
+                                    <para>
+                                        control -  MXBean containing control message statistics
+                                    </para>
+                                </listitem>
+                            </itemizedlist>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                endpoints - a directory containing application endpoint MXBeans
+                            </para>
+                            <itemizedlist>
+                                <listitem>
+                                    <para>
+                                        Endpoint 1 - MXBean containing Endpoint 1 class name and path, number of open sessions,
+                                        maximal number of open sessions, error and total message statistics for the endpoint.
+                                    </para>
+                                    <itemizedlist>
+                                        <listitem>
+                                            <para>
+                                                text - MXBean containing text message statistics
+                                            </para>
+                                        </listitem>
+                                        <listitem>
+                                            <para>
+                                                binary - MXBean containing binary message statistics
+                                            </para>
+                                        </listitem>
+                                        <listitem>
+                                            <para>
+                                                control -  MXBean containing control message statistics
+                                            </para>
+                                        </listitem>
+                                    </itemizedlist>
+                                </listitem>
+                                <listitem>
+                                    <para>
+                                        Endpoint 2
+                                    </para>
+                                </listitem>
+                            </itemizedlist>
+                        </listitem>
+                    </itemizedlist>
+                </listitem>
+                <listitem>
+                    <para>
+                        Application 2
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        <para>
+            In fact the monitoring structure described above was a little bit simplistic, because there is an additional
+            monitoring level available, which causes message metrics being also available per session.
+            The monitoring structure is very similar to the one described above, with a small difference that there are
+            four MXBeans registered for each session, which contain text, binary, control and total message statistics.
+            In order to distinguish the two monitoring levels, they will be referred to as endpoint-level monitoring
+            and session-level monitoring.
+        </para>
+        <section>
+            <title>Configuration</title>
+            <para>
+                As has been already mentioned, monitoring is supported only on the server side and is disabled by default.
+                The following code sample shows, how endpoint-level monitoring can be enabled on Grizzly server:
+                <programlisting language="java" linenumbering="numbered">
+serverProperties.put(ApplicationEventListener.APPLICATION_EVENT_LISTENER, new SessionlessApplicationMonitor());
+                </programlisting>
+                Similarly endpoint-level monitoring can be enabled on Grizzly server in the following way:
+                <programlisting language="java" linenumbering="numbered">
+serverProperties.put(ApplicationEventListener.APPLICATION_EVENT_LISTENER, new SessionAwareApplicationMonitor());
+                </programlisting>
+                Monitoring can be configured on Glassfish in web.xml and the following code sample shows endpoint-level configuration:
+                <programlisting language="xml" linenumbering="numbered">&lt;web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"&gt;
+
+    &lt;context-param&gt;
+        &lt;param-name&gt;org.glassfish.tyrus.core.monitoring.ApplicationEventListener&lt;/param-name&gt;
+        &lt;param-value&gt;org.glassfish.tyrus.ext.monitoring.jmx.SessionlessApplicationMonitor&lt;/param-value&gt;
+    &lt;/context-param&gt;
+&lt;/web-app&gt;
+                </programlisting>
+                Similarly session-level monitoring can be configured on Glassfish in web.xml in the following way:
+                <programlisting language="xml" linenumbering="numbered">&lt;web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"&gt;
+
+    &lt;context-param&gt;
+        &lt;param-name&gt;org.glassfish.tyrus.core.monitoring.ApplicationEventListener&lt;/param-name&gt;
+        &lt;param-value&gt;org.glassfish.tyrus.ext.monitoring.jmx.SessionAwareApplicationMonitor&lt;/param-value&gt;
+    &lt;/context-param&gt;
+&lt;/web-app&gt;
+                </programlisting>
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Maximal number of open sessions on server-side</title>
+        <para>
+            Tyrus offers a few ways to limit the number of open sessions, which can be used to save limited resources
+            on a server hosting system. The limits can be configured in several scopes:
+        </para>
+        <itemizedlist>
+            <listitem>
+                <simpara>per whole application</simpara>
+            </listitem>
+            <listitem>
+                <simpara>per endpoint</simpara>
+            </listitem>
+            <listitem>
+                <simpara>per remote address (client IP address)</simpara>
+            </listitem>
+        </itemizedlist>
+        <para>
+            If the number of simultaneously opened sessions exceeds any of these limits, Tyrus will close the session
+            with close code 1013 - Try Again Later.
+        </para>
+        <para>
+            Limits mentioned above can be combined together. For example, let's say we have
+            an application with two endpoints. Overall limit per application will be 1000 open sessions and the first
+            one, non-critical endpoint, will be limited to 75 open sessions at maximum. So we know that the second
+            endpoint can handle 925-1000 opened sessions, depends on how many open sessions are connected to
+            the first endpoint (0-75).
+        </para>
+
+        <section>
+            <title>Maximal number of open sessions per application</title>
+
+            <para>
+                This configuration property can be used to limit overall number of open sessions per whole application.
+                The main purpose of this configurable limit is to restrict how many resources the application can
+                consume.
+            </para>
+
+            <para>
+                The number of open sessions per whole application can be configured by setting property
+                <code>org.glassfish.tyrus.maxSessionsPerApp</code>. Property can be used as
+                <code><![CDATA[<context-param>]]></code>
+                in
+                <code>web.xml</code>
+                or as an entry in parameter map in (standalone) Server properties.
+            </para>
+            <para>
+                Note that only positive integer is allowed.
+            </para>
+
+            <para>This example will set maximal number of open sessions per whole application to 500:</para>
+
+            <programlisting language="xml" linenumbering="unnumbered">
+<![CDATA[
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <context-param>
+        <param-name>org.glassfish.tyrus.maxSessionsPerApp</param-name>
+        <param-value>500</param-value>
+    </context-param>
+</web-app>
+]]>
+            </programlisting>
+
+        </section>
+
+        <section>
+            <title>Maximal number of open sessions per remote address</title>
+
+            <para>
+                The number of open sessions per remote address can be configured by setting property
+                <code>org.glassfish.tyrus.maxSessionsPerRemoteAddr</code>. Property can be used as
+                <code><![CDATA[<context-param>]]></code>
+                in
+                <code>web.xml</code>
+                or as an entry in parameter map in (standalone) Server properties.
+            </para>
+            <para>
+                <code>Remote address</code>
+                value is obtained from
+                <link xlink:href="http://docs.oracle.com/javaee/6/api/javax/servlet/ServletRequest.html#getRemoteAddr()">
+                    ServletRequest#getRemoteAddr()
+                </link>
+                or its alternative when using Grizzly server implementation.
+                Beware that this method returns always the last node which sending HTTP request, so all clients
+                behind one proxy will be treated as clients from single remote address.
+            </para>
+            <para>
+                Note that only positive integer is allowed.
+            </para>
+
+            <para>This example will set maximal number of open sessions from unique IP address or last proxy to 5:
+            </para>
+
+            <programlisting language="xml" linenumbering="unnumbered">
+                <![CDATA[
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <context-param>
+        <param-name>org.glassfish.tyrus.maxSessionsPerRemoteAddr</param-name>
+        <param-value>5</param-value>
+    </context-param>
+</web-app>
+]]>
+            </programlisting>
+
+        </section>
+
+        <section>
+            <title>Maximal number of open sessions per endpoint</title>
+
+            <para>
+                Set maximum number of sessions in annotated endpoint:
+                <programlisting language="java" linenumbering="numbered"><![CDATA[
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
+
+import org.glassfish.tyrus.core.MaxSessions;
+
+/**
+ * Annotated endpoint.
+ */
+@MaxSessions(100)
+@ServerEndpoint(value = "/limited-sessions-endpoint")
+public static class LimitedSessionsEndpoint {
+    @OnOpen
+    public void onOpen(Session s) {
+        ...
+    }
+    ...
+}]]>
+                </programlisting>
+            </para>
+            <para>
+                Set maximum number of sessions for programmatic endpoint:
+                <programlisting language="java" linenumbering="numbered">
+TyrusServerEndpointConfig.Builder.create(LimitedSessionsEndpoint.class,
+  "/limited-sessions-endpoint").maxSessions(100).build();
+                </programlisting>
+            </para>
+            <para>
+                Note that only positive integer is allowed.
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Client HTTP Authentication</title>
+        <para>
+            For server endpoints which is protected by HTTP authentication, Tyrus provides a mechanism to authenticate
+            client.
+            When client receives HTTP response status code<code>401 - Unauthorized</code>, then Tyrus extracts required
+            scheme from
+            <code>WWW-Authenticate</code>
+            challenge. Then it chooses an
+            authenticator from a map of registered authenticators and uses configured<code>credentials</code>.
+            If no proper authenticator is found or credentials are missing, then
+            <code>AuthenticationException</code>
+            is thrown before the handshake can be done.
+            There are implementations of the two most used authentication schemes in Tyrus: BASIC and DIGEST, but it is
+            also possible to implement your own authenticator and register it with a configuration builder
+            <code>org.glassfish.tyrus.client.auth.AuthConfig.Builder</code>
+            or even to override default BASIC or DIGEST
+            auth implementations.
+            If no
+            <code>org.glassfish.tyrus.client.auth.AuthConfig</code>
+            client property is set, then default
+            configuration is used. It is constructed as you can see bellow: BASIC and DIGEST internal implementations
+            are
+            enabled by default.
+        </para>
+        <para>
+            Please note that Basic Authentication scheme should be used over HTTPS connection only.
+        </para>
+        <section>
+            <title>Credentials</title>
+            <para>
+                Credentials are required for both implemented authentication schemes in Tyrus. You can pass an instance
+                into ClientManager as a property:
+                <programlisting language="java" linenumbering="numbered">
+                    <![CDATA[
+  client.getProperties().put(ClientProperties.CREDENTIALS, new Credentials("ws_user", "password".getBytes(AuthConfig.CHARACTER_SET));
+                    ]]>
+                </programlisting>
+            </para>
+        </section>
+
+        <section>
+            <title>Auth Configuration</title>
+            <para>
+                <code>org.glassfish.tyrus.client.auth.AuthConfig</code>
+                provides a way to configure of HTTP authentication schemes.
+                Creating an instance of
+                <code>org.glassfish.tyrus.client.auth.AuthConfig</code>
+                is optional.
+                If you don't specify AuthConfig, then default instance will be created like in following code listing
+            </para>
+            <para>
+                <programlisting language="java" linenumbering="numbered">
+                    <![CDATA[
+  AuthConfig authConfig = AuthConfig.Builder.create().build();
+  ClientManager client = ClientManager.createClient();
+  client.getProperties().put(ClientProperties.AUTH_CONFIG, authConfig);
+                    ]]>
+                </programlisting>
+            </para>
+            <para>
+                If authentication is required after an initial upgrade request, Tyrus chooses a proper authentication
+                scheme based on a received challenge from server. There are two HTTP authentication scheme implemented
+                and registered
+                by default.
+            </para>
+        </section>
+
+        <section>
+            <title>User defined authenticator</title>
+            <para>
+                Tyrus provides an option to implement your own client HTTP authenticator by extending
+                <code>org.glassfish.tyrus.client.auth.Authenticator</code>
+                and implementing<code>generateAuthorizationHeader</code>.
+                Request URI,
+                <code>WWW-Authenticate</code>
+                response header and provided
+                <code>Credentials</code>
+                are
+                passed as parameters. Method must return response to authentication challenge as it is required by HTTP
+                server.
+                An instance of the implemented class must be passed to the Tyrus configuration with
+                <code>org.glassfish.tyrus.client.auth.AuthConfig.Builder#setAuthScheme(String scheme, Authenticator
+                    userDefinedAuthenticator)
+                </code>
+                and created
+                <code>AuthConfig</code>
+                instance must be put into client properties.
+            </para>
+            <para>Authenticator.java</para>
+            <programlisting language="java" linenumbering="numbered">
+                <![CDATA[
+package org.glassfish.tyrus.client;
+
+import java.net.URI;
+
+/**
+ * Http Authentication provider.
+ * Class generates authorization token as a input for {@code Authorization} HTTP request header.
+ *
+ * @author Ondrej Kosatka (ondrej.kosatka at oracle.com)
+ */
+public abstract class Authenticator {
+
+    /**
+     * Generates authorization tokens as a input for {@code Authorization} HTTP request header.
+     * @param uri URI is needed for generating authorization tokens for some authentication scheme (DIGEST: {@link DigestAuthenticator})
+     * @param wwwAuthenticateHeader a value of header {@code WWW-Authenticate} from HTTP response.
+     * @param credentials credentials.
+     * @return generated {@link String} value of {@code Authorization}.
+     * @throws AuthenticationException if is not possible to create auth token.
+     */
+    public abstract String generateAuthorizationHeader(final URI uri, final String wwwAuthenticateHeader, final Credentials credentials) throws AuthenticationException;
+
+}
+                ]]>
+            </programlisting>
+        </section>
+
+        <section>
+            <title>Examples</title>
+            <para>
+                The simplest way to setup Tyrus authentication is by adding client property
+                <code>ClientProperties.CREDENTIALS</code>
+                <programlisting language="java" linenumbering="numbered">
+                    <![CDATA[
+  client.getProperties().put(ClientProperties.CREDENTIALS, new Credentials("ws_user", "password");
+                    ]]>
+                </programlisting>
+            </para>
+            <para>
+                How to configure Tyrus with suppressing Basic authentication, even if server side challenges Basic
+                authentication scheme.
+                <programlisting language="java" linenumbering="numbered">
+                    <![CDATA[
+  AuthConfig authConfig = AuthConfig.Builder.create().
+                               disableBasicAuth().
+                               build();
+  Credentials credentials = new Credentials("ws_user", "password");
+  client.getProperties().put(ClientProperties.AUTH_CONFIG, authConfig);
+  client.getProperties().put(ClientProperties.CREDENTIALS, credentials);
+                    ]]>
+                </programlisting>
+            </para>
+            <para>
+                How to configure Tyrus using user defined DIGEST authentication and Tyrus Basic authentication. User
+                defined
+                authentication provider
+                <code>MyOwnDigestAuthenticator</code>
+                must extend<code>org.glassfish.tyrus.client.auth.Authenticator</code>.
+                <programlisting language="java" linenumbering="numbered">
+                    <![CDATA[
+  AuthConfig authConfig = AuthConfig.Builder.create().
+                               putAuthProvider("Digest", new MyOwnDigestAuthenticator()).
+                               build();
+  Credentials credentials = new Credentials("ws_user", "password");
+  client.getProperties().put(ClientProperties.AUTH_CONFIG, authConfig);
+  client.getProperties().put(ClientProperties.CREDENTIALS, credentials);
+                ]]>
+                </programlisting>
+            </para>
+            <para>
+                How to configure Tyrus using user defined NTLM authentication and suppress Tyrus Basic authentication,
+                even if server side challenges Basic authentication scheme.. User defined
+                authentication provider
+                <code>MyOwnNTLMAuthenticator</code>
+                must extend<code>org.glassfish.tyrus.client.auth.Authenticator</code>.
+                <programlisting language="java" linenumbering="numbered">
+                    <![CDATA[
+  AuthConfig authConfig = AuthConfig.Builder.create().
+                               disableBasicAuth().
+                               putAuthProvider("NTLM", new MyOwnNTLMAuthenticator()).
+                               build();
+  Credentials credentials = new Credentials("ws_user", "password");
+  client.getProperties().put(ClientProperties.AUTH_CONFIG, authConfig);
+  client.getProperties().put(ClientProperties.CREDENTIALS, credentials);
+                ]]>
+                </programlisting>
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Client HTTP Redirect</title>
+        <para>
+            Another Tyrus feature is HTTP redirect. If client received 3xx HTTP Redirect response code during a
+            handshake and HTTP Redirect is allowed (by <code>ClientProperty.REDIRECT_ENABLED</code>
+            property) then client engine  transparently follows the URI contained in received HTTP response header
+            <code>Location</code> and sends upgrade request to the new URI. Redirects can be chained up to limit set in
+            <code>ClientProperty.REDIRECT_THRESHOLD</code>, whilst default value is 5.
+            If HTTP redirect failed by any reason, <code>RedirectException</code> is thrown.
+        </para>
+        <section>
+            <title>Supported HTTP response codes</title>
+            <para>
+                List of 3xx HTTP response codes which can be automatically redirect
+                <itemizedlist>
+                    <listitem>
+                        <para>300 - Multiple Choices</para>
+                    </listitem>
+                    <listitem>
+                        <para>301 - Moved permanently</para>
+                    </listitem>
+                    <listitem>
+                        <para>302 - Found</para>
+                    </listitem>
+                    <listitem>
+                        <para>303 - See Other (since HTTP/1.1)</para>
+                    </listitem>
+                    <listitem>
+                        <para>307 - Temporary Redirect (since HTTP/1.1)</para>
+                    </listitem>
+                    <listitem>
+                        <para>308 - Permanent Redirect (Experimental RFC; RFC 7238)</para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+        </section>
+        <section>
+            <title>Configuration</title>
+            <section>
+                <title>Enabling</title>
+                <para>
+                    For enabling HTTP Redirect feature, <code>ClientProperty.REDIRECT_ENABLED</code> must be explicitly set to
+                    <code>true</code> (default value is<code>false</code>), otherwise <code>RedirectException</code>
+                    will be thrown, when any of supported HTTP Redirect response codes (see above).
+                </para>
+                <programlisting language="java" linenumbering="unnumbered">
+                    <![CDATA[client.getProperties().put(ClientProperties.REDIRECT_ENABLED, true);]]>
+                </programlisting>
+            </section>
+            <section>
+                <title>Threshold</title>
+                <para>
+                    <code>ClientProperty.REDIRECT_THRESHOLD</code> is property which can be used to limit maximal
+                    number of chained redirect. Positive integer is expected and default value is 5.
+                </para>
+                <programlisting language="java" linenumbering="unnumbered">
+                    <![CDATA[client.getProperties().put(ClientProperties.REDIRECT_THRESHOLD, 3);]]>
+                </programlisting>
+            </section>
+        </section>
+        <section>
+            <title>Exception handling</title>
+            <para>
+                <code>RedirectException</code>
+                is set as a cause of DeploymentException when any of the supported Redirection HTTP response
+                status codes (see above) was received and WebSocketContainer.connectToServer(...) fails
+                because of any of the following reasons:
+                <itemizedlist>
+                    <listitem>
+                        <para>
+                            <code>ClientProperties.REDIRECT_ENABLED</code> property is not set to true.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Value of <code>ClientProperties.REDIRECT_THRESHOLD</code> is not assignable to Integer.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            Number of chained redirection exceeds a value of <code>ClientProperties.REDIRECT_THRESHOLD</code>
+                            (default value is 5).
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>Infinite redirection loop is detected.</para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            <code>Location</code> response header is missing, is empty or does not contain a valid URI.
+                        </para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+        </section>
+    </section>
+    <section>
+        <title>Client support for HTTP status 503 - Service Unavailable with Retry-After header</title>
+        <para>
+            Tyrus offers automatic handling of HTTP status code <code>503 - Service Unavailable</code>, which can be
+            returned from server when temporarily overloaded or down for maintenance. When <code>Retry-After</code>
+            header is included in the response, client will parse the value and schedule another reconnect attempt.
+        </para>
+        <para>This feature is disabled by default.</para>
+        <para>
+            The implementation limits connection attempts to 5, each with reconnect delay not bigger than 300
+            seconds. Other values or conditions can be handled by custom <code>ReconnectHandler</code>
+            (see <code>RetryAfterException</code>).
+        </para>
+        <section>
+            <title>Configuration</title>
+            <para>
+                <programlisting language="java" linenumbering="numbered">
+                    <![CDATA[
+            final ClientManager client = ClientManager.createClient();
+            client.getProperties().put(ClientProperties.RETRY_AFTER_SERVICE_UNAVAILABLE, true);
+]]></programlisting>
+            </para>
+        </section>
+    </section>
+</chapter>

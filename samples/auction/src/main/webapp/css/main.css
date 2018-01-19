@@ -1,0 +1,83 @@
+/*
+ * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Distribution License v. 1.0, which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+/*
+    Document   : main
+    Created on : Mar 18, 2013, 6:15:21 PM
+    Author     : petrjiricka
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root {
+    display: block;
+}
+
+body {
+    font-family: sans-serif;
+}
+
+#userID {
+    text-align: right;
+}
+
+#html5images {
+    text-align: center;
+}
+
+#html5images img {
+    width: 64px;
+    height: 64px;
+}
+
+h2 {
+    text-align: center;
+}
+
+table {
+    text-align: center;
+    padding: 5;
+    border-spacing: 10;
+    margin: auto;
+}
+
+.label {
+    vertical-align: top;
+    text-align: left;
+}
+
+.label p {
+    color: blue;
+}
+
+.value {
+    vertical-align: central;
+    background-color: #E8E8E8;
+    text-align: left;
+
+}
+
+#resultID, #newBid {
+    text-align: center;
+}
+
+#comboID {
+    width: 300px;
+}
+
+.innertable {
+    text-align: center;
+    padding: 5;
+    border-spacing: 10;
+}
+
+.centered {
+    text-align: center;
+}

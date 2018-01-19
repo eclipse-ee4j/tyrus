@@ -1,0 +1,432 @@
+/*
+ * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0, which is available at
+ * http://www.eclipse.org/legal/epl-2.0.
+ *
+ * This Source Code may also be made available under the following Secondary
+ * Licenses when the conditions for such availability set forth in the
+ * Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+ * version 2 with the GNU Classpath Exception, which is available at
+ * https://www.gnu.org/software/classpath/license.html.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+ */
+
+package org.glassfish.tyrus.core;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.logging.Logger;
+
+import javax.websocket.Extension;
+
+/**
+ * WebSocket {@link Extension} implementation.
+ *
+ * @author Pavel Bucek (pavel.bucek at oracle.com)
+ */
+public class TyrusExtension implements Extension, Serializable {
+
+    private static final transient Logger LOGGER = Logger.getLogger(TyrusExtension.class.getName());
+    private final String name;
+    private final ArrayList<Parameter> parameters;
+
+    private static final long serialVersionUID = -3671075267907614851L;
+
+    /**
+     * Create {@link Extension} with specific name.
+     *
+     * @param name extension name.
+     * @throws IllegalArgumentException when name is null or empty string.
+     */
+    public TyrusExtension(String name) {
+        this(name, null);
+    }
+
+    /**
+     * Create {@link Extension} with name and parameters.
+     *
+     * @param name       extension name.
+     * @param parameters extension parameters.
+     */
+    public TyrusExtension(String name, List<Parameter> parameters) {
+        if (name == null || name.length() == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        this.name = name;
+        if (parameters != null) {
+            this.parameters = new ArrayList<Parameter>(parameters);
+        } else {
+            this.parameters = new ArrayList<Parameter>();
+        }
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public List<Parameter> getParameters() {
+        return Collections.unmodifiableList(parameters);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("TyrusExtension{");
+        sb.append("name='").append(name).append('\'');
+        sb.append(", parameters=").append(parameters);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        TyrusExtension that = (TyrusExtension) o;
+
+        return name.equals(that.name) && parameters.equals(that.parameters);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + parameters.hashCode();
+        return result;
+    }
+
+    /**
+     * Returns defined representation for HTTP headers.
+     *
+     * @param extension {@link Extension} instance.
+     * @return String containing {@link Extension} representation as defined in RFC 6455.
+     */
+    static String toString(Extension extension) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(extension.getName());
+        final List<Parameter> extensionParameters = extension.getParameters();
+        if (extensionParameters != null && !extensionParameters.isEmpty()) {
+            for (Extension.Parameter p : extensionParameters) {
+                sb.append("; ");
+                sb.append(TyrusParameter.toString(p));
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Parsing of one {@link Extension}.
+     *
+     * @param s {@link List} of {@link String} containing {@link Extension Extensions}.
+     * @return List of extensions represented as {@link TyrusExtension}.
+     */
+    public static List<Extension> fromString(List<String> s) {
+        return fromHeaders(s);
+    }
+
+    private enum ParserState {
+        NAME,
+        PARAM_NAME,
+        PARAM_VALUE,
+        PARAM_VALUE_QUOTED,
+        PARAM_VALUE_QUOTED_POST,
+        // quoted-pair - '\' escaped character
+        PARAM_VALUE_QUOTED_QP,
+        ERROR
+    }
+
+    /**
+     * Parse {@link Extension} from headers (represented as {@link List} of strings).
+     *
+     * @param extensionHeaders Http Extension headers.
+     * @return list of parsed {@link Extension Extensions}.
+     */
+    public static List<Extension> fromHeaders(List<String> extensionHeaders) {
+        List<Extension> extensions = new ArrayList<Extension>();
+        if (extensionHeaders == null) {
+            return extensions;
+        }
+
+        for (String singleHeader : extensionHeaders) {
+            if (singleHeader == null) {
+                break;
+            }
+            final char[] chars = singleHeader.toCharArray();
+            int i = 0;
+            ParserState next = ParserState.NAME;
+            StringBuilder name = new StringBuilder();
+            StringBuilder paramName = new StringBuilder();
+            StringBuilder paramValue = new StringBuilder();
+            List<Parameter> params = new ArrayList<Parameter>();
+
+            do {
+                switch (next) {
+
+                    case NAME:
+                        switch (chars[i]) {
+                            case ';':
+                                next = ParserState.PARAM_NAME;
+                                break;
+                            case ',':
+                                if (name.length() > 0) {
+                                    extensions.add(new TyrusExtension(name.toString().trim(), params));
+                                    name = new StringBuilder();
+                                    paramName = new StringBuilder();
+                                    paramValue = new StringBuilder();
+                                    params.clear();
+                                }
+
+                                next = ParserState.NAME;
+                                break;
+                            case '=':
+                                next = ParserState.ERROR;
+                                break;
+                            default:
+                                name.append(chars[i]);
+                        }
+
+                        break;
+
+                    case PARAM_NAME:
+
+                        switch (chars[i]) {
+                            case ';':
+                                next = ParserState.PARAM_NAME;
+                                params.add(new TyrusParameter(paramName.toString().trim(), null));
+                                paramName = new StringBuilder();
+                                paramValue = new StringBuilder();
+                                break;
+                            case ',':
+                                next = ParserState.NAME;
+                                params.add(new TyrusParameter(paramName.toString().trim(), null));
+                                paramName = new StringBuilder();
+                                paramValue = new StringBuilder();
+                                if (name.length() > 0) {
+                                    extensions.add(new TyrusExtension(name.toString().trim(), params));
+                                    name = new StringBuilder();
+                                    paramName = new StringBuilder();
+                                    paramValue = new StringBuilder();
+                                    params.clear();
+                                }
+                                break;
+                            case '=':
+                                next = ParserState.PARAM_VALUE;
+                                break;
+                            default:
+                                paramName.append(chars[i]);
+                        }
+
+                        break;
+
+                    case PARAM_VALUE:
+
+                        switch (chars[i]) {
+                            case '"':
+                                if (paramValue.length() > 0) {
+                                    next = ParserState.ERROR;
+                                } else {
+                                    next = ParserState.PARAM_VALUE_QUOTED;
+                                }
+                                break;
+                            case ';':
+                                next = ParserState.PARAM_NAME;
+                                params.add(new TyrusParameter(paramName.toString().trim(),
+                                                              paramValue.toString().trim()));
+                                paramName = new StringBuilder();
+                                paramValue = new StringBuilder();
+                                break;
+                            case ',':
+                                next = ParserState.NAME;
+                                params.add(new TyrusParameter(paramName.toString().trim(),
+                                                              paramValue.toString().trim()));
+                                paramName = new StringBuilder();
+                                paramValue = new StringBuilder();
+                                if (name.length() > 0) {
+                                    extensions.add(new TyrusExtension(name.toString().trim(), params));
+                                    name = new StringBuilder();
+                                    paramName = new StringBuilder();
+                                    paramValue = new StringBuilder();
+                                    params.clear();
+                                }
+
+                                break;
+                            case '=':
+                                next = ParserState.ERROR;
+                                break;
+                            default:
+                                paramValue.append(chars[i]);
+                        }
+
+                        break;
+
+                    case PARAM_VALUE_QUOTED:
+
+                        switch (chars[i]) {
+                            case '"':
+                                next = ParserState.PARAM_VALUE_QUOTED_POST;
+                                params.add(new TyrusParameter(paramName.toString().trim(), paramValue.toString()));
+                                paramName = new StringBuilder();
+                                paramValue = new StringBuilder();
+                                break;
+                            case '\\':
+                                next = ParserState.PARAM_VALUE_QUOTED_QP;
+                                break;
+                            case '=':
+                                next = ParserState.ERROR;
+                                break;
+                            default:
+                                paramValue.append(chars[i]);
+                        }
+
+                        break;
+
+                    case PARAM_VALUE_QUOTED_QP:
+
+                        next = ParserState.PARAM_VALUE_QUOTED;
+                        paramValue.append(chars[i]);
+                        break;
+
+                    case PARAM_VALUE_QUOTED_POST:
+
+                        switch (chars[i]) {
+                            case ',':
+                                next = ParserState.NAME;
+                                if (name.length() > 0) {
+                                    extensions.add(new TyrusExtension(name.toString().trim(), params));
+                                    name = new StringBuilder();
+                                    paramName = new StringBuilder();
+                                    paramValue = new StringBuilder();
+                                    params.clear();
+                                }
+
+                                break;
+                            case ';':
+                                next = ParserState.PARAM_NAME;
+                                break;
+                            default:
+                                next = ParserState.ERROR;
+                                break;
+                        }
+
+                        break;
+
+                    // defensive error handling - just skip this one and try to parse rest.
+                    case ERROR:
+                        LOGGER.fine(String.format("Error during parsing Extension: %s", name));
+
+                        if (name.length() > 0) {
+                            name = new StringBuilder();
+                            paramName = new StringBuilder();
+                            paramValue = new StringBuilder();
+                            params.clear();
+                        }
+
+                        switch (chars[i]) {
+                            case ',':
+                                next = ParserState.NAME;
+                                if (name.length() > 0) {
+                                    extensions.add(new TyrusExtension(name.toString().trim(), params));
+                                    name = new StringBuilder();
+                                    paramName = new StringBuilder();
+                                    paramValue = new StringBuilder();
+                                    params.clear();
+                                }
+
+                                break;
+                            case ';':
+                                next = ParserState.PARAM_NAME;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        break;
+                }
+
+                i++;
+            } while (i < chars.length);
+
+            if ((name.length() > 0) && (next != ParserState.ERROR)) {
+                if (paramName.length() > 0) {
+                    final String paramValueString = paramValue.toString();
+                    params.add(new TyrusParameter(paramName.toString().trim(),
+                                                  paramValueString.equals("") ? null : paramValueString));
+                }
+                extensions.add(new TyrusExtension(name.toString().trim(), params));
+                params.clear();
+            } else {
+                LOGGER.fine(String.format("Unable to parse Extension: %s", name));
+            }
+        }
+
+        return extensions;
+    }
+
+    /**
+     * WebSocket {@link Parameter} implementation.
+     */
+    public static class TyrusParameter implements Parameter, Serializable {
+
+        private static final long serialVersionUID = -6818457211703933087L;
+
+        private final String name;
+        private final String value;
+
+        /**
+         * Create {@link Parameter} with name and value.
+         *
+         * @param name  parameter name.
+         * @param value parameter value.
+         */
+        public TyrusParameter(String name, String value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder("TyrusParameter{");
+            sb.append("name='").append(name).append('\'');
+            sb.append(", value='").append(value).append('\'');
+            sb.append('}');
+            return sb.toString();
+        }
+
+        /**
+         * Returns defined representation for HTTP headers.
+         *
+         * @param parameter {@link Parameter} instance.
+         * @return String containing {@link Parameter} representation as defined in RFC 6455.
+         */
+        static String toString(Parameter parameter) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append(parameter.getName());
+            final String value = parameter.getValue();
+            if (value != null) {
+                sb.append('=').append(value);
+            }
+            return sb.toString();
+        }
+    }
+}

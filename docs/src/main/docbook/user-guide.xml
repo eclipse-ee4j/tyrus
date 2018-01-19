@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!--
+
+    Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
+<!DOCTYPE book [<!ENTITY % ents SYSTEM "tyrus.ent" > %ents;]>
+<book xmlns="http://docbook.org/ns/docbook"
+      version="5.0"
+      xml:lang="en"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      xsi:schemaLocation="http://docbook.org/ns/docbook http://docbook.org/xml/5.0/xsd/docbook.xsd
+                          http://www.w3.org/1999/xlink http://www.w3.org/1999/xlink.xsd">
+    <info>
+        <title>Tyrus &version; User Guide</title>
+    </info>
+    <preface xml:id="preface">
+        <title>Preface</title>
+        <para>
+            This is user guide for Tyrus &version;. We are trying to keep it up to date
+            as we add new features. Please use also our API documentation linked
+            from the
+            <link xlink:href="https://projects.eclipse.org/projects/ee4j.tyrus">Tyrus</link> and
+            <link xlink:href="https://projects.eclipse.org/projects/ee4j.websocket">Java API for WebSocket</link>
+            home pages as an additional source of information about Tyrus features and API.
+
+            If you would like to contribute to the guide or have questions
+            on things not covered in our docs, please contact us at
+            <link xlink:href="https://dev.eclipse.org/mailman/listinfo/tyrus-dev">tyrus-dev@eclipse.org</link>.
+        </para>
+    </preface>
+
+        <xi:include href="getting-started.xml" />
+        <xi:include href="dependencies.xml" />
+        <xi:include href="deployment.xml" />
+        <xi:include href="endpoints.xml" />
+        <xi:include href="configurations.xml" />
+        <xi:include href="lifecycle.xml" />
+        <xi:include href="injection.xml" />
+        <xi:include href="tyrus-configuration.xml" />
+</book>

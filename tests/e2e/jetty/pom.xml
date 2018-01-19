@@ -1,0 +1,133 @@
+<!--
+
+    Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.glassfish.tyrus.tests</groupId>
+        <artifactId>tyrus-tests-e2e</artifactId>
+        <version>2.0-SNAPSHOT</version>
+    </parent>
+
+    <packaging>pom</packaging>
+    <artifactId>tyrus-tests-e2e-jetty</artifactId>
+
+    <name>Tyrus End-to-End Tests running on Jetty</name>
+
+    <modules>
+        <module>auth-basic</module>
+        <module>auth-digest</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.tyrus</groupId>
+            <artifactId>tyrus-container-grizzly-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.tyrus</groupId>
+            <artifactId>tyrus-container-jdk-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.tyrus</groupId>
+            <artifactId>tyrus-server</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.tyrus.ext</groupId>
+            <artifactId>tyrus-extension-deflate</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <profiles>
+        <profile>
+            <id>jetty-tests</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.eclipse.jetty</groupId>
+                            <artifactId>jetty-maven-plugin</artifactId>
+                            <version>9.2.1.v20140609</version>
+                            <configuration>
+                                <scanIntervalSeconds>10</scanIntervalSeconds>
+                                <stopPort>8026</stopPort>
+                                <stopKey>STOP</stopKey>
+                                <stopWait>5</stopWait>
+                                <webApp>
+                                    <contextPath>/</contextPath>
+                                </webApp>
+                                <httpConnector>
+                                    <port>8025</port>
+                                    <idleTimeout>10000</idleTimeout>
+                                </httpConnector>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <id>start-jetty</id>
+                                    <phase>test-compile</phase>
+                                    <goals>
+                                        <goal>start</goal>
+                                    </goals>
+                                    <configuration>
+                                        <scanIntervalSeconds>0</scanIntervalSeconds>
+                                        <daemon>true</daemon>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <id>stop-jetty</id>
+                                    <phase>test</phase>
+                                    <goals>
+                                        <goal>stop</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>no-jetty-tests</id>
+            <activation>
+                <property>
+                    <name>maven.test.skip</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
+</project>

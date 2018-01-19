@@ -1,0 +1,37 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!--
+
+    Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Distribution License v. 1.0, which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: BSD-3-Clause
+
+-->
+
+<html><head><title>Programmatic Echo Sample</title></head>
+
+
+<body>
+<h1>Programmatic Echo Sample</h1>
+
+<p>This application presents programmatic version of the echo sample. The user sends a text message, server concatenates text " (from your server)" to the message and sends it back.</p>
+
+<h2>Contents</h2>
+<p>The application utilizes endpoint <code>org.glassfish.tyrus.sample.programmaticecho.MyWsConfiguration$EchoEndpoint</code> to receive messages, add the text and send it back.
+    Note that the endpoint is constructed by extending the <code>javax.websocket.Endpoint</code> class.
+    </p>
+
+<h2>Running the Example</h2>
+<p>Run the example as follows:
+    deploy:
+<blockquote><code>$AS_MAIN/bin/asadmin start-domain</code></blockquote>
+<blockquote><code>$AS_MAIN/bin/asadmin deploy --force ./target/*war</code></blockquote>
+
+<p>From a web browser, visit:</p>
+<blockquote><code><a href="http://localhost:8080/sample-programmatic-echo">http://localhost:8080/sample-programmatic-echo</a></code></blockquote>
+
+</body>
+</html>
