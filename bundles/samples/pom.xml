@@ -69,13 +69,6 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.tyrus.samples</groupId>
-            <artifactId>tyrus-sample-echo-dart</artifactId>
-            <version>${project.version}</version>
-            <classifier>project-src</classifier>
-            <type>zip</type>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.tyrus.samples</groupId>
             <artifactId>tyrus-sample-echo-https</artifactId>
             <version>${project.version}</version>
             <classifier>project-src</classifier>

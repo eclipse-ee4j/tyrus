@@ -31,7 +31,7 @@
     </fileSets>
     <files>
         <file>
-            <source>../../LICENSE.txt</source>
+            <source>../../LICENSE.md</source>
             <outputDirectory>tyrus</outputDirectory>
         </file>
     </files>
