@@ -7,5 +7,4 @@ jdk:
 install: true
 
 script:
-  - mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer \
-  -     -Pbundles -Pjvnet-nexus-releases clean package
+  - mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles -Pjvnet-nexus-releases clean package
