@@ -1,0 +1,14 @@
+language: java
+
+jdk:
+  - oraclejdk8
+
+cache:
+  directories:
+    - .autoconf
+    - $HOME/.m2
+
+install: true
+
+script:
+  - mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles -Pjvnet-nexus-releases clean install

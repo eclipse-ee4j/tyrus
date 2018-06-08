@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -44,6 +44,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class ServerSessionConnectToServerTest extends TestContainer {
 
+    private static String MESSAGE_TEXT = "Message for connectToServer.";
     private CountDownLatch messageLatch;
 
     @Test
@@ -110,17 +111,13 @@ public class ServerSessionConnectToServerTest extends TestContainer {
                             public void onMessage(String message) {
                                 System.out.println("### Server endpoint received: " + message);
 
-                                if (message
-                                        .equals("Yo Dawg, I heard you like clients, so we put client into server so "
-                                                        + "you can connectToServer while you connectToServer.")
+                                if (message.equals(MESSAGE_TEXT)
                                         && (serverWebSocketContainer.equals(session.getContainer()))) {
                                     messageLatch.countDown();
                                 }
                             }
                         });
-                        session.getBasicRemote().sendText(
-                                "Yo Dawg, I heard you like clients, so we put client into server so you can "
-                                        + "connectToServer while you connectToServer.");
+                        session.getBasicRemote().sendText(MESSAGE_TEXT);
                         System.out.println("### Message from client running inside server endpoint sent.");
                     } catch (IOException e) {
                         e.printStackTrace();
