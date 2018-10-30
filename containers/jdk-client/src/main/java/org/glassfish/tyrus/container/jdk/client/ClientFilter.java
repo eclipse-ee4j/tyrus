@@ -211,6 +211,9 @@ class ClientFilter extends Filter {
     public void processConnectionClosed() {
         LOGGER.log(Level.FINE, "Connection has been closed by the server");
 
+        if (connectCompletionHandler != null) {
+            connectCompletionHandler.failed(null);
+        }
         if (wsConnection == null) {
             return;
         }
