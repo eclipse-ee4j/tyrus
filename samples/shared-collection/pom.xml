@@ -119,6 +119,11 @@
                     <mainClass>org.glassfish.tyrus.sample.shared.collection.Main</mainClass>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <inherited>true</inherited>
+            </plugin>
         </plugins>
     </build>
 </project>

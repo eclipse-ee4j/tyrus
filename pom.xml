@@ -132,6 +132,8 @@
         <netbeans.hint.license>gf-cddl-gpl</netbeans.hint.license>
 
         <maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
+
+        <legal.doc.source>${maven.multiModuleProjectDirectory}</legal.doc.source>
     </properties>
 
     <modules>
@@ -273,6 +275,25 @@
                                 <goal>parse-version</goal>
                             </goals>
                         </execution>
+                        <execution>
+                            <id>add-legal-resource</id>
+                            <phase>generate-resources</phase>
+                            <goals>
+                                <goal>add-resource</goal>
+                            </goals>
+                            <configuration>
+                                <resources>
+                                    <resource>
+                                        <directory>${legal.doc.source}</directory>
+                                        <includes>
+                                            <include>NOTICE.md</include>
+                                            <include>LICENSE.md</include>
+                                        </includes>
+                                        <targetPath>META-INF</targetPath>
+                                    </resource>
+                                </resources>
+                            </configuration>
+                        </execution>
                     </executions>
                 </plugin>
                 <plugin>
@@ -317,6 +338,16 @@
                     <version>2.4</version>
                     <configuration>
                         <failOnMissingWebXml>false</failOnMissingWebXml>
+                        <webResources>
+                            <resource>
+                                <directory>${legal.doc.source}</directory>
+                                <targetPath>META-INF</targetPath>
+                                <includes>
+                                    <include>NOTICE.md</include>
+                                    <include>LICENSE.md</include>
+                                </includes>
+                            </resource>
+                        </webResources>
                     </configuration>
                 </plugin>
                 <plugin>
