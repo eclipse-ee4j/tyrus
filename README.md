@@ -1,6 +1,4 @@
-[![Build Status](https://travis-ci.org/eclipse-ee4j/tyrus.svg?branch=master)](https://travis-ci.org/eclipse-ee4j/tyrus)
-
-# Tyrus
+<br/>
 
 Tyrus is the open source
 <a href="https://projects.eclipse.org/projects/ee4j.websocket">JSR 356 - Java API for WebSocket</a>
@@ -12,15 +10,14 @@ communication overhead. Therefore Tyrus and WebSocket in general are suitable fo
 applications that require sending a huge volume of relatively small messages like
 online games or market ticker broadcasting.
 
-## Licensing
+# <a name="Latest_News"></a>Latest News
 
-- [Eclipse Public License 2.0](https://projects.eclipse.org/license/epl-2.0)
-- [GNU General Public License, version 2 with the GNU Classpath Exception](https://projects.eclipse.org/license/secondary-gpl-2.0-cp)
+## January 5, 2019 - Eclipse Tyrus Final Release ##
 
-## Links
+The 1.15 release is the first release of the Eclipse Tyrus project.
+
+# <a name="Links"></a>Links
 
 - Website: https://projects.eclipse.org/projects/ee4j.tyrus
 - Issues tracker: https://github.com/eclipse-ee4j/tyrus/issues
 - Mailing list: https://accounts.eclipse.org/mailing-list/tyrus-dev 
-
-HTML 5 logo by W3C - http://www.w3.org
