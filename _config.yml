@@ -6,7 +6,7 @@ description: [Java API for WebSocket reference implementation for easy developme
 links:
   source: https://github.com/eclipse-ee4j/tyrus
   #docs: documentation
-  javadocs: docs/api/
+  javadocs: docs/api/?overview-summary.html
   download: https://github.com/eclipse-ee4j/tyrus/releases
   mailinglist: https://accounts.eclipse.org/mailing-list/tyrus-dev
   #faq: FAQ
