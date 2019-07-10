@@ -16,6 +16,8 @@
 
 package org.glassfish.tyrus.container.jdk.client;
 
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.websocket.ContainerProvider;
@@ -33,6 +35,10 @@ public class UnknownHostTest {
 
     private static final Logger LOG = Logger.getLogger(UnknownHostTest.class.getName());
 
+    @Before
+    public void assumeUnixOs() {
+        Assume.assumeTrue(isUnixOs());
+    }
 
     @Test
     public void testIncreaseFileDescriptorsOnTyrusImplementationInCaseOfUnresolvedAddressException() throws Exception {
@@ -80,6 +86,11 @@ public class UnknownHostTest {
     private long getOpenFileDescriptorCount() {
         return (((com.sun.management.UnixOperatingSystemMXBean) java.lang.management.ManagementFactory
                 .getOperatingSystemMXBean()).getOpenFileDescriptorCount());
+    }
+
+    private boolean isUnixOs() {
+        return (java.lang.management.ManagementFactory
+                .getOperatingSystemMXBean() instanceof com.sun.management.UnixOperatingSystemMXBean);
     }
 
     private static class WebSocketClientEndpoint extends Endpoint {
