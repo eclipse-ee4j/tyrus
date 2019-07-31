@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -481,6 +481,15 @@ public class TyrusSession implements Session, DistributedSession {
     }
 
     void restartIdleTimeoutExecutor() {
+        cancelIdleTimeoutExecutor();
+
+        synchronized (idleTimeoutLock) {
+            idleTimeoutFuture =
+                    service.schedule(new IdleTimeoutCommand(), this.getMaxIdleTimeout(), TimeUnit.MILLISECONDS);
+        }
+    }
+
+    private void cancelIdleTimeoutExecutor() {
         if (this.maxIdleTimeout < 1) {
             synchronized (idleTimeoutLock) {
                 if (idleTimeoutFuture != null) {
@@ -494,9 +503,6 @@ public class TyrusSession implements Session, DistributedSession {
             if (idleTimeoutFuture != null) {
                 idleTimeoutFuture.cancel(false);
             }
-
-            idleTimeoutFuture =
-                    service.schedule(new IdleTimeoutCommand(), this.getMaxIdleTimeout(), TimeUnit.MILLISECONDS);
         }
     }
 
@@ -730,6 +736,7 @@ public class TyrusSession implements Session, DistributedSession {
         }
 
         cancelHeartBeatTask();
+        cancelIdleTimeoutExecutor();
     }
 
     /**
