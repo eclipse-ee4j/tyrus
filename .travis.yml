@@ -1,3 +1,5 @@
+dist: trusty
+
 language: java
 
 jdk:
@@ -11,4 +13,4 @@ cache:
 install: true
 
 script:
-  - mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles -Pjvnet-nexus-releases clean install
+  - mvn -U -c -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles -Pjvnet-nexus-releases clean install
