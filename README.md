@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/eclipse-ee4j/tyrus.svg?branch=master)](https://travis-ci.org/eclipse-ee4j/tyrus)
+
 # Tyrus
 
 Tyrus is the open source
