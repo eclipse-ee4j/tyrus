@@ -19,6 +19,7 @@ package org.glassfish.tyrus.test.e2e.non_deployable;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -72,7 +73,7 @@ public class RetryAfterTest extends TestContainer {
             server = startServer(RetryAfterEchoEndpoint.class);
 
             testRetryAfter(
-                    new java.text.SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz")
+                    new java.text.SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH)
                             .format(new Date(System.currentTimeMillis() + 1000)));
 
         } finally {

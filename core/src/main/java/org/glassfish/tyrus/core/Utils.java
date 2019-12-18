@@ -452,15 +452,15 @@ public class Utils {
      * @throws ParseException if the specified string cannot be parsed in neither of all three HTTP date formats.
      */
     public static Date parseHttpDate(String stringValue) throws ParseException {
-        SimpleDateFormat formatRfc1123 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz");
+        SimpleDateFormat formatRfc1123 = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
         try {
             return formatRfc1123.parse(stringValue);
         } catch (ParseException e) {
-            SimpleDateFormat formatRfc1036 = new SimpleDateFormat("EEE, dd-MMM-yy HH:mm:ss zzz");
+            SimpleDateFormat formatRfc1036 = new SimpleDateFormat("EEE, dd-MMM-yy HH:mm:ss zzz", Locale.ENGLISH);
             try {
                 return formatRfc1036.parse(stringValue);
             } catch (ParseException e1) {
-                SimpleDateFormat formatAnsiCAsc = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy");
+                SimpleDateFormat formatAnsiCAsc = new SimpleDateFormat("EEE MMM d HH:mm:ss yyyy", Locale.ENGLISH);
                 return formatAnsiCAsc.parse(stringValue);
             }
         }
