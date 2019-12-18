@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,25 +20,20 @@ package org.glassfish.tyrus.core;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.net.URI;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.websocket.ClientEndpointConfig;
 import javax.websocket.DeploymentException;
 import javax.websocket.EncodeException;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
-import javax.websocket.Extension;
 import javax.websocket.MessageHandler;
 import javax.websocket.OnMessage;
 import javax.websocket.SendHandler;
@@ -65,7 +60,7 @@ public class TyrusRemoteEndpointTest {
     public TyrusRemoteEndpointTest() {
         try {
             endpointWrapper = new TyrusEndpointWrapper(EchoEndpoint.class, null, ComponentProviderService.create(),
-                                                       new TestContainer(), null, null, null, null, null, null);
+                    new TestContainer(), null, null, null, null, null, null);
         } catch (DeploymentException e) {
             // do nothing.
         }
@@ -92,7 +87,7 @@ public class TyrusRemoteEndpointTest {
         stream.close();
 
         Assert.assertArrayEquals("Writing byte[] to stream and flushing.", sentBytesComplete,
-                                 tre.getBytesAndClearBuffer());
+                tre.getBytesAndClearBuffer());
     }
 
     @Test
@@ -109,7 +104,7 @@ public class TyrusRemoteEndpointTest {
         Assert.assertEquals(0, tre.getLastSentMessageSize());
 
         Assert.assertArrayEquals("Writing byte[] to stream and flushing.", sentBytesComplete,
-                                 tre.getBytesAndClearBuffer());
+                tre.getBytesAndClearBuffer());
     }
 
     @Test
@@ -128,7 +123,7 @@ public class TyrusRemoteEndpointTest {
         Assert.assertEquals(0, tre.getLastSentMessageSize());
 
         Assert.assertArrayEquals("Writing byte[] to stream and flushing.", sentBytesComplete,
-                                 tre.getBytesAndClearBuffer());
+                tre.getBytesAndClearBuffer());
     }
 
 
@@ -298,8 +293,8 @@ public class TyrusRemoteEndpointTest {
 
     private TyrusSession createTestSession(TyrusWebSocket webSocket, TyrusEndpointWrapper endpointWrapper) {
         return new TyrusSession(null, webSocket, endpointWrapper, null, null, true, null, null,
-                                Collections.<String, String>emptyMap(), null, new HashMap<String, List<String>>(), null,
-                                null, null, new DebugContext());
+                Collections.<String, String>emptyMap(), null, new HashMap<String, List<String>>(), null,
+                null, null, new DebugContext());
     }
 
     private class TestRemoteEndpoint extends TyrusWebSocket {
@@ -425,81 +420,6 @@ public class TyrusRemoteEndpointTest {
         @OnMessage
         public String doThat(String message) {
             return message;
-        }
-    }
-
-    private static class TestContainer extends BaseContainer {
-
-        @Override
-        public long getDefaultAsyncSendTimeout() {
-            return 0;
-        }
-
-        @Override
-        public void setAsyncSendTimeout(long l) {
-
-        }
-
-        @Override
-        public Session connectToServer(Object o, URI uri) throws DeploymentException, IOException {
-            return null;
-        }
-
-        @Override
-        public Session connectToServer(Class<?> aClass, URI uri) throws DeploymentException, IOException {
-            return null;
-        }
-
-        @Override
-        public Session connectToServer(Endpoint endpoint, ClientEndpointConfig clientEndpointConfig, URI uri) throws
-                DeploymentException, IOException {
-            return null;
-        }
-
-        @Override
-        public Session connectToServer(Class<? extends Endpoint> aClass, ClientEndpointConfig clientEndpointConfig,
-                                       URI uri) throws DeploymentException, IOException {
-            return null;
-        }
-
-        @Override
-        public long getDefaultMaxSessionIdleTimeout() {
-            return 0;
-        }
-
-        @Override
-        public void setDefaultMaxSessionIdleTimeout(long l) {
-
-        }
-
-        @Override
-        public int getDefaultMaxBinaryMessageBufferSize() {
-            return 0;
-        }
-
-        @Override
-        public void setDefaultMaxBinaryMessageBufferSize(int i) {
-
-        }
-
-        @Override
-        public int getDefaultMaxTextMessageBufferSize() {
-            return 0;
-        }
-
-        @Override
-        public void setDefaultMaxTextMessageBufferSize(int i) {
-
-        }
-
-        @Override
-        public Set<Extension> getInstalledExtensions() {
-            return Collections.emptySet();
-        }
-
-        @Override
-        public ScheduledExecutorService getScheduledExecutorService() {
-            return null;
         }
     }
 }

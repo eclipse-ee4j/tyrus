@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,9 +19,14 @@ package org.glassfish.tyrus.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.websocket.DeploymentException;
 import javax.websocket.Endpoint;
@@ -30,6 +35,7 @@ import javax.websocket.MessageHandler;
 import javax.websocket.OnMessage;
 import javax.websocket.PongMessage;
 import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
 import javax.websocket.server.ServerEndpoint;
 
 import org.junit.Test;
@@ -448,9 +454,51 @@ public class TyrusSessionTest {
         assertNotNull(session2.getUserProperties().get(test2));
     }
 
+    @Test
+    public void testIdleTimeoutFutureIsCanceled() throws IOException {
+        final AtomicBoolean canceled = new AtomicBoolean(false);
+        final InvocationHandler scheduledFutureHandler = (proxy, method, args) -> {
+            switch (method.getName()) {
+                case "cancel":
+                    canceled.set(true);
+                    return true;
+                default:
+                    return null;
+            }
+        };
+        final InvocationHandler scheduledExecutorServiceHandler = (proxy, method, args) -> {
+            switch (method.getName()) {
+                case "schedule":
+                    return Proxy.newProxyInstance(
+                            getClass().getClassLoader(), new Class[]{ScheduledFuture.class}, scheduledFutureHandler
+                    );
+                default:
+                    return null;
+            }
+        };
+        final WebSocketContainer webSocketContainer = new TestContainer() {
+            @Override
+            public ScheduledExecutorService getScheduledExecutorService() {
+                return (ScheduledExecutorService) Proxy.newProxyInstance(
+                        getClass().getClassLoader(),
+                        new Class[]{ScheduledExecutorService.class},
+                        scheduledExecutorServiceHandler
+                );
+            }
+        };
+        final Session session = createSession(endpointWrapper, webSocketContainer);
+        session.close();
+        assertTrue(canceled.get());
+    }
+
+    private TyrusSession createSession(TyrusEndpointWrapper endpointWrapper, WebSocketContainer container) {
+        return new TyrusSession(container, new TestRemoteEndpoint(), endpointWrapper, null, null, false, null, null, null,
+                null, new HashMap<String, List<String>>(), null, null, null, new DebugContext());
+    }
+
+
     private TyrusSession createSession(TyrusEndpointWrapper endpointWrapper) {
-        return new TyrusSession(null, new TestRemoteEndpoint(), endpointWrapper, null, null, false, null, null, null,
-                                null, new HashMap<String, List<String>>(), null, null, null, new DebugContext());
+        return createSession(endpointWrapper, null);
     }
 
     private static class TestRemoteEndpoint extends TyrusWebSocket {
