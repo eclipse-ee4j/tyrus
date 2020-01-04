@@ -17,6 +17,7 @@
 package org.glassfish.tyrus.container.grizzly.client;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.ProxySelector;
@@ -359,7 +360,13 @@ public class GrizzlyClientSocket {
                                       sharedTransportTimeout, proxyHeaders, grizzlyConnector, sslHandshakeFuture,
                                       upgradeRequest));
 
-            connectionGrizzlyFuture = connectorHandler.connect(connectAddress);
+            InetAddress bindingAddress = Utils.getProperty(properties, ClientProperties.SOCKET_BINDING, InetAddress.class);
+
+            if (bindingAddress == null) {
+                connectionGrizzlyFuture = connectorHandler.connect(connectAddress);
+            } else {
+                connectionGrizzlyFuture = connectorHandler.connect(socketAddress, new InetSocketAddress(bindingAddress, 0));
+            }
 
             try {
                 final Connection connection = connectionGrizzlyFuture.get(timeoutMs, TimeUnit.MILLISECONDS);

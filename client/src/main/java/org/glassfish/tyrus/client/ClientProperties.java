@@ -17,6 +17,7 @@
 package org.glassfish.tyrus.client;
 
 
+import java.net.InetAddress;
 import java.net.URI;
 
 import org.glassfish.tyrus.client.auth.AuthConfig;
@@ -284,4 +285,15 @@ public final class ClientProperties {
      * of masking keys.
      */
     public static final String MASKING_KEY_GENERATOR = "org.glassfish.tyrus.client.maskingKeyGenerator";
+
+    /**
+     * Property name for defining local binding address for all socket created by the client. The expected value is an instance
+     * of {@link java.net.InetAddress}.
+     * <p>
+     * Sample below demonstrates how to use this property:
+     * <pre>
+     *     client.getProperties().put(ClientProperties.SOCKET_BINDING, InetAddress.getByName("127.0.0.1"));
+     * </pre>
+     */
+    public static final String SOCKET_BINDING = "org.glassfish.tyrus.client.socketBinding";
 }

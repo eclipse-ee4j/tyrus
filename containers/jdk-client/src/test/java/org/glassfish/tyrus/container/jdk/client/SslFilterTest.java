@@ -381,7 +381,7 @@ public class SslFilterTest {
         SslEngineConfigurator sslEngineConfigurator = new SslEngineConfigurator(sslConfig.createSSLContext());
         sslEngineConfigurator.setHostnameVerifier(customHostnameVerifier);
 
-        final TransportFilter transportFilter = new TransportFilter(17_000, ThreadPoolConfig.defaultConfig(), null);
+        final TransportFilter transportFilter = new TransportFilter(17_000, ThreadPoolConfig.defaultConfig(), null, null);
         final SslFilter sslFilter = new SslFilter(transportFilter, sslEngineConfigurator, host);
 
         // exceptions errors that occur before SSL handshake has finished are thrown from this method
