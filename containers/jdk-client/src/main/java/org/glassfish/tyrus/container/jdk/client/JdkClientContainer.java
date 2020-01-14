@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,6 +17,7 @@
 package org.glassfish.tyrus.container.jdk.client;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.ProxySelector;
@@ -99,6 +100,9 @@ public class JdkClientContainer implements ClientContainer {
         final Integer containerIdleTimeout =
                 Utils.getProperty(properties, ClientProperties.SHARED_CONTAINER_IDLE_TIMEOUT, Integer.class);
 
+        final InetAddress bindingAddress =
+                Utils.getProperty(properties, ClientProperties.SOCKET_BINDING, InetAddress.class);
+
         final ThreadPoolConfig finalThreadPoolConfig = threadPoolConfig;
         final Callable<Void> jdkConnector = new Callable<Void>() {
 
@@ -118,13 +122,19 @@ public class JdkClientContainer implements ClientContainer {
 
                 if (secure) {
                     TransportFilter transportFilter =
-                            createTransportFilter(SSL_INPUT_BUFFER_SIZE, finalThreadPoolConfig, containerIdleTimeout);
+                            createTransportFilter(SSL_INPUT_BUFFER_SIZE,
+                                                  finalThreadPoolConfig,
+                                                  containerIdleTimeout,
+                                                  bindingAddress);
                     SslFilter sslFilter = createSslFilter(cec, properties, transportFilter, uri);
                     writeQueue = createTaskQueueFilter(sslFilter);
 
                 } else {
                     TransportFilter transportFilter =
-                            createTransportFilter(INPUT_BUFFER_SIZE, finalThreadPoolConfig, containerIdleTimeout);
+                            createTransportFilter(INPUT_BUFFER_SIZE,
+                                                  finalThreadPoolConfig,
+                                                  containerIdleTimeout,
+                                                  bindingAddress);
                     writeQueue = createTaskQueueFilter(transportFilter);
                 }
 
@@ -276,9 +286,11 @@ public class JdkClientContainer implements ClientContainer {
         return sslFilter;
     }
 
-    private TransportFilter createTransportFilter(int sslInputBufferSize, ThreadPoolConfig threadPoolConfig,
-                                                  Integer containerIdleTimeout) {
-        return new TransportFilter(sslInputBufferSize, threadPoolConfig, containerIdleTimeout);
+    private TransportFilter createTransportFilter(int sslInputBufferSize,
+                                                  ThreadPoolConfig threadPoolConfig,
+                                                  Integer containerIdleTimeout,
+                                                  InetAddress bindingAddress) {
+        return new TransportFilter(sslInputBufferSize, threadPoolConfig, containerIdleTimeout, bindingAddress);
     }
 
     private TaskQueueFilter createTaskQueueFilter(Filter downstreamFilter) {

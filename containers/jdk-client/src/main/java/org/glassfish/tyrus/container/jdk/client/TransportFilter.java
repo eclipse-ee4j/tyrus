@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,6 +17,8 @@
 package org.glassfish.tyrus.container.jdk.client;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
@@ -85,6 +87,7 @@ class TransportFilter extends Filter {
     private final int inputBufferSize;
     private final ThreadPoolConfig threadPoolConfig;
     private final Integer containerIdleTimeout;
+    private final InetAddress bindingAddress;
 
     private volatile AsynchronousSocketChannel socketChannel;
 
@@ -99,12 +102,18 @@ class TransportFilter extends Filter {
      * @param threadPoolConfig     thread pool configuration used for creating thread pool.
      * @param containerIdleTimeout idle time after which the shared thread pool will be destroyed. If {@code null}
      *                             default value will be used. The default value is 30 seconds.
+     * @param bindingAddress       local address to bind sockets ({@link #socketChannel}) when they are created.
+     *                             Binding is done only if not {@code null}.
      */
-    TransportFilter(int inputBufferSize, ThreadPoolConfig threadPoolConfig, Integer containerIdleTimeout) {
+    TransportFilter(int inputBufferSize,
+                    ThreadPoolConfig threadPoolConfig,
+                    Integer containerIdleTimeout,
+                    InetAddress bindingAddress) {
         super(null);
         this.inputBufferSize = inputBufferSize;
         this.threadPoolConfig = threadPoolConfig;
         this.containerIdleTimeout = containerIdleTimeout;
+        this.bindingAddress = bindingAddress;
     }
 
     @Override
@@ -161,6 +170,9 @@ class TransportFilter extends Filter {
                 updateThreadPoolConfig();
                 initializeChannelGroup();
                 socketChannel = AsynchronousSocketChannel.open(channelGroup);
+                if (bindingAddress != null) {
+                    socketChannel.bind(new InetSocketAddress(bindingAddress, 0));
+                }
                 openedConnections.incrementAndGet();
             }
         } catch (IOException e) {

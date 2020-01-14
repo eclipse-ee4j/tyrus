@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -381,7 +381,7 @@ public class SslFilterTest {
         SslEngineConfigurator sslEngineConfigurator = new SslEngineConfigurator(sslConfig.createSSLContext());
         sslEngineConfigurator.setHostnameVerifier(customHostnameVerifier);
 
-        final TransportFilter transportFilter = new TransportFilter(17_000, ThreadPoolConfig.defaultConfig(), null);
+        final TransportFilter transportFilter = new TransportFilter(17_000, ThreadPoolConfig.defaultConfig(), null, null);
         final SslFilter sslFilter = new SslFilter(transportFilter, sslEngineConfigurator, host);
 
         // exceptions errors that occur before SSL handshake has finished are thrown from this method
