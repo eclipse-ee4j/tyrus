@@ -320,7 +320,7 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${maven-javadoc-plugin.version}</version>
                     <configuration>
-                    	<detectJavaApiLink>false</detectJavaApiLink>
+                        <detectJavaApiLink>false</detectJavaApiLink>
                         <doctitle>Tyrus ${project.version} API Documentation</doctitle>
                         <windowtitle>Tyrus ${project.version} API</windowtitle>
                         <links>
@@ -428,43 +428,43 @@
             </modules>
         </profile>
         <profile>
-		    <id>jdk9+</id>
-		    <activation>
-		        <jdk>[9,)</jdk>
-		    </activation>
-	        <dependencies>
-	        	<dependency>
-	                <groupId>jakarta.xml.bind</groupId>
-	                <artifactId>jakarta.xml.bind-api</artifactId>
-	                <version>${jaxb.api.version}</version>
-	                <scope>provided</scope>
-	            </dependency>
-	            <dependency>
-	                <groupId>com.sun.xml.bind</groupId>
-	                <artifactId>jaxb-impl</artifactId>
-	                <version>${jaxb.ri.version}</version>
-	                <scope>provided</scope>
-	            </dependency>
-	            <dependency>
-	                <groupId>com.sun.xml.bind</groupId>
-	                <artifactId>jaxb-xjc</artifactId>
-	                <version>${jaxb.ri.version}</version>
-	                <scope>provided</scope>
-	            </dependency>
-	            <dependency>
-				    <groupId>com.sun.xml.bind</groupId>
-				    <artifactId>jaxb-osgi</artifactId>
-				    <version>${jaxb.ri.version}</version>
-				    <scope>provided</scope>
-				</dependency>
-				<dependency>
-                <groupId>jakarta.annotation</groupId>
-	                <artifactId>jakarta.annotation-api</artifactId>
-	                <version>${javax.annotation.version}</version>
-	                <scope>provided</scope>
-	            </dependency>
-	        </dependencies>
-		</profile>
+            <id>jdk9+</id>
+            <activation>
+                <jdk>[9,)</jdk>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>jakarta.xml.bind</groupId>
+                    <artifactId>jakarta.xml.bind-api</artifactId>
+                    <version>${jaxb.api.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                    <version>${jaxb.ri.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-xjc</artifactId>
+                    <version>${jaxb.ri.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-osgi</artifactId>
+                    <version>${jaxb.ri.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>jakarta.annotation</groupId>
+                    <artifactId>jakarta.annotation-api</artifactId>
+                    <version>${javax.annotation.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+        </profile>
     </profiles>
 
     <reporting>
