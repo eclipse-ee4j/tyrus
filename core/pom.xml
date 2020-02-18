@@ -67,6 +67,28 @@
             <plugin>
                 <groupId>com.sun.tools.xjc.maven2</groupId>
                 <artifactId>maven-jaxb-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>jakarta.xml.bind</groupId>
+                        <artifactId>jakarta.xml.bind-api</artifactId>
+                        <version>${jaxb.api.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-impl</artifactId>
+                        <version>${jaxb.ri.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.sun.xml.bind</groupId>
+                        <artifactId>jaxb-xjc</artifactId>
+                        <version>${jaxb.ri.version}</version>
+                    </dependency>
+                    <dependency>
+		                <groupId>com.sun.xml.bind</groupId>
+		                <artifactId>jaxb-osgi</artifactId>
+		                <version>${jaxb.ri.version}</version>
+		            </dependency>
+                </dependencies>
                 <executions>
                     <execution>
                         <goals>
