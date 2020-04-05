@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -528,7 +528,8 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
                         } else if ((((Class<?>) o).getAnnotation(ClientEndpoint.class) != null)) {
                             endpoint = AnnotatedEndpoint
                                     .fromClass((Class) o, componentProvider, false, incomingBufferSize, collector,
-                                               EndpointEventListener.NO_OP);
+                                               EndpointEventListener.NO_OP,
+                                               getInstalledExtensions());
                             config = (ClientEndpointConfig) ((AnnotatedEndpoint) endpoint).getEndpointConfig();
                         } else {
                             collector.addException(new DeploymentException(String.format(
@@ -539,7 +540,8 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
                         }
                     } else {
                         endpoint = AnnotatedEndpoint
-                                .fromInstance(o, componentProvider, false, incomingBufferSize, collector);
+                                .fromInstance(o, componentProvider, false, incomingBufferSize, collector,
+                                getInstalledExtensions());
                         config = (ClientEndpointConfig) ((AnnotatedEndpoint) endpoint).getEndpointConfig();
                     }
 
@@ -754,7 +756,6 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
     @Override
     public Set<Extension> getInstalledExtensions() {
         if (webSocketContainer == null) {
-            // TODO
             return Collections.emptySet();
         } else {
             return webSocketContainer.getInstalledExtensions();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,6 +17,7 @@
 package org.glassfish.tyrus.core;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -591,7 +592,7 @@ public class TyrusWebSocketEngine implements WebSocketEngine {
         EndpointEventListenerWrapper endpointEventListenerWrapper = new EndpointEventListenerWrapper();
         AnnotatedEndpoint endpoint = AnnotatedEndpoint
                 .fromClass(endpointClass, componentProviderService, true, incomingBufferSize, collector,
-                           endpointEventListenerWrapper);
+                           endpointEventListenerWrapper, webSocketContainer.getInstalledExtensions());
         EndpointConfig config = endpoint.getEndpointConfig();
 
         TyrusEndpointWrapper endpointWrapper =
@@ -644,7 +645,7 @@ public class TyrusWebSocketEngine implements WebSocketEngine {
 
             final AnnotatedEndpoint endpoint = AnnotatedEndpoint
                     .fromClass(endpointClass, componentProviderService, true, incomingBufferSize, collector,
-                               endpointEventListenerWrapper);
+                               endpointEventListenerWrapper, webSocketContainer.getInstalledExtensions());
             final EndpointConfig config = endpoint.getEndpointConfig();
 
             endpointWrapper = new TyrusEndpointWrapper(

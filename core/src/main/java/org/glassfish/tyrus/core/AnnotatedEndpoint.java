@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -40,6 +40,7 @@ import javax.websocket.DeploymentException;
 import javax.websocket.Encoder;
 import javax.websocket.Endpoint;
 import javax.websocket.EndpointConfig;
+import javax.websocket.Extension;
 import javax.websocket.MessageHandler;
 import javax.websocket.OnClose;
 import javax.websocket.OnError;
@@ -91,9 +92,29 @@ public class AnnotatedEndpoint extends Endpoint {
      */
     public static AnnotatedEndpoint fromClass(Class<?> annotatedClass, ComponentProviderService componentProvider,
                                               boolean isServerEndpoint, int incomingBufferSize, ErrorCollector
-            collector, EndpointEventListener endpointEventListener) {
+                                              collector, EndpointEventListener endpointEventListener) {
+        return fromClass(annotatedClass, componentProvider, isServerEndpoint, incomingBufferSize, collector,
+                                      endpointEventListener, Collections.emptySet());
+    }
+
+    /**
+     * Create {@link AnnotatedEndpoint} from class.
+     *
+     * @param annotatedClass        annotated class.
+     * @param componentProvider     used for instantiating.
+     * @param isServerEndpoint      {@code true} iff annotated endpoint is deployed on server side.
+     * @param incomingBufferSize    size limit of the incoming buffer.
+     * @param collector             error collector.
+     * @param endpointEventListener listener of monitored endpoint events.
+     * @param extensions            installed extentions.
+     * @return new instance.
+     */
+    public static AnnotatedEndpoint fromClass(Class<?> annotatedClass, ComponentProviderService componentProvider,
+                                              boolean isServerEndpoint, int incomingBufferSize,
+                                              ErrorCollector collector, EndpointEventListener endpointEventListener,
+                                              Set<Extension> extensions) {
         return new AnnotatedEndpoint(annotatedClass, null, componentProvider, isServerEndpoint, incomingBufferSize,
-                                     collector, endpointEventListener);
+                                     collector, endpointEventListener, extensions);
     }
 
     /**
@@ -109,14 +130,32 @@ public class AnnotatedEndpoint extends Endpoint {
     public static AnnotatedEndpoint fromInstance(
             Object annotatedInstance, ComponentProviderService componentProvider, boolean isServerEndpoint,
             int incomingBufferSize, ErrorCollector collector) {
+        return fromInstance(annotatedInstance, componentProvider, isServerEndpoint, incomingBufferSize,
+                                     collector, Collections.emptySet());
+    }
+
+     /**
+     * Create {@link AnnotatedEndpoint} from instance.
+     *
+     * @param annotatedInstance  annotated instance.
+     * @param componentProvider  used for instantiating.
+     * @param isServerEndpoint   {@code true} iff annotated endpoint is deployed on server side.
+     * @param incomingBufferSize size limit of the incoming buffer
+     * @param collector          error collector.
+     * @param extensions         installed extentions.
+     * @return new instance.
+     */
+    public static AnnotatedEndpoint fromInstance(
+            Object annotatedInstance, ComponentProviderService componentProvider, boolean isServerEndpoint,
+            int incomingBufferSize, ErrorCollector collector, Set<Extension> extensions) {
         return new AnnotatedEndpoint(annotatedInstance.getClass(), annotatedInstance, componentProvider,
-                                     isServerEndpoint, incomingBufferSize, collector, EndpointEventListener.NO_OP);
+                                     isServerEndpoint, incomingBufferSize, collector, EndpointEventListener.NO_OP, extensions);
     }
 
     private AnnotatedEndpoint(Class<?> annotatedClass, Object instance, ComponentProviderService componentProvider,
                               Boolean isServerEndpoint, int incomingBufferSize, ErrorCollector collector,
-                              EndpointEventListener endpointEventListener) {
-        this.configuration = createEndpointConfig(annotatedClass, isServerEndpoint, collector);
+                              EndpointEventListener endpointEventListener, Set<Extension> extensions) {
+        this.configuration = createEndpointConfig(annotatedClass, isServerEndpoint, collector, extensions);
         this.annotatedInstance = instance;
         this.annotatedClass = annotatedClass;
         this.endpointEventListener = endpointEventListener;
@@ -265,7 +304,7 @@ public class AnnotatedEndpoint extends Endpoint {
     }
 
     private EndpointConfig createEndpointConfig(Class<?> annotatedClass, boolean isServerEndpoint, ErrorCollector
-            collector) {
+            collector, Set<Extension> extensions) {
         if (isServerEndpoint) {
             final ServerEndpoint wseAnnotation = annotatedClass.getAnnotation(ServerEndpoint.class);
 
@@ -294,6 +333,7 @@ public class AnnotatedEndpoint extends Endpoint {
                                 .create(annotatedClass, wseAnnotation.value())
                                 .encoders(encoderClasses)
                                 .decoders(decoderClasses)
+                                .extensions(new ArrayList<>(extensions))
                                 .subprotocols(Arrays.asList(subProtocols));
                 if (!wseAnnotation.configurator().equals(ServerEndpointConfig.Configurator.class)) {
                     builder = builder.configurator(ReflectionHelper.getInstance(wseAnnotation.configurator(),
@@ -307,6 +347,7 @@ public class AnnotatedEndpoint extends Endpoint {
                                 .create(annotatedClass, wseAnnotation.value())
                                 .encoders(encoderClasses)
                                 .decoders(decoderClasses)
+                                .extensions(new ArrayList<>(extensions))
                                 .subprotocols(Arrays.asList(subProtocols));
                 if (!wseAnnotation.configurator().equals(ServerEndpointConfig.Configurator.class)) {
                     builder = builder.configurator(ReflectionHelper.getInstance(wseAnnotation.configurator(),
