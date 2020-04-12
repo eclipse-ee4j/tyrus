@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -33,12 +33,32 @@ import java.nio.ByteBuffer;
 public abstract class Writer implements Closeable {
 
     /**
+     * <p>
+     * A backward compatible method called from {@link #write(ByteBuffer, CompletionHandler, WriterInfo)}
+     * to handover the data for a connection
+     * to the transport. The transport writes bytes to underlying connection.
+     * Tyrus runtime must not use the buffer until the write is completed.
+     * </p>
+     * <p>
+     * The method will be removed in the next major version.
+     * </p>
+     *
+     * @param buffer            bytes to write.
+     * @param completionHandler completion handler to know the write status.
+     */
+    public abstract void write(ByteBuffer buffer, CompletionHandler<ByteBuffer> completionHandler);
+
+    /**
      * Tyrus runtime calls this method to handover the data for a connection
      * to the transport. The transport writes bytes to underlying connection.
      * Tyrus runtime must not use the buffer until the write is completed.
      *
      * @param buffer            bytes to write.
      * @param completionHandler completion handler to know the write status.
+     * @param writerInfo        additional information about the data to be written.
+     * @since 1.17
      */
-    public abstract void write(ByteBuffer buffer, CompletionHandler<ByteBuffer> completionHandler);
+    public void write(ByteBuffer buffer, CompletionHandler<ByteBuffer> completionHandler, WriterInfo writerInfo) {
+        write(buffer, completionHandler);
+    }
 }

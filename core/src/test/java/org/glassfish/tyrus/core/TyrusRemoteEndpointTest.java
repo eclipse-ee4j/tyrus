@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -43,6 +43,7 @@ import javax.websocket.server.ServerEndpoint;
 
 import org.glassfish.tyrus.core.frame.Frame;
 
+import org.glassfish.tyrus.spi.WriterInfo;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -308,7 +309,7 @@ public class TyrusRemoteEndpointTest {
         }
 
         @Override
-        public Future<Frame> sendText(String fragment, boolean isLast) {
+        public Future<Frame> sendText(String fragment, boolean isLast, WriterInfo writerInfo) {
             builder.append(fragment);
             return new Future<Frame>() {
                 @Override
@@ -340,7 +341,7 @@ public class TyrusRemoteEndpointTest {
         }
 
         @Override
-        public Future<Frame> sendBinary(byte[] data, int off, int len, boolean isLast) {
+        public Future<Frame> sendBinary(byte[] data, int off, int len, boolean isLast, WriterInfo writerInfo) {
             lastSentMessageSize = len;
             for (int i = off; i < len; i++) {
                 bytesToSend.add(data[i]);

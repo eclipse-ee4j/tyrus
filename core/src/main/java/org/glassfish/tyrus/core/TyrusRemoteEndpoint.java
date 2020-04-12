@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -35,6 +35,9 @@ import javax.websocket.SendHandler;
 import javax.websocket.SendResult;
 
 import org.glassfish.tyrus.core.l10n.LocalizationMessages;
+import org.glassfish.tyrus.spi.WriterInfo;
+import org.glassfish.tyrus.spi.WriterInfo.MessageType;
+import org.glassfish.tyrus.spi.WriterInfo.RemoteEndpointType;
 
 import static org.glassfish.tyrus.core.Utils.checkNotNull;
 
@@ -75,7 +78,7 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
                    .appendLogMessage(LOGGER, Level.FINEST, DebugContext.Type.MESSAGE_OUT, "Sending text message: ",
                                      text);
 
-            final Future<?> future = webSocket.sendText(text);
+            final Future<?> future = webSocket.sendText(text, new WriterInfo(MessageType.TEXT, RemoteEndpointType.BASIC));
             try {
                 processFuture(future);
             } finally {
@@ -90,7 +93,8 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
             session.getDebugContext()
                    .appendLogMessage(LOGGER, Level.FINEST, DebugContext.Type.MESSAGE_OUT, "Sending binary message");
 
-            final Future<?> future = webSocket.sendBinary(Utils.getRemainingArray(data));
+            final Future<?> future = webSocket.sendBinary(Utils.getRemainingArray(data),
+                    new WriterInfo(WriterInfo.MessageType.BINARY, WriterInfo.RemoteEndpointType.BASIC));
             try {
                 processFuture(future);
             } finally {
@@ -105,7 +109,8 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
             session.getDebugContext().appendLogMessage(LOGGER, Level.FINEST, DebugContext.Type.MESSAGE_OUT,
                                                        "Sending partial text message: ", partialMessage);
 
-            final Future<?> future = webSocket.sendText(partialMessage, isLast);
+            final Future<?> future = webSocket.sendText(partialMessage, isLast,
+                    new WriterInfo(isLast ? MessageType.TEXT : MessageType.TEXT_CONTINUATION, RemoteEndpointType.BASIC));
             try {
                 processFuture(future);
             } finally {
@@ -120,7 +125,8 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
             session.getDebugContext().appendLogMessage(LOGGER, Level.FINEST, DebugContext.Type.MESSAGE_OUT,
                                                        "Sending partial binary message");
 
-            final Future<?> future = webSocket.sendBinary(Utils.getRemainingArray(partialByte), isLast);
+            final Future<?> future = webSocket.sendBinary(Utils.getRemainingArray(partialByte), isLast,
+                    new WriterInfo(isLast ? MessageType.BINARY : MessageType.BINARY_CONTINUATION, RemoteEndpointType.BASIC));
             try {
                 processFuture(future);
             } finally {
@@ -155,7 +161,7 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
         @Override
         public void sendObject(Object data) throws IOException, EncodeException {
             checkNotNull(data, "data");
-            final Future<?> future = sendSyncObject(data);
+            final Future<?> future = sendSyncObject(data, new WriterInfo(MessageType.OBJECT, RemoteEndpointType.BASIC));
             try {
                 future.get();
             } catch (InterruptedException e) {
@@ -268,17 +274,18 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
                 case TEXT:
                     session.getDebugContext().appendLogMessage(
                             LOGGER, Level.FINEST, DebugContext.Type.MESSAGE_OUT, "Sending text message: ", message);
-                    result = webSocket.sendText((String) message);
+                    result = webSocket.sendText((String) message, new WriterInfo(MessageType.TEXT, RemoteEndpointType.ASYNC));
                     break;
 
                 case BINARY:
                     session.getDebugContext().appendLogMessage(
                             LOGGER, Level.FINEST, DebugContext.Type.MESSAGE_OUT, "Sending binary message");
-                    result = webSocket.sendBinary(Utils.getRemainingArray((ByteBuffer) message));
+                    result = webSocket.sendBinary(Utils.getRemainingArray((ByteBuffer) message),
+                                new WriterInfo(MessageType.BINARY, RemoteEndpointType.ASYNC));
                     break;
 
                 case OBJECT:
-                    result = sendSyncObject(message);
+                    result = sendSyncObject(message, new WriterInfo(MessageType.OBJECT, RemoteEndpointType.ASYNC));
                     break;
             }
 
@@ -328,15 +335,16 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
         private void sendAsync(final Object message, final SendHandler handler, final AsyncMessageType type) {
             switch (type) {
                 case TEXT:
-                    webSocket.sendText((String) message, handler);
+                    webSocket.sendText((String) message, handler, new WriterInfo(MessageType.TEXT, RemoteEndpointType.ASYNC));
                     break;
 
                 case BINARY:
-                    webSocket.sendBinary(Utils.getRemainingArray((ByteBuffer) message), handler);
+                    webSocket.sendBinary(Utils.getRemainingArray((ByteBuffer) message), handler,
+                            new WriterInfo(MessageType.BINARY, RemoteEndpointType.ASYNC));
                     break;
 
                 case OBJECT:
-                    sendSyncObject(message, handler);
+                    sendSyncObject(message, handler, new WriterInfo(MessageType.OBJECT, RemoteEndpointType.ASYNC));
                     break;
             }
         }
@@ -349,7 +357,7 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
     }
 
     @SuppressWarnings("unchecked")
-    Future<?> sendSyncObject(Object o) {
+    Future<?> sendSyncObject(Object o, WriterInfo writerInfo) {
         Object toSend;
         try {
             session.getDebugContext()
@@ -386,16 +394,16 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
         }
 
         if (toSend instanceof String) {
-            return webSocket.sendText((String) toSend);
+            return webSocket.sendText((String) toSend, writerInfo);
         } else if (toSend instanceof ByteBuffer) {
-            return webSocket.sendBinary(Utils.getRemainingArray((ByteBuffer) toSend));
+            return webSocket.sendBinary(Utils.getRemainingArray((ByteBuffer) toSend), writerInfo);
         } else if (toSend instanceof StringWriter) {
             StringWriter writer = (StringWriter) toSend;
             StringBuffer sb = writer.getBuffer();
-            return webSocket.sendText(sb.toString());
+            return webSocket.sendText(sb.toString(), writerInfo);
         } else if (toSend instanceof ByteArrayOutputStream) {
             ByteArrayOutputStream baos = (ByteArrayOutputStream) toSend;
-            return webSocket.sendBinary(baos.toByteArray());
+            return webSocket.sendBinary(baos.toByteArray(), writerInfo);
         }
 
         return null;
@@ -403,9 +411,9 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
 
     // TODO: naming
     @SuppressWarnings("unchecked")
-    void sendSyncObject(Object o, SendHandler handler) {
+    void sendSyncObject(Object o, SendHandler handler, WriterInfo writerInfo) {
         if (o instanceof String) {
-            webSocket.sendText((String) o, handler);
+            webSocket.sendText((String) o, handler, writerInfo);
         } else {
             Object toSend = null;
             try {
@@ -415,16 +423,16 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
             }
 
             if (toSend instanceof String) {
-                webSocket.sendText((String) toSend, handler);
+                webSocket.sendText((String) toSend, handler, writerInfo);
             } else if (toSend instanceof ByteBuffer) {
-                webSocket.sendBinary(Utils.getRemainingArray((ByteBuffer) toSend), handler);
+                webSocket.sendBinary(Utils.getRemainingArray((ByteBuffer) toSend), handler, writerInfo);
             } else if (toSend instanceof StringWriter) {
                 StringWriter writer = (StringWriter) toSend;
                 StringBuffer sb = writer.getBuffer();
-                webSocket.sendText(sb.toString(), handler);
+                webSocket.sendText(sb.toString(), handler, writerInfo);
             } else if (toSend instanceof ByteArrayOutputStream) {
                 ByteArrayOutputStream baos = (ByteArrayOutputStream) toSend;
-                webSocket.sendBinary(baos.toByteArray(), handler);
+                webSocket.sendBinary(baos.toByteArray(), handler, writerInfo);
             }
         }
     }

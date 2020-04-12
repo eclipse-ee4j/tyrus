@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -39,6 +39,7 @@ import org.glassfish.tyrus.core.frame.TyrusFrame;
 import org.glassfish.tyrus.core.l10n.LocalizationMessages;
 import org.glassfish.tyrus.core.monitoring.MessageEventListener;
 import org.glassfish.tyrus.spi.UpgradeRequest;
+import org.glassfish.tyrus.spi.WriterInfo;
 
 /**
  * Tyrus representation of web socket connection.
@@ -56,6 +57,9 @@ public class TyrusWebSocket {
     private final Lock lock = new ReentrantLock();
 
     private volatile MessageEventListener messageEventListener = MessageEventListener.NO_OP;
+
+    private static final WriterInfo PING_INFO = new WriterInfo(WriterInfo.MessageType.PING, WriterInfo.RemoteEndpointType.SUPER);
+    private static final WriterInfo PONG_INFO = new WriterInfo(WriterInfo.MessageType.PONG, WriterInfo.RemoteEndpointType.SUPER);
 
     /**
      * Create new instance, set {@link ProtocolHandler} and register {@link TyrusEndpointWrapper}.
@@ -256,6 +260,7 @@ public class TyrusWebSocket {
      * @param data data to be sent.
      * @return {@link Future} which could be used to control/check the sending completion state.
      */
+    @Deprecated
     public Future<Frame> sendBinary(byte[] data) {
         checkConnectedState();
         return protocolHandler.send(data);
@@ -264,12 +269,37 @@ public class TyrusWebSocket {
     /**
      * Send a binary frame to the remote endpoint.
      *
+     * @param data data to be sent.
+     * @param writerInfo  information about the outbound message.
+     * @return {@link Future} which could be used to control/check the sending completion state.
+     */
+    public Future<Frame> sendBinary(byte[] data, WriterInfo writerInfo) {
+        checkConnectedState();
+        return protocolHandler.send(data, writerInfo);
+    }
+
+    /**
+     * Send a binary frame to the remote endpoint.
+     *
      * @param data    data to be sent.
      * @param handler {@link SendHandler#onResult(javax.websocket.SendResult)} will be called when sending is complete.
      */
+    @Deprecated
     public void sendBinary(byte[] data, SendHandler handler) {
         checkConnectedState();
         protocolHandler.send(data, handler);
+    }
+
+    /**
+     * Send a binary frame to the remote endpoint.
+     *
+     * @param data    data to be sent.
+     * @param writerInfo  information about the outbound message.
+     * @param handler {@link SendHandler#onResult(javax.websocket.SendResult)} will be called when sending is complete.
+     */
+    public void sendBinary(byte[] data, SendHandler handler, WriterInfo writerInfo) {
+        checkConnectedState();
+        protocolHandler.send(data, handler, writerInfo);
     }
 
     /**
@@ -278,6 +308,7 @@ public class TyrusWebSocket {
      * @param data data to be sent.
      * @return {@link Future} which could be used to control/check the sending completion state.
      */
+    @Deprecated
     public Future<Frame> sendText(String data) {
         checkConnectedState();
         return protocolHandler.send(data);
@@ -286,12 +317,37 @@ public class TyrusWebSocket {
     /**
      * Send a text frame to the remote endpoint.
      *
+     * @param data data to be sent.
+     * @param writerInfo  information about the outbound message.
+     * @return {@link Future} which could be used to control/check the sending completion state.
+     */
+    public Future<Frame> sendText(String data, WriterInfo writerInfo) {
+        checkConnectedState();
+        return protocolHandler.send(data, writerInfo);
+    }
+
+    /**
+     * Send a text frame to the remote endpoint.
+     *
      * @param data    data to be sent.
      * @param handler {@link SendHandler#onResult(javax.websocket.SendResult)} will be called when sending is complete.
      */
+    @Deprecated
     public void sendText(String data, SendHandler handler) {
         checkConnectedState();
         protocolHandler.send(data, handler);
+    }
+
+    /**
+     * Send a text frame to the remote endpoint.
+     *
+     * @param data    data to be sent.
+     * @param writerInfo  information about the outbound message.
+     * @param handler {@link SendHandler#onResult(javax.websocket.SendResult)} will be called when sending is complete.
+     */
+    public void sendText(String data, SendHandler handler, WriterInfo writerInfo) {
+        checkConnectedState();
+        protocolHandler.send(data, handler, writerInfo);
     }
 
     /**
@@ -312,7 +368,7 @@ public class TyrusWebSocket {
      * @return {@link Future} which could be used to control/check the sending completion state.
      */
     public Future<Frame> sendPing(byte[] data) {
-        return send(new PingFrame(data));
+        return send(new PingFrame(data), PING_INFO);
     }
 
     /**
@@ -328,7 +384,7 @@ public class TyrusWebSocket {
      * @return {@link Future} which could be used to control/check the sending completion state.
      */
     public Future<Frame> sendPong(byte[] data) {
-        return send(new PongFrame(data));
+        return send(new PongFrame(data), PONG_INFO);
     }
 
     // return boolean, check return value
@@ -340,9 +396,9 @@ public class TyrusWebSocket {
         }
     }
 
-    private Future<Frame> send(TyrusFrame frame) {
+    private Future<Frame> send(TyrusFrame frame, WriterInfo writerInfo) {
         checkConnectedState();
-        return protocolHandler.send(frame);
+        return protocolHandler.send(frame, writerInfo);
     }
 
     /**
@@ -352,9 +408,23 @@ public class TyrusWebSocket {
      * @param last     boolean indicating if this message fragment is the last.
      * @return {@link Future} which could be used to control/check the sending completion state.
      */
+    @Deprecated
     public Future<Frame> sendText(String fragment, boolean last) {
         checkConnectedState();
         return protocolHandler.stream(last, fragment);
+    }
+
+    /**
+     * Sends a fragment of a complete message.
+     *
+     * @param fragment   the textual fragment to send.
+     * @param last       boolean indicating if this message fragment is the last.
+     * @param writerInfo information about the outbound message.
+     * @return {@link Future} which could be used to control/check the sending completion state.
+     */
+    public Future<Frame> sendText(String fragment, boolean last, WriterInfo writerInfo) {
+        checkConnectedState();
+        return protocolHandler.stream(last, fragment, writerInfo);
     }
 
     /**
@@ -364,8 +434,21 @@ public class TyrusWebSocket {
      * @param last  boolean indicating if this message fragment is the last.
      * @return {@link Future} which could be used to control/check the sending completion state.
      */
+    @Deprecated
     public Future<Frame> sendBinary(byte[] bytes, boolean last) {
         return sendBinary(bytes, 0, bytes.length, last);
+    }
+
+    /**
+     * Sends a fragment of a complete message.
+     *
+     * @param bytes      the binary fragment to send.
+     * @param last       boolean indicating if this message fragment is the last.
+     * @param writerInfo information about the outbound message.
+     * @return {@link Future} which could be used to control/check the sending completion state.
+     */
+    public Future<Frame> sendBinary(byte[] bytes, boolean last, WriterInfo writerInfo) {
+        return sendBinary(bytes, 0, bytes.length, last, writerInfo);
     }
 
     /**
@@ -377,9 +460,25 @@ public class TyrusWebSocket {
      * @param last  boolean indicating if this message fragment is the last.
      * @return {@link Future} which could be used to control/check the sending completion state.
      */
+    @Deprecated
     public Future<Frame> sendBinary(byte[] bytes, int off, int len, boolean last) {
         checkConnectedState();
         return protocolHandler.stream(last, bytes, off, len);
+    }
+
+    /**
+     * Sends a fragment of a complete message.
+     *
+     * @param bytes       the binary fragment to send.
+     * @param off         the offset within the fragment to send.
+     * @param len         the number of bytes of the fragment to send.
+     * @param last        boolean indicating if this message fragment is the last.
+     * @param writerInfo  information about the outbound message.
+     * @return {@link Future} which could be used to control/check the sending completion state.
+     */
+    public Future<Frame> sendBinary(byte[] bytes, int off, int len, boolean last, WriterInfo writerInfo) {
+        checkConnectedState();
+        return protocolHandler.stream(last, bytes, off, len, writerInfo);
     }
 
     ProtocolHandler getProtocolHandler() {
