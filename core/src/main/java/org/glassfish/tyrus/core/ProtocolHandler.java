@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -48,6 +48,7 @@ import org.glassfish.tyrus.spi.CompletionHandler;
 import org.glassfish.tyrus.spi.UpgradeRequest;
 import org.glassfish.tyrus.spi.UpgradeResponse;
 import org.glassfish.tyrus.spi.Writer;
+import org.glassfish.tyrus.spi.WriterInfo;
 
 /**
  * Tyrus protocol handler.
@@ -80,6 +81,9 @@ public final class ProtocolHandler {
     private volatile boolean hasExtensions = false;
     private volatile MessageEventListener messageEventListener = MessageEventListener.NO_OP;
     private volatile SendingFragmentState sendingFragment = SendingFragmentState.IDLE;
+
+    private static final WriterInfo CLOSE = new WriterInfo(WriterInfo.MessageType.CLOSE, WriterInfo.RemoteEndpointType.SUPER);
+    private static final WriterInfo NULL_INFO = new WriterInfo(null, null);
 
     /**
      * Synchronizes all public send* (including stream variants) methods.
@@ -238,30 +242,42 @@ public final class ProtocolHandler {
      * Not message frames - ping/pong/...
      */
     /* package */
-    final Future<Frame> send(TyrusFrame frame) {
-        return send(frame, null, true);
+    final Future<Frame> send(TyrusFrame frame, WriterInfo writerInfo) {
+        return send(frame, null, writerInfo, true);
     }
 
-    private Future<Frame> send(TyrusFrame frame, CompletionHandler<Frame> completionHandler, Boolean useTimeout) {
-        return write(frame, completionHandler, useTimeout);
+    private
+    Future<Frame> send(TyrusFrame frame, CompletionHandler<Frame> completionHandler, WriterInfo writerInfo, Boolean useTimeout) {
+        return write(frame, completionHandler, writerInfo, useTimeout);
     }
 
-    private Future<Frame> send(ByteBuffer frame, CompletionHandler<Frame> completionHandler, Boolean useTimeout) {
-        return write(frame, completionHandler, useTimeout);
+    private
+    Future<Frame> send(ByteBuffer frame, CompletionHandler<Frame> completionHandler, WriterInfo writerInfo, Boolean useTimeout) {
+        return write(frame, completionHandler, writerInfo, useTimeout);
     }
 
+    @Deprecated
     public Future<Frame> send(byte[] data) {
+        return send(data, NULL_INFO);
+    }
+
+    public Future<Frame> send(byte[] data, WriterInfo writerInfo) {
         lock.lock();
         try {
             checkSendingFragment();
 
-            return send(new BinaryFrame(data, false, true), null, true);
+            return send(new BinaryFrame(data, false, true), null, writerInfo, true);
         } finally {
             lock.unlock();
         }
     }
 
+    @Deprecated
     public void send(final byte[] data, final SendHandler handler) {
+        send(data, handler, NULL_INFO);
+    }
+
+    public void send(final byte[] data, final SendHandler handler, WriterInfo writerInfo) {
         lock.lock();
 
         try {
@@ -277,24 +293,34 @@ public final class ProtocolHandler {
                 public void completed(Frame result) {
                     handler.onResult(new SendResult());
                 }
-            }, true);
+            }, writerInfo, true);
         } finally {
             lock.unlock();
         }
     }
 
+    @Deprecated
     public Future<Frame> send(String data) {
+        return send(data, NULL_INFO);
+    }
+
+    public Future<Frame> send(String data, WriterInfo writerInfo) {
         lock.lock();
 
         try {
             checkSendingFragment();
-            return send(new TextFrame(data, false, true));
+            return send(new TextFrame(data, false, true), writerInfo);
         } finally {
             lock.unlock();
         }
     }
 
+    @Deprecated
     public void send(final String data, final SendHandler handler) {
+        send(data, handler, NULL_INFO);
+    }
+
+    public void send(final String data, final SendHandler handler, WriterInfo writerInfo) {
         lock.lock();
 
         try {
@@ -310,7 +336,7 @@ public final class ProtocolHandler {
                 public void completed(Frame result) {
                     handler.onResult(new SendResult());
                 }
-            }, true);
+            }, writerInfo, true);
         } finally {
             lock.unlock();
         }
@@ -328,7 +354,7 @@ public final class ProtocolHandler {
         try {
             checkSendingFragment();
 
-            return send(data, null, true);
+            return send(data, null, new WriterInfo(WriterInfo.MessageType.BINARY, WriterInfo.RemoteEndpointType.BROADCAST), true);
         } finally {
             lock.unlock();
         }
@@ -364,14 +390,19 @@ public final class ProtocolHandler {
         }
     }
 
+    @Deprecated
     public Future<Frame> stream(boolean last, byte[] bytes, int off, int len) {
+        return stream(last, bytes, off, len, NULL_INFO);
+    }
+
+    public Future<Frame> stream(boolean last, byte[] bytes, int off, int len, WriterInfo writerInfo) {
         lock.lock();
 
         try {
             switch (sendingFragment) {
                 case SENDING_BINARY:
                     Future<Frame> frameFuture = send(
-                            new BinaryFrame(Arrays.copyOfRange(bytes, off, off + len), true, last));
+                            new BinaryFrame(Arrays.copyOfRange(bytes, off, off + len), true, last), writerInfo);
                     if (last) {
                         sendingFragment = SendingFragmentState.IDLE;
                         idleCondition.signalAll();
@@ -381,12 +412,12 @@ public final class ProtocolHandler {
                 case SENDING_TEXT:
                     checkSendingFragment();
                     sendingFragment = (last ? SendingFragmentState.IDLE : SendingFragmentState.SENDING_BINARY);
-                    return send(new BinaryFrame(Arrays.copyOfRange(bytes, off, off + len), false, last));
+                    return send(new BinaryFrame(Arrays.copyOfRange(bytes, off, off + len), false, last), writerInfo);
 
                 default:
                     // IDLE
                     sendingFragment = (last ? SendingFragmentState.IDLE : SendingFragmentState.SENDING_BINARY);
-                    return send(new BinaryFrame(Arrays.copyOfRange(bytes, off, off + len), false, last));
+                    return send(new BinaryFrame(Arrays.copyOfRange(bytes, off, off + len), false, last), writerInfo);
             }
 
         } finally {
@@ -394,13 +425,18 @@ public final class ProtocolHandler {
         }
     }
 
+    @Deprecated
     public Future<Frame> stream(boolean last, String fragment) {
+        return stream(last, fragment, NULL_INFO);
+    }
+
+    public Future<Frame> stream(boolean last, String fragment, WriterInfo writerInfo) {
         lock.lock();
 
         try {
             switch (sendingFragment) {
                 case SENDING_TEXT:
-                    Future<Frame> frameFuture = send(new TextFrame(fragment, true, last));
+                    Future<Frame> frameFuture = send(new TextFrame(fragment, true, last), writerInfo);
                     if (last) {
                         sendingFragment = SendingFragmentState.IDLE;
                         idleCondition.signalAll();
@@ -410,12 +446,12 @@ public final class ProtocolHandler {
                 case SENDING_BINARY:
                     checkSendingFragment();
                     sendingFragment = (last ? SendingFragmentState.IDLE : SendingFragmentState.SENDING_TEXT);
-                    return send(new TextFrame(fragment, false, last));
+                    return send(new TextFrame(fragment, false, last), writerInfo);
 
                 default:
                     // IDLE
                     sendingFragment = (last ? SendingFragmentState.IDLE : SendingFragmentState.SENDING_TEXT);
-                    return send(new TextFrame(fragment, false, last));
+                    return send(new TextFrame(fragment, false, last), writerInfo);
             }
 
         } finally {
@@ -440,7 +476,7 @@ public final class ProtocolHandler {
             outgoingCloseFrame = new CloseFrame(closeReason);
         }
 
-        final Future<Frame> send = send(outgoingCloseFrame, null, false);
+        final Future<Frame> send = send(outgoingCloseFrame, null, CLOSE, false);
 
         webSocket.onClose(new CloseFrame(closeReason));
 
@@ -448,7 +484,7 @@ public final class ProtocolHandler {
     }
 
     private Future<Frame> write(final TyrusFrame frame, final CompletionHandler<Frame> completionHandler,
-                                boolean useTimeout) {
+                                WriterInfo data, boolean useTimeout) {
         final Writer localWriter = writer;
         final TyrusFuture<Frame> future = new TyrusFuture<Frame>();
 
@@ -457,14 +493,14 @@ public final class ProtocolHandler {
         }
 
         final ByteBuffer byteBuffer = frame(frame);
-        localWriter.write(byteBuffer, new CompletionHandlerWrapper(completionHandler, future, frame));
+        localWriter.write(byteBuffer, new CompletionHandlerWrapper(completionHandler, future, frame), data);
         messageEventListener.onFrameSent(frame.getFrameType(), frame.getPayloadLength());
 
         return future;
     }
 
     private Future<Frame> write(final ByteBuffer frame, final CompletionHandler<Frame> completionHandler,
-                                boolean useTimeout) {
+                                WriterInfo data, boolean useTimeout) {
         final Writer localWriter = writer;
         final TyrusFuture<Frame> future = new TyrusFuture<Frame>();
 
@@ -472,7 +508,7 @@ public final class ProtocolHandler {
             throw new IllegalStateException(LocalizationMessages.CONNECTION_NULL());
         }
 
-        localWriter.write(frame, new CompletionHandlerWrapper(completionHandler, future, null));
+        localWriter.write(frame, new CompletionHandlerWrapper(completionHandler, future, null), data);
 
         return future;
     }

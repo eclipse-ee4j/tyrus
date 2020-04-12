@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,6 +16,8 @@
 
 package org.glassfish.tyrus.core;
 
+import org.glassfish.tyrus.spi.WriterInfo;
+
 import java.io.IOException;
 import java.io.Writer;
 
@@ -27,13 +29,14 @@ import java.io.Writer;
 class WriterToAsyncTextAdapter extends Writer {
     private final TyrusWebSocket socket;
     private String buffer = null;
+    private static final WriterInfo TEXT_INFO = new WriterInfo(WriterInfo.MessageType.TEXT, WriterInfo.RemoteEndpointType.BASIC);
 
     public WriterToAsyncTextAdapter(TyrusWebSocket socket) {
         this.socket = socket;
     }
 
     private void sendBuffer(boolean last) {
-        socket.sendText(buffer, last);
+        socket.sendText(buffer, last, TEXT_INFO);
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,6 +16,8 @@
 
 package org.glassfish.tyrus.core;
 
+import org.glassfish.tyrus.spi.WriterInfo;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.ExecutionException;
@@ -28,6 +30,10 @@ import java.util.concurrent.Future;
  */
 class OutputStreamToAsyncBinaryAdapter extends OutputStream {
     private final TyrusWebSocket socket;
+    private static final WriterInfo BINARY_CONTINUATION_INFO =
+            new WriterInfo(WriterInfo.MessageType.BINARY_CONTINUATION, WriterInfo.RemoteEndpointType.BASIC);
+    private static final WriterInfo BINARY_INFO =
+            new WriterInfo(WriterInfo.MessageType.BINARY, WriterInfo.RemoteEndpointType.BASIC);
 
     public OutputStreamToAsyncBinaryAdapter(TyrusWebSocket socket) {
         this.socket = socket;
@@ -43,7 +49,7 @@ class OutputStreamToAsyncBinaryAdapter extends OutputStream {
             return;
         }
 
-        final Future<?> future = socket.sendBinary(b, off, len, false);
+        final Future<?> future = socket.sendBinary(b, off, len, false, BINARY_CONTINUATION_INFO);
         try {
             future.get();
         } catch (InterruptedException e) {
@@ -71,6 +77,6 @@ class OutputStreamToAsyncBinaryAdapter extends OutputStream {
 
     @Override
     public void close() throws IOException {
-        socket.sendBinary(new byte[]{}, true);
+        socket.sendBinary(new byte[]{}, true, BINARY_INFO);
     }
 }
