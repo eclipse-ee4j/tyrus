@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -101,12 +101,15 @@
         <websocket-api.version>1.1</websocket-api.version>
         <!--<websocket.api.build_number>18</websocket.api.build_number>-->
 
-        <servlet.api.version>3.1.0</servlet.api.version>
+        <annotation.api.version>1.3.5</annotation.api.version>
+        <cdi-api.version>1.2</cdi-api.version>
         <grizzly.version>2.3.22</grizzly.version>
         <javax.ejb-api.version>3.2</javax.ejb-api.version>
-        <cdi-api.version>1.2</cdi-api.version>
+        <jaxb.api.version>2.3.2</jaxb.api.version>
+        <jaxb.ri.version>2.3.2</jaxb.ri.version>
         <json-api.version>1.0</json-api.version>
         <json-impl.version>1.0.4</json-impl.version>
+        <servlet.api.version>3.1.0</servlet.api.version>
 
         <api_package>javax.websocket</api_package>
         <impl_namespace>org.glassfish</impl_namespace>
@@ -131,7 +134,7 @@
 
         <netbeans.hint.license>gf-cddl-gpl</netbeans.hint.license>
 
-        <maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
+        <maven-javadoc-plugin.version>3.2.0</maven-javadoc-plugin.version>
     </properties>
 
     <modules>
@@ -325,6 +328,7 @@
                         <excludePackageNames>
                             *.core.l10n.*:*.internal.*:org.glassfish.tyrus.core.wsadl.model
                         </excludePackageNames>
+                        <source>8</source>
                     </configuration>
                     <executions>
                         <execution>
@@ -340,6 +344,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.17</version>
+                    <configuration>
+                        <argLine>-Djdk.tls.client.protocols=TLSv1.2</argLine>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -600,6 +607,27 @@
                 <groupId>org.glassfish.main.extras</groupId>
                 <artifactId>glassfish-embedded-all</artifactId>
                 <version>4.0-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${jaxb.api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-impl</artifactId>
+                <version>${jaxb.ri.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-osgi</artifactId>
+                <version>${jaxb.ri.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${annotation.api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
