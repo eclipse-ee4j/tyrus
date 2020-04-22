@@ -1,6 +1,9 @@
-remote_theme: jakartaee/jekyll-theme-jakarta-ee
+github: [metadata]
 
-title: [Tyrus]
+remote_theme: eclipsefdn/jekyll-theme-eclipsefdn
+#theme: jekyll-theme-eclipsefdn # for local execution
+
+title: [Eclipse Tyrus]
 description: [Java API for WebSocket reference implementation for easy development of WebSocket applications (JSR 356)]
 
 links:
