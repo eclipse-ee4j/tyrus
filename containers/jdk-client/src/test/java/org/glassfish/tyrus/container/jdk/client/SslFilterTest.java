@@ -63,6 +63,8 @@ public class SslFilterTest {
         System.setProperty("javax.net.ssl.keyStorePassword", "asdfgh");
         System.setProperty("javax.net.ssl.trustStore", this.getClass().getResource("/truststore_server").getPath());
         System.setProperty("javax.net.ssl.trustStorePassword", "asdfgh");
+        System.setProperty("jdk.tls.server.protocols", "TLSv1.2");
+        System.setProperty("jdk.tls.client.protocols", "TLSv1.2");
     }
 
     @Test
