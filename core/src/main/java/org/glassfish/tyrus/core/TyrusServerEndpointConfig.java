@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.websocket.Decoder;
-import javax.websocket.Encoder;
-import javax.websocket.Extension;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.Encoder;
+import jakarta.websocket.Extension;
+import jakarta.websocket.server.ServerEndpointConfig;
 
 /**
- * Configuration {@link javax.websocket.server.ServerEndpointConfig} enhanced
+ * Configuration {@link jakarta.websocket.server.ServerEndpointConfig} enhanced
  * to offer tyrus specific attributes like maxSessions.
  * Declarative way to define maxSessions is also available using
  * annotation {@link MaxSessions}.

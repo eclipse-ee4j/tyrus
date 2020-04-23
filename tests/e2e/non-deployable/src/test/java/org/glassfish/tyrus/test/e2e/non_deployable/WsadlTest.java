@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -22,8 +22,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLConnection;
 
-import javax.websocket.DeploymentException;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.server.ServerEndpoint;
 
 import org.glassfish.tyrus.core.TyrusWebSocketEngine;
 import org.glassfish.tyrus.server.Server;

@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -38,7 +38,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.glassfish.tyrus.test.tools.*;version=${project.version}</Export-Package>
-                        <Import-Package>javax.websocket;version=${apijar.bundle.version},javax.websocket.server;version=${apijar.bundle.version},*</Import-Package>
+                        <Import-Package>jakarta.websocket;version=${apijar.bundle.version},jakarta.websocket.server;version=${apijar.bundle.version},*</Import-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
                 </configuration>
@@ -53,8 +53,8 @@
             <!--<scope>provided</scope>-->
         </dependency>
         <dependency>
-            <groupId>javax.websocket</groupId>
-            <artifactId>javax.websocket-api</artifactId>
+            <groupId>jakarta.websocket</groupId>
+            <artifactId>jakarta.websocket-api</artifactId>
             <version>${websocket-api.version}</version>
             <!--<scope>provided</scope>-->
         </dependency>

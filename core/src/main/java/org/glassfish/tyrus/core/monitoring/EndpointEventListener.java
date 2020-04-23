@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -44,11 +44,11 @@ public interface EndpointEventListener {
     /**
      * Called when an error has occurred.
      * <p>
-     * Errors that occur either during {@link javax.websocket.Endpoint#onOpen(javax.websocket.Session,
-     * javax.websocket.EndpointConfig)}, {@link javax.websocket.Endpoint#onClose(javax.websocket.Session,
-     * javax.websocket.CloseReason)} and their annotated equivalent or when handling an incoming message, cause this
-     * listener to be called. It corresponds to the event of invocation of {@link javax.websocket.Endpoint#onError
-     * (javax.websocket.Session, Throwable)} and its annotated equivalent.
+     * Errors that occur either during {@link jakarta.websocket.Endpoint#onOpen(jakarta.websocket.Session,
+     * jakarta.websocket.EndpointConfig)}, {@link jakarta.websocket.Endpoint#onClose(jakarta.websocket.Session,
+     * jakarta.websocket.CloseReason)} and their annotated equivalent or when handling an incoming message, cause this
+     * listener to be called. It corresponds to the event of invocation of {@link jakarta.websocket.Endpoint#onError
+     * (jakarta.websocket.Session, Throwable)} and its annotated equivalent.
      *
      * @param sessionId an ID of the session on which the error occurred.
      * @param t         throwable that has been thrown.

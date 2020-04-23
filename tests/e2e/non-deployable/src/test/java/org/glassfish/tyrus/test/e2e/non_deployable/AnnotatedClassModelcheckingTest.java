@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,15 +19,15 @@ package org.glassfish.tyrus.test.e2e.non_deployable;
 import java.net.URI;
 import java.util.ArrayList;
 
-import javax.websocket.ClientEndpoint;
-import javax.websocket.DeploymentException;
-import javax.websocket.OnClose;
-import javax.websocket.OnError;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.PongMessage;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.ClientEndpoint;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnError;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.PongMessage;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
 
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.server.Server;
@@ -60,6 +60,9 @@ public class AnnotatedClassModelcheckingTest extends TestContainer {
             server = startServer(testedBean);
         } catch (DeploymentException e) {
             exceptionThrown = true;
+            if (!shouldThrowException) {
+                e.printStackTrace();
+            }
         } finally {
             stopServer(server);
             Assert.assertEquals(shouldThrowException, exceptionThrown);

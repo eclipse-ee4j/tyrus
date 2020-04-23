@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
 
-import javax.websocket.DeploymentException;
+import jakarta.websocket.DeploymentException;
 
 import org.glassfish.tyrus.spi.ServerContainer;
 import org.glassfish.tyrus.spi.ServerContainerFactory;
@@ -67,9 +67,9 @@ public class Server {
      * Create new server instance.
      *
      * @param configuration to be registered with the server. Classes annotated with {@link
-     *                      javax.websocket.server.ServerEndpoint}, implementing
-     *                      {@link javax.websocket.server.ServerApplicationConfig} or extending {@link
-     *                      javax.websocket.server.ServerEndpointConfig}
+     *                      jakarta.websocket.server.ServerEndpoint}, implementing
+     *                      {@link jakarta.websocket.server.ServerApplicationConfig} or extending {@link
+     *                      jakarta.websocket.server.ServerEndpointConfig}
      *                      are supported.
      */
     public Server(Class<?>... configuration) {
@@ -82,9 +82,9 @@ public class Server {
      * @param properties    properties used as a parameter to {@link ServerContainerFactory#createServerContainer
      *                      (java.util.Map)} call.
      * @param configuration to be registered with the server. Classes annotated with {@link
-     *                      javax.websocket.server.ServerEndpoint}, implementing {@link
-     *                      javax.websocket.server.ServerApplicationConfig} or extending {@link
-     *                      javax.websocket.server.ServerEndpointConfig}
+     *                      jakarta.websocket.server.ServerEndpoint}, implementing {@link
+     *                      jakarta.websocket.server.ServerApplicationConfig} or extending {@link
+     *                      jakarta.websocket.server.ServerEndpointConfig}
      *                      are supported.
      */
     public Server(Map<String, Object> properties, Class<?>... configuration) {
@@ -101,9 +101,9 @@ public class Server {
      * @param properties    properties used as a parameter to {@link ServerContainerFactory#createServerContainer
      *                      (java.util.Map)} call.
      * @param configuration to be registered with the server. Classes annotated with {@link
-     *                      javax.websocket.server.ServerEndpoint}, implementing
-     *                      {@link javax.websocket.server.ServerApplicationConfig} or extending {@link
-     *                      javax.websocket.server.ServerEndpointConfig}
+     *                      jakarta.websocket.server.ServerEndpoint}, implementing
+     *                      {@link jakarta.websocket.server.ServerApplicationConfig} or extending {@link
+     *                      jakarta.websocket.server.ServerEndpointConfig}
      *                      are supported.
      * @see #getPort()
      */
@@ -122,9 +122,9 @@ public class Server {
      * @param properties    properties used as a parameter to {@link ServerContainerFactory#createServerContainer
      *                      (java.util.Map)} call.
      * @param configuration to be registered with the server. Classes annotated with {@link
-     *                      javax.websocket.server.ServerEndpoint}, implementing {@link
-     *                      javax.websocket.server.ServerApplicationConfig}
-     *                      or extending {@link javax.websocket.server.ServerEndpointConfig}
+     *                      jakarta.websocket.server.ServerEndpoint}, implementing {@link
+     *                      jakarta.websocket.server.ServerApplicationConfig}
+     *                      or extending {@link jakarta.websocket.server.ServerEndpointConfig}
      *                      are supported.
      * @see #getPort()
      */

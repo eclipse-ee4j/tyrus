@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.DeploymentException;
-import javax.websocket.server.ServerApplicationConfig;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.server.ServerApplicationConfig;
+import jakarta.websocket.server.ServerEndpointConfig;
 
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.core.RequestContext;
@@ -52,8 +52,8 @@ public class InMemoryClientContainer implements ClientContainer {
     /**
      * Property used to define server config used for in-memory container.
      * <p>
-     * Value has to be instance of {@link javax.websocket.server.ServerApplicationConfig} and is provided as user
-     * parameter in {@link javax.websocket.ClientEndpointConfig}.
+     * Value has to be instance of {@link jakarta.websocket.server.ServerApplicationConfig} and is provided as user
+     * parameter in {@link jakarta.websocket.ClientEndpointConfig}.
      */
     public static final String SERVER_CONFIG = "org.glassfish.tyrus.container.inmemory.ServerConfig";
 

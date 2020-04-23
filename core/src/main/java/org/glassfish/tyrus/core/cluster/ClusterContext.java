@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-import javax.websocket.CloseReason;
-import javax.websocket.SendHandler;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.SendHandler;
 
 /**
  * Cluster related context.
@@ -109,24 +109,24 @@ public abstract class ClusterContext {
     public abstract Future<Void> sendPong(String sessionId, byte[] data);
 
     /**
-     * Send text message with {@link javax.websocket.SendHandler}.
+     * Send text message with {@link jakarta.websocket.SendHandler}.
      *
      * @param sessionId   remote session id.
      * @param text        text to be sent.
      * @param sendHandler sendhandler instance on which
-     *                    {@link javax.websocket.SendHandler#onResult(javax.websocket.SendResult)} will be invoked.
-     * @see javax.websocket.SendHandler
+     *                    {@link jakarta.websocket.SendHandler#onResult(jakarta.websocket.SendResult)} will be invoked.
+     * @see jakarta.websocket.SendHandler
      */
     public abstract void sendText(String sessionId, String text, SendHandler sendHandler);
 
     /**
-     * Send binary message with {@link javax.websocket.SendHandler}.
+     * Send binary message with {@link jakarta.websocket.SendHandler}.
      *
      * @param sessionId   remote session id.
      * @param data        data to be sent.
      * @param sendHandler sendhandler instance on which
-     *                    {@link javax.websocket.SendHandler#onResult(javax.websocket.SendResult)} will be invoked.
-     * @see javax.websocket.SendHandler
+     *                    {@link jakarta.websocket.SendHandler#onResult(jakarta.websocket.SendResult)} will be invoked.
+     * @see jakarta.websocket.SendHandler
      */
     public abstract void sendBinary(String sessionId, byte[] data, SendHandler sendHandler);
 
@@ -152,7 +152,7 @@ public abstract class ClusterContext {
      * @param sessionId    remote session id.
      * @param endpointPath endpoint path identifying sessions alignment to the endpoint.
      * @return {@code true} when session is opened, {@code false} otherwise.
-     * @see javax.websocket.Session#isOpen()
+     * @see jakarta.websocket.Session#isOpen()
      */
     public abstract boolean isSessionOpen(String sessionId, String endpointPath);
 
@@ -168,7 +168,7 @@ public abstract class ClusterContext {
     public abstract Future<Void> close(String sessionId);
 
     /**
-     * Close remote session with custom {@link javax.websocket.CloseReason}.
+     * Close remote session with custom {@link jakarta.websocket.CloseReason}.
      *
      * @param sessionId   remote session id.
      * @param closeReason custom close reason.

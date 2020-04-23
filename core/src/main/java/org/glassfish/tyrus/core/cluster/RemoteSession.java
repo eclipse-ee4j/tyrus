@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -33,15 +33,15 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.websocket.CloseReason;
-import javax.websocket.EncodeException;
-import javax.websocket.Extension;
-import javax.websocket.MessageHandler;
-import javax.websocket.RemoteEndpoint;
-import javax.websocket.SendHandler;
-import javax.websocket.SendResult;
-import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.EncodeException;
+import jakarta.websocket.Extension;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.RemoteEndpoint;
+import jakarta.websocket.SendHandler;
+import jakarta.websocket.SendResult;
+import jakarta.websocket.Session;
+import jakarta.websocket.WebSocketContainer;
 
 import org.glassfish.tyrus.core.TyrusEndpointWrapper;
 import org.glassfish.tyrus.core.Utils;
@@ -71,7 +71,7 @@ public class RemoteSession implements Session, DistributedSession {
          * <p>
          * Value must be {@link String}.
          *
-         * @see javax.websocket.Session#getNegotiatedSubprotocol()
+         * @see jakarta.websocket.Session#getNegotiatedSubprotocol()
          */
         NEGOTIATED_SUBPROTOCOL("negotiatedSubprotocol"),
         /**
@@ -79,7 +79,7 @@ public class RemoteSession implements Session, DistributedSession {
          * <p>
          * Value must be {@link List}&lt;{@link Extension}&gt;.
          *
-         * @see javax.websocket.Session#getNegotiatedExtensions()
+         * @see jakarta.websocket.Session#getNegotiatedExtensions()
          */
         NEGOTIATED_EXTENSIONS("negotiatedExtensions"),
         /**
@@ -87,7 +87,7 @@ public class RemoteSession implements Session, DistributedSession {
          * <p>
          * Value must be {@code boolean} or {@link java.lang.Boolean}.
          *
-         * @see javax.websocket.Session#isSecure()
+         * @see jakarta.websocket.Session#isSecure()
          */
         SECURE("secure"),
         /**
@@ -95,7 +95,7 @@ public class RemoteSession implements Session, DistributedSession {
          * <p>
          * Value must be {@code long} or {@link java.lang.Long}.
          *
-         * @see javax.websocket.Session#getMaxIdleTimeout()
+         * @see jakarta.websocket.Session#getMaxIdleTimeout()
          */
         MAX_IDLE_TIMEOUT("maxIdleTimeout"),
         /**
@@ -103,7 +103,7 @@ public class RemoteSession implements Session, DistributedSession {
          * <p>
          * Value must be {@code int} or {@link java.lang.Integer}.
          *
-         * @see javax.websocket.Session#getMaxBinaryMessageBufferSize()
+         * @see jakarta.websocket.Session#getMaxBinaryMessageBufferSize()
          */
         MAX_BINARY_MESSAGE_BUFFER_SIZE("maxBinaryBufferSize"),
         /**
@@ -111,7 +111,7 @@ public class RemoteSession implements Session, DistributedSession {
          * <p>
          * Value must be {@code int} or {@link java.lang.Integer}.
          *
-         * @see javax.websocket.Session#getMaxTextMessageBufferSize()
+         * @see jakarta.websocket.Session#getMaxTextMessageBufferSize()
          */
         MAX_TEXT_MESSAGE_BUFFER_SIZE("maxTextBufferSize"),
         /**
@@ -119,7 +119,7 @@ public class RemoteSession implements Session, DistributedSession {
          * <p>
          * Value must be {@link URI}.
          *
-         * @see javax.websocket.Session#getRequestURI()
+         * @see jakarta.websocket.Session#getRequestURI()
          */
         REQUEST_URI("requestURI"),
         /**
@@ -127,7 +127,7 @@ public class RemoteSession implements Session, DistributedSession {
          * <p>
          * Value must be {@link java.util.Map}&lt;{@link String}, {@link java.util.List}&lt;{@link String}&gt;&gt;.
          *
-         * @see javax.websocket.Session#getRequestParameterMap()
+         * @see jakarta.websocket.Session#getRequestParameterMap()
          */
         REQUEST_PARAMETER_MAP("requestParameterMap"),
         /**
@@ -135,7 +135,7 @@ public class RemoteSession implements Session, DistributedSession {
          * <p>
          * Value must be {@link String}.
          *
-         * @see javax.websocket.Session#getQueryString()
+         * @see jakarta.websocket.Session#getQueryString()
          */
         QUERY_STRING("queryString"),
         /**
@@ -143,7 +143,7 @@ public class RemoteSession implements Session, DistributedSession {
          * <p>
          * Value must be {@link java.util.Map}&lt;{@link String}, {@link String}&gt;.
          *
-         * @see javax.websocket.Session#getPathParameters()
+         * @see jakarta.websocket.Session#getPathParameters()
          */
         PATH_PARAMETERS("pathParameters"),
         /**
@@ -151,7 +151,7 @@ public class RemoteSession implements Session, DistributedSession {
          * <p>
          * Value must be {@link java.security.Principal}.
          *
-         * @see javax.websocket.Session#getUserPrincipal()
+         * @see jakarta.websocket.Session#getUserPrincipal()
          */
         USER_PRINCIPAL("userPrincipal"),
         /**

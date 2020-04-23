@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -44,22 +44,22 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.websocket.CloseReason;
-import javax.websocket.DecodeException;
-import javax.websocket.Decoder;
-import javax.websocket.DeploymentException;
-import javax.websocket.EncodeException;
-import javax.websocket.Encoder;
-import javax.websocket.Endpoint;
-import javax.websocket.EndpointConfig;
-import javax.websocket.Extension;
-import javax.websocket.MessageHandler;
-import javax.websocket.PongMessage;
-import javax.websocket.RemoteEndpoint;
-import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
-import javax.websocket.server.HandshakeRequest;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.DecodeException;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.EncodeException;
+import jakarta.websocket.Encoder;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.Extension;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.PongMessage;
+import jakarta.websocket.RemoteEndpoint;
+import jakarta.websocket.Session;
+import jakarta.websocket.WebSocketContainer;
+import jakarta.websocket.server.HandshakeRequest;
+import jakarta.websocket.server.ServerEndpointConfig;
 
 import org.glassfish.tyrus.core.cluster.BroadcastListener;
 import org.glassfish.tyrus.core.cluster.ClusterContext;
@@ -549,13 +549,13 @@ public class TyrusEndpointWrapper {
     /**
      * Server-side; Get server endpoint path.
      * <p>
-     * In this context, server endpoint path is exactly what is present in {@link javax.websocket.server.ServerEndpoint}
-     * annotation or returned from {@link javax.websocket.server.ServerEndpointConfig#getPath()} method call. Context
+     * In this context, server endpoint path is exactly what is present in {@link jakarta.websocket.server.ServerEndpoint}
+     * annotation or returned from {@link jakarta.websocket.server.ServerEndpointConfig#getPath()} method call. Context
      * path is not included.
      *
      * @return server endpoint path.
-     * @see javax.websocket.server.ServerEndpoint#value()
-     * @see javax.websocket.server.ServerEndpointConfig#getPath()
+     * @see jakarta.websocket.server.ServerEndpoint#value()
+     * @see jakarta.websocket.server.ServerEndpointConfig#getPath()
      */
     String getServerEndpointPath() {
         return serverEndpointPath;
@@ -1089,7 +1089,7 @@ public class TyrusEndpointWrapper {
     }
 
     /**
-     * Check {@link Throwable} produced during {@link javax.websocket.OnMessage} annotated method call.
+     * Check {@link Throwable} produced during {@link jakarta.websocket.OnMessage} annotated method call.
      *
      * @param throwable thrown {@link Throwable}.
      * @param session   {@link Session} related to {@link Throwable}.
@@ -1711,8 +1711,8 @@ public class TyrusEndpointWrapper {
         }
 
         /**
-         * Invoked before {@link javax.websocket.OnOpen} annotated method
-         * or {@link Endpoint#onOpen(javax.websocket.Session, javax.websocket.EndpointConfig)} is invoked.
+         * Invoked before {@link jakarta.websocket.OnOpen} annotated method
+         * or {@link Endpoint#onOpen(jakarta.websocket.Session, jakarta.websocket.EndpointConfig)} is invoked.
          * <p>
          * Default implementation always returns {@link
          * org.glassfish.tyrus.core.TyrusEndpointWrapper.SessionListener.OnOpenResult#SESSION_ALLOWED}.
@@ -1726,8 +1726,8 @@ public class TyrusEndpointWrapper {
         }
 
         /**
-         * Invoked after {@link javax.websocket.OnClose} annotated method
-         * or {@link Endpoint#onClose(javax.websocket.Session, javax.websocket.CloseReason)} execution.
+         * Invoked after {@link jakarta.websocket.OnClose} annotated method
+         * or {@link Endpoint#onClose(jakarta.websocket.Session, jakarta.websocket.CloseReason)} execution.
          *
          * @param session     closed session.
          * @param closeReason close reason.

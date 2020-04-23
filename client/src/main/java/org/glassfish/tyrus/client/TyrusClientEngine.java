@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -32,12 +32,12 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.CloseReason;
-import javax.websocket.Extension;
-import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
-import javax.websocket.server.HandshakeRequest;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.Extension;
+import jakarta.websocket.Session;
+import jakarta.websocket.WebSocketContainer;
+import jakarta.websocket.server.HandshakeRequest;
 
 import org.glassfish.tyrus.client.auth.AuthConfig;
 import org.glassfish.tyrus.client.auth.AuthenticationException;
@@ -108,10 +108,10 @@ public class TyrusClientEngine implements ClientEngine {
      *
      * @param endpointWrapper         wrapped client endpoint.
      * @param listener                used for reporting back the outcome of handshake. {@link
-     *                                ClientHandshakeListener#onSessionCreated(javax.websocket.Session)} is invoked if
+     *                                ClientHandshakeListener#onSessionCreated(jakarta.websocket.Session)} is invoked if
      *                                handshake is completed and provided {@link Session} is open and ready to be
      *                                returned from {@link WebSocketContainer#connectToServer(Class,
-     *                                javax.websocket.ClientEndpointConfig, java.net.URI)} (and alternatives) call.
+     *                                jakarta.websocket.ClientEndpointConfig, java.net.URI)} (and alternatives) call.
      * @param properties              passed container properties, see {@link org.glassfish.tyrus.client *
      *                                .ClientManager#getProperties()}.
      * @param connectToServerUriParam to which the client is connecting.
@@ -641,7 +641,7 @@ public class TyrusClientEngine implements ClientEngine {
         /**
          * Invoked when handshake is completed and provided {@link Session} is open and ready to be returned from
          * {@link
-         * WebSocketContainer#connectToServer(Class, javax.websocket.ClientEndpointConfig, java.net.URI)} (and
+         * WebSocketContainer#connectToServer(Class, jakarta.websocket.ClientEndpointConfig, java.net.URI)} (and
          * alternatives) call.
          *
          * @param session opened client session.

@@ -30,11 +30,11 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.websocket.CloseReason;
-import javax.websocket.Extension;
-import javax.websocket.SendHandler;
-import javax.websocket.SendResult;
-import javax.websocket.server.HandshakeRequest;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.Extension;
+import jakarta.websocket.SendHandler;
+import jakarta.websocket.SendResult;
+import jakarta.websocket.server.HandshakeRequest;
 
 import org.glassfish.tyrus.core.extension.ExtendedExtension;
 import org.glassfish.tyrus.core.frame.BinaryFrame;

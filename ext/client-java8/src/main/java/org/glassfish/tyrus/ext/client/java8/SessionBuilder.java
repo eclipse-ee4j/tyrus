@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -28,14 +28,14 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
 import java.util.function.BiConsumer;
 
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.CloseReason;
-import javax.websocket.DeploymentException;
-import javax.websocket.Endpoint;
-import javax.websocket.EndpointConfig;
-import javax.websocket.MessageHandler;
-import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.Session;
+import jakarta.websocket.WebSocketContainer;
 
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.core.Beta;
@@ -49,8 +49,8 @@ import org.glassfish.tyrus.core.MessageHandlerManager;
  * Session}
  * can be opened even without it and used only for sending messages.
  * <p>
- * {@link javax.websocket.Encoder Encoders} and {@link javax.websocket.Decoder decoders} can be registered by creating
- * {@link javax.websocket.ClientEndpointConfig} and registering it to SessionBuilder via
+ * {@link jakarta.websocket.Encoder Encoders} and {@link jakarta.websocket.Decoder decoders} can be registered by creating
+ * {@link jakarta.websocket.ClientEndpointConfig} and registering it to SessionBuilder via
  * {@link org.glassfish.tyrus.ext.client.java8.SessionBuilder#clientEndpointConfig} method call.
  * <p>
  * Code example:
@@ -84,7 +84,7 @@ public class SessionBuilder {
     private BiConsumer<Session, CloseReason> onClose;
 
     /**
-     * Create SessionBuilder with provided {@link javax.websocket.WebSocketContainer}.
+     * Create SessionBuilder with provided {@link jakarta.websocket.WebSocketContainer}.
      *
      * @param container provided websocket container.
      */
@@ -111,9 +111,9 @@ public class SessionBuilder {
     }
 
     /**
-     * Set {@link javax.websocket.ClientEndpointConfig}.
+     * Set {@link jakarta.websocket.ClientEndpointConfig}.
      *
-     * @param clientEndpointConfig {@link javax.websocket.ClientEndpointConfig} to be set.
+     * @param clientEndpointConfig {@link jakarta.websocket.ClientEndpointConfig} to be set.
      * @return updated SessionBuilder instance.
      */
     public SessionBuilder clientEndpointConfig(ClientEndpointConfig clientEndpointConfig) {
@@ -163,7 +163,7 @@ public class SessionBuilder {
      *
      * @param onOpen method invoked when a {@link Session} is opened.
      * @return updated SessionBuilder instance.
-     * @see javax.websocket.OnOpen
+     * @see jakarta.websocket.OnOpen
      */
     public SessionBuilder onOpen(BiConsumer<Session, EndpointConfig> onOpen) {
         this.onOpen = onOpen;
@@ -171,11 +171,11 @@ public class SessionBuilder {
     }
 
     /**
-     * Set method reference which will be invoked when {@link javax.websocket.OnError} method is invoked.
+     * Set method reference which will be invoked when {@link jakarta.websocket.OnError} method is invoked.
      *
-     * @param onError method invoked when {@link javax.websocket.OnError} method is invoked.
+     * @param onError method invoked when {@link jakarta.websocket.OnError} method is invoked.
      * @return updated SessionBuilder instance.
-     * @see javax.websocket.OnError
+     * @see jakarta.websocket.OnError
      */
     public SessionBuilder onError(BiConsumer<Session, Throwable> onError) {
         this.onError = onError;
@@ -187,7 +187,7 @@ public class SessionBuilder {
      *
      * @param onClose method invoked when a {@link Session} is closed.
      * @return updated SessionBuilder instance.
-     * @see javax.websocket.OnClose
+     * @see jakarta.websocket.OnClose
      */
     public SessionBuilder onClose(BiConsumer<Session, CloseReason> onClose) {
         this.onClose = onClose;

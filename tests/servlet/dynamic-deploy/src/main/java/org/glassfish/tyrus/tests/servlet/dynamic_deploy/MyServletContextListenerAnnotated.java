@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,17 +16,17 @@
 
 package org.glassfish.tyrus.tests.servlet.dynamic_deploy;
 
-import javax.websocket.DeploymentException;
-import javax.websocket.OnMessage;
-import javax.websocket.server.ServerContainer;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerEndpoint;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 /**
- * Calls {@link javax.websocket.server.ServerContainer#addEndpoint(Class)} with MyServletContextListener.class (which is
+ * Calls {@link jakarta.websocket.server.ServerContainer#addEndpoint(Class)} with MyServletContextListener.class (which is
  * also an endpoint). It will be picked up by scanning mechanism but ignored because MyApplication class filters it
  * out.
  *
@@ -39,7 +39,7 @@ public class MyServletContextListenerAnnotated implements ServletContextListener
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         final ServerContainer serverContainer = (ServerContainer) servletContextEvent.getServletContext().getAttribute(
-                "javax.websocket.server.ServerContainer");
+                "jakarta.websocket.server.ServerContainer");
 
         try {
             // this is the important call

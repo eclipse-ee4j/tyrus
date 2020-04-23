@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,14 +16,14 @@
 
 package org.glassfish.tyrus.core;
 
-import javax.websocket.CloseReason;
+import jakarta.websocket.CloseReason;
 
 /**
- * Thrown when {@link javax.websocket.OnMessage#maxMessageSize()} is smaller than received message size.
+ * Thrown when {@link jakarta.websocket.OnMessage#maxMessageSize()} is smaller than received message size.
  * <p>
- * Underlying web socket connection will be closed with {@link javax.websocket.CloseReason.CloseCode}
- * {@link javax.websocket.CloseReason.CloseCodes#TOO_BIG} and {@link javax.websocket.OnError} annotated method (or
- * {@link javax.websocket.Endpoint#onError(javax.websocket.Session, Throwable)} will be called with instance of this
+ * Underlying web socket connection will be closed with {@link jakarta.websocket.CloseReason.CloseCode}
+ * {@link jakarta.websocket.CloseReason.CloseCodes#TOO_BIG} and {@link jakarta.websocket.OnError} annotated method (or
+ * {@link jakarta.websocket.Endpoint#onError(jakarta.websocket.Session, Throwable)} will be called with instance of this
  * class as {@link Throwable} parameter.
  *
  * @author Pavel Bucek (pavel.bucek at oracle.com)

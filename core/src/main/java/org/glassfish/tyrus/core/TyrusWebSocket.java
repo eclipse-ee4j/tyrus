@@ -25,9 +25,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.websocket.CloseReason;
-import javax.websocket.Extension;
-import javax.websocket.SendHandler;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.Extension;
+import jakarta.websocket.SendHandler;
 
 import org.glassfish.tyrus.core.frame.BinaryFrame;
 import org.glassfish.tyrus.core.frame.CloseFrame;
@@ -246,7 +246,7 @@ public class TyrusWebSocket {
     }
 
     /**
-     * Closes this {@link TyrusWebSocket} using the {@link javax.websocket.CloseReason}.
+     * Closes this {@link TyrusWebSocket} using the {@link jakarta.websocket.CloseReason}.
      *
      * @param closeReason the close reason.
      */
@@ -282,7 +282,7 @@ public class TyrusWebSocket {
      * Send a binary frame to the remote endpoint.
      *
      * @param data    data to be sent.
-     * @param handler {@link SendHandler#onResult(javax.websocket.SendResult)} will be called when sending is complete.
+     * @param handler {@link SendHandler#onResult(jakarta.websocket.SendResult)} will be called when sending is complete.
      */
     @Deprecated
     public void sendBinary(byte[] data, SendHandler handler) {
@@ -295,7 +295,7 @@ public class TyrusWebSocket {
      *
      * @param data    data to be sent.
      * @param writerInfo  information about the outbound message.
-     * @param handler {@link SendHandler#onResult(javax.websocket.SendResult)} will be called when sending is complete.
+     * @param handler {@link SendHandler#onResult(jakarta.websocket.SendResult)} will be called when sending is complete.
      */
     public void sendBinary(byte[] data, SendHandler handler, WriterInfo writerInfo) {
         checkConnectedState();
@@ -330,7 +330,7 @@ public class TyrusWebSocket {
      * Send a text frame to the remote endpoint.
      *
      * @param data    data to be sent.
-     * @param handler {@link SendHandler#onResult(javax.websocket.SendResult)} will be called when sending is complete.
+     * @param handler {@link SendHandler#onResult(jakarta.websocket.SendResult)} will be called when sending is complete.
      */
     @Deprecated
     public void sendText(String data, SendHandler handler) {
@@ -343,7 +343,7 @@ public class TyrusWebSocket {
      *
      * @param data    data to be sent.
      * @param writerInfo  information about the outbound message.
-     * @param handler {@link SendHandler#onResult(javax.websocket.SendResult)} will be called when sending is complete.
+     * @param handler {@link SendHandler#onResult(jakarta.websocket.SendResult)} will be called when sending is complete.
      */
     public void sendText(String data, SendHandler handler, WriterInfo writerInfo) {
         checkConnectedState();

@@ -33,14 +33,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
-import javax.websocket.ClientEndpoint;
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.CloseReason;
-import javax.websocket.DeploymentException;
-import javax.websocket.Endpoint;
-import javax.websocket.Extension;
-import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
+import jakarta.websocket.ClientEndpoint;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.Extension;
+import jakarta.websocket.Session;
+import jakarta.websocket.WebSocketContainer;
 
 import org.glassfish.tyrus.core.AnnotatedEndpoint;
 import org.glassfish.tyrus.core.BaseContainer;
@@ -94,7 +94,7 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
      *     client.connectToServer(...);
      * </pre>
      *
-     * @see javax.websocket.ClientEndpointConfig#getUserProperties()
+     * @see jakarta.websocket.ClientEndpointConfig#getUserProperties()
      * @deprecated please use {@link org.glassfish.tyrus.client.ClientProperties#PROXY_URI}.
      */
     @SuppressWarnings("UnusedDeclaration")
@@ -118,9 +118,9 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
      * </pre>
      * Please note that these headers will be used only when establishing proxy connection, for modifying
      * WebSocket handshake headers, see {@link
-     * javax.websocket.ClientEndpointConfig.Configurator#beforeRequest(java.util.Map)}.
+     * jakarta.websocket.ClientEndpointConfig.Configurator#beforeRequest(java.util.Map)}.
      *
-     * @see javax.websocket.ClientEndpointConfig#getUserProperties()
+     * @see jakarta.websocket.ClientEndpointConfig#getUserProperties()
      * @deprecated please use {@link org.glassfish.tyrus.client.ClientProperties#PROXY_HEADERS}.
      */
     @SuppressWarnings("UnusedDeclaration")
@@ -389,7 +389,7 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
     }
 
     /**
-     * Non-blocking version of {@link WebSocketContainer#connectToServer(Class, javax.websocket.ClientEndpointConfig,
+     * Non-blocking version of {@link WebSocketContainer#connectToServer(Class, jakarta.websocket.ClientEndpointConfig,
      * java.net.URI)}.
      * <p>
      * Only simple checks are performed in the main thread; client container is created in different thread, same
@@ -400,7 +400,7 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
      * @param cec           the configuration used to configure the programmatic endpoint.
      * @return the Session created if the connection is successful.
      * @throws DeploymentException if the configuration is not valid
-     * @see WebSocketContainer#connectToServer(Class, javax.websocket.ClientEndpointConfig, java.net.URI)
+     * @see WebSocketContainer#connectToServer(Class, jakarta.websocket.ClientEndpointConfig, java.net.URI)
      */
     public Future<Session> asyncConnectToServer(Class<? extends Endpoint> endpointClass, ClientEndpointConfig cec,
                                                 URI path) throws DeploymentException {
@@ -408,8 +408,8 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
     }
 
     /**
-     * Non-blocking version of {@link WebSocketContainer#connectToServer(javax.websocket.Endpoint,
-     * javax.websocket.ClientEndpointConfig, java.net.URI)}.
+     * Non-blocking version of {@link WebSocketContainer#connectToServer(jakarta.websocket.Endpoint,
+     * jakarta.websocket.ClientEndpointConfig, java.net.URI)}.
      * <p>
      * Only simple checks are performed in the main thread; client container is created in different thread, same
      * applies to connecting etc.
@@ -419,7 +419,7 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
      * @param cec              the configuration used to configure the programmatic endpoint.
      * @return the Session created if the connection is successful.
      * @throws DeploymentException if the configuration is not valid
-     * @see WebSocketContainer#connectToServer(javax.websocket.Endpoint, javax.websocket.ClientEndpointConfig,
+     * @see WebSocketContainer#connectToServer(jakarta.websocket.Endpoint, jakarta.websocket.ClientEndpointConfig,
      * java.net.URI)
      */
     public Future<Session> asyncConnectToServer(Endpoint endpointInstance, ClientEndpointConfig cec, URI path) throws
@@ -854,15 +854,15 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
      * Reconnect handler.
      * <p>
      * When implementing, be sure that you do have enough logic behind cancelling reconnect feature - even {@link
-     * javax.websocket.Session#close()} call will be treated just like any other disconnect resulting in reconnect.
+     * jakarta.websocket.Session#close()} call will be treated just like any other disconnect resulting in reconnect.
      */
     public static class ReconnectHandler {
 
         private static final long RECONNECT_DELAY = 5L;
 
         /**
-         * Called after {@link javax.websocket.OnClose} annotated method (or {@link
-         * Endpoint#onClose(javax.websocket.Session, javax.websocket.CloseReason)} is invoked.
+         * Called after {@link jakarta.websocket.OnClose} annotated method (or {@link
+         * Endpoint#onClose(jakarta.websocket.Session, jakarta.websocket.CloseReason)} is invoked.
          *
          * @param closeReason close reason passed to onClose method.
          * @return When {@code true} is returned, client container will reconnect.

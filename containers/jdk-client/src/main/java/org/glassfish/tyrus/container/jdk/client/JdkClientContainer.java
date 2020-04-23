@@ -33,8 +33,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.DeploymentException;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.DeploymentException;
 
 import javax.net.ssl.HostnameVerifier;
 

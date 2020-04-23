@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -21,12 +21,12 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Map;
 
-import javax.websocket.CloseReason;
-import javax.websocket.Decoder;
-import javax.websocket.DeploymentException;
-import javax.websocket.Encoder;
-import javax.websocket.EndpointConfig;
-import javax.websocket.MessageHandler;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Encoder;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.MessageHandler;
 
 import org.glassfish.tyrus.core.l10n.LocalizationMessages;
 
@@ -56,11 +56,11 @@ class AnnotatedClassValidityChecker {
     }
 
     /**
-     * Checks whether the params of the method annotated with {@link javax.websocket.OnMessage} comply with the
+     * Checks whether the params of the method annotated with {@link jakarta.websocket.OnMessage} comply with the
      * specification.
      * <p>
-     * Voluntary parameters of type {@link javax.websocket.Session} and parameters annotated with {@link
-     * javax.websocket.server.PathParam} are checked in advance in {@link AnnotatedEndpoint}.
+     * Voluntary parameters of type {@link jakarta.websocket.Session} and parameters annotated with {@link
+     * jakarta.websocket.server.PathParam} are checked in advance in {@link AnnotatedEndpoint}.
      */
     public void checkOnMessageParams(Method method, MessageHandler handler) {
         try {
@@ -87,10 +87,10 @@ class AnnotatedClassValidityChecker {
     }
 
     /**
-     * Checks whether the params of method annotated with {@link javax.websocket.OnOpen} comply with the specification.
+     * Checks whether the params of method annotated with {@link jakarta.websocket.OnOpen} comply with the specification.
      * <p>
-     * Voluntary parameters of type {@link javax.websocket.Session} and parameters annotated with {@link
-     * javax.websocket.server.PathParam} are checked in advance in {@link AnnotatedEndpoint}.
+     * Voluntary parameters of type {@link jakarta.websocket.Session} and parameters annotated with {@link
+     * jakarta.websocket.server.PathParam} are checked in advance in {@link AnnotatedEndpoint}.
      *
      * @param params to be checked.
      */
@@ -105,7 +105,7 @@ class AnnotatedClassValidityChecker {
     }
 
     /**
-     * Checks whether the params of method annotated with {@link javax.websocket.OnClose} comply with the
+     * Checks whether the params of method annotated with {@link jakarta.websocket.OnClose} comply with the
      * specification.
      *
      * @param params unknown params of the method.
@@ -121,7 +121,7 @@ class AnnotatedClassValidityChecker {
     }
 
     /**
-     * Checks whether the params of method annotated with {@link javax.websocket.OnError} comply with the
+     * Checks whether the params of method annotated with {@link jakarta.websocket.OnError} comply with the
      * specification.
      *
      * @param params unknown params of the method.
