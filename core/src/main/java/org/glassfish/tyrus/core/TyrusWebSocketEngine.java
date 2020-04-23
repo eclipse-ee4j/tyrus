@@ -29,13 +29,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.websocket.CloseReason;
-import javax.websocket.DeploymentException;
-import javax.websocket.Endpoint;
-import javax.websocket.EndpointConfig;
-import javax.websocket.Extension;
-import javax.websocket.WebSocketContainer;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.Extension;
+import jakarta.websocket.WebSocketContainer;
+import jakarta.websocket.server.ServerEndpointConfig;
 
 import org.glassfish.tyrus.core.cluster.ClusterContext;
 import org.glassfish.tyrus.core.extension.ExtendedExtension;
@@ -633,7 +633,7 @@ public class TyrusWebSocketEngine implements WebSocketEngine {
         EndpointEventListenerWrapper endpointEventListenerWrapper = new EndpointEventListenerWrapper();
 
         if (isEndpointClass) {
-            // we are pretty sure that endpoint class is javax.websocket.Endpoint descendant.
+            // we are pretty sure that endpoint class is jakarta.websocket.Endpoint descendant.
             //noinspection unchecked
             endpointWrapper = new TyrusEndpointWrapper((Class<? extends Endpoint>) endpointClass, serverConfig,
                                                        componentProviderService,

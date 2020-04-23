@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,9 +23,9 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation may be used to annotate server endpoints as a optional annotation
- * to {@link javax.websocket.server.ServerEndpoint}. When number of maximal open
+ * to {@link jakarta.websocket.server.ServerEndpoint}. When number of maximal open
  * sessions is exceeded every new attempt to open session is closed with
- * {@link javax.websocket.CloseReason.CloseCodes#TRY_AGAIN_LATER}.
+ * {@link jakarta.websocket.CloseReason.CloseCodes#TRY_AGAIN_LATER}.
  * If value less then 1 is specified, no limit will be applied.
  * Annotation example:
  * <pre><code>

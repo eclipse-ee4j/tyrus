@@ -37,7 +37,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.websocket.DeploymentException;
+import jakarta.websocket.DeploymentException;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -90,7 +90,7 @@ public class GrizzlyClientSocket {
      *     client.connectToServer(...);
      * </pre>
      *
-     * @see javax.websocket.ClientEndpointConfig#getUserProperties()
+     * @see jakarta.websocket.ClientEndpointConfig#getUserProperties()
      * @deprecated please use {@link org.glassfish.tyrus.client.ClientProperties#PROXY_URI}.
      */
     @SuppressWarnings("UnusedDeclaration")
@@ -113,9 +113,9 @@ public class GrizzlyClientSocket {
      *     client.connectToServer(...);
      * </pre>
      * Please note that these headers will be used only when establishing proxy connection, for modifying WebSocket
-     * handshake headers, see {@link javax.websocket.ClientEndpointConfig.Configurator#beforeRequest(java.util.Map)}.
+     * handshake headers, see {@link jakarta.websocket.ClientEndpointConfig.Configurator#beforeRequest(java.util.Map)}.
      *
-     * @see javax.websocket.ClientEndpointConfig#getUserProperties()
+     * @see jakarta.websocket.ClientEndpointConfig#getUserProperties()
      * @deprecated please use {@link org.glassfish.tyrus.client.ClientProperties#PROXY_HEADERS}
      */
     @SuppressWarnings("UnusedDeclaration")

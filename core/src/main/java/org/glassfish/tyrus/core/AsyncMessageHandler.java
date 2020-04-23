@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,7 +16,7 @@
 
 package org.glassfish.tyrus.core;
 
-import javax.websocket.MessageHandler;
+import jakarta.websocket.MessageHandler;
 
 /**
  * Asynchonous message handler with added getType method.
@@ -36,7 +36,7 @@ interface AsyncMessageHandler extends MessageHandler.Partial {
      * Get max message size allowed for this message handler.
      *
      * @return max message size.
-     * @see javax.websocket.OnMessage#maxMessageSize()
+     * @see jakarta.websocket.OnMessage#maxMessageSize()
      */
     long getMaxMessageSize();
 }

@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -38,8 +38,8 @@
             <artifactId>tyrus-container-jdk-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.websocket</groupId>
-            <artifactId>javax.websocket-client-api</artifactId>
+            <groupId>jakarta.websocket</groupId>
+            <artifactId>jakarta.websocket-client-api</artifactId>
         </dependency>
     </dependencies>
 
@@ -53,7 +53,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.glassfish.tyrus.client;version=${project.version},
-                            javax.websocket;version=${apijar.bundle.version}
+                            jakarta.websocket;version=${apijar.bundle.version}
                         </Export-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
@@ -88,8 +88,8 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>javax.websocket</groupId>
-                                    <artifactId>javax.websocket-api</artifactId>
+                                    <groupId>jakarta.websocket</groupId>
+                                    <artifactId>jakarta.websocket-api</artifactId>
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${gen-src-dir}</outputDirectory>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -22,7 +22,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.logging.Level;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 
 import org.glassfish.tyrus.tests.qa.lifecycle.SessionConversation;
 import org.glassfish.tyrus.tests.qa.lifecycle.SessionLifeCycle;
@@ -66,7 +66,7 @@ public class BufferedReaderSessionImpl extends SessionLifeCycle<Reader> implemen
     @Override
     public void startTalk(Session s) throws IOException {
         logger.log(Level.INFO, "XXX: Send message:{0}", messageToSend);
-        javax.websocket.RemoteEndpoint.Basic basic = s.getBasicRemote();
+        jakarta.websocket.RemoteEndpoint.Basic basic = s.getBasicRemote();
         Writer wr = basic.getSendWriter();
         wr.write(messageToSend);
         wr.close();

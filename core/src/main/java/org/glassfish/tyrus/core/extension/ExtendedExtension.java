@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,7 +19,7 @@ package org.glassfish.tyrus.core.extension;
 import java.util.List;
 import java.util.Map;
 
-import javax.websocket.Extension;
+import jakarta.websocket.Extension;
 
 import org.glassfish.tyrus.core.frame.Frame;
 
@@ -50,7 +50,7 @@ import org.glassfish.tyrus.core.frame.Frame;
  * </pre>
  * <p>
  * Any exception thrown from processIncoming or processOutgoing will be logged. Rest of extension chain will be invoked
- * without any modifications done in "faulty" extension. {@link javax.websocket.OnError} won't be triggered. (this
+ * without any modifications done in "faulty" extension. {@link jakarta.websocket.OnError} won't be triggered. (this
  * might
  * change).
  * <pre>TODO:\

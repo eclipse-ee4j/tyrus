@@ -29,10 +29,10 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.websocket.CloseReason;
-import javax.websocket.EncodeException;
-import javax.websocket.SendHandler;
-import javax.websocket.SendResult;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.EncodeException;
+import jakarta.websocket.SendHandler;
+import jakarta.websocket.SendResult;
 
 import org.glassfish.tyrus.core.l10n.LocalizationMessages;
 import org.glassfish.tyrus.spi.WriterInfo;
@@ -42,14 +42,14 @@ import org.glassfish.tyrus.spi.WriterInfo.RemoteEndpointType;
 import static org.glassfish.tyrus.core.Utils.checkNotNull;
 
 /**
- * Wraps the {@link javax.websocket.RemoteEndpoint} and represents the other side of the websocket connection.
+ * Wraps the {@link jakarta.websocket.RemoteEndpoint} and represents the other side of the websocket connection.
  *
  * @author Danny Coward (danny.coward at oracle.com)
  * @author Martin Matula (martin.matula at oracle.com)
  * @author Stepan Kopriva (stepan.kopriva at oracle.com)
  * @author Pavel Bucek (pavel.bucek at oracle.com)
  */
-public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpoint {
+public abstract class TyrusRemoteEndpoint implements jakarta.websocket.RemoteEndpoint {
 
     final TyrusSession session;
     final TyrusWebSocket webSocket;
@@ -64,7 +64,7 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
         this.session = session;
     }
 
-    static class Basic extends TyrusRemoteEndpoint implements javax.websocket.RemoteEndpoint.Basic {
+    static class Basic extends TyrusRemoteEndpoint implements jakarta.websocket.RemoteEndpoint.Basic {
 
         Basic(TyrusSession session, TyrusWebSocket socket, TyrusEndpointWrapper endpointWrapper) {
             super(session, socket, endpointWrapper);
@@ -189,7 +189,7 @@ public abstract class TyrusRemoteEndpoint implements javax.websocket.RemoteEndpo
         }
     }
 
-    static class Async extends TyrusRemoteEndpoint implements javax.websocket.RemoteEndpoint.Async {
+    static class Async extends TyrusRemoteEndpoint implements jakarta.websocket.RemoteEndpoint.Async {
         private long sendTimeout;
 
         Async(TyrusSession session, TyrusWebSocket socket, TyrusEndpointWrapper endpointWrapper) {

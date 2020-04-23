@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -46,7 +46,7 @@
         <dependency>
             <groupId>javax.ejb</groupId>
             <artifactId>javax.ejb-api</artifactId>
-            <version>${javax.ejb-api.version}</version>
+            <version>${ejb-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
@@ -121,8 +121,8 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>javax.websocket</groupId>
-                                    <artifactId>javax.websocket-api</artifactId>
+                                    <groupId>jakarta.websocket</groupId>
+                                    <artifactId>jakarta.websocket-api</artifactId>
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${gen-src-dir}</outputDirectory>
@@ -221,7 +221,7 @@
                         </Implementation-Version>
                         <Extension-Name>${project.artifactId}</Extension-Name>
                         <Export-Package>
-                            javax.websocket.*;version=${websocket-api.version},
+                            jakarta.websocket.*;version=${websocket-api.version},
                             org.glassfish.tyrus.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>

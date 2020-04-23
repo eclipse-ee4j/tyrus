@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,15 +23,15 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.ContainerProvider;
-import javax.websocket.DeploymentException;
-import javax.websocket.EndpointConfig;
-import javax.websocket.HandshakeResponse;
-import javax.websocket.MessageHandler;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.ContainerProvider;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.HandshakeResponse;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
 
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.server.Server;
@@ -68,7 +68,7 @@ public class SubProtocolTest extends TestContainer {
             final ClientEndpointConfig clientEndpointConfig =
                     ClientEndpointConfig.Builder.create().preferredSubprotocols(
                             Arrays.asList("MBWS.huawei.com", "soap", "v10.stomp")).build();
-            ContainerProvider.getWebSocketContainer().connectToServer(new javax.websocket.Endpoint() {
+            ContainerProvider.getWebSocketContainer().connectToServer(new jakarta.websocket.Endpoint() {
                 @Override
                 public void onOpen(final Session session, EndpointConfig config) {
                     session.addMessageHandler(new MessageHandler.Whole<String>() {
@@ -115,7 +115,7 @@ public class SubProtocolTest extends TestContainer {
                                                     }
                                                 }).preferredSubprotocols(Arrays.asList("a", "b", "c")).build();
             ClientManager client = createClient();
-            client.connectToServer(new javax.websocket.Endpoint() {
+            client.connectToServer(new jakarta.websocket.Endpoint() {
                 @Override
                 public void onOpen(final Session session, EndpointConfig config) {
                     session.addMessageHandler(new MessageHandler.Whole<String>() {

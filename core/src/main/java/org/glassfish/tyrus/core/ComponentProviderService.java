@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.websocket.Decoder;
-import javax.websocket.DeploymentException;
-import javax.websocket.Encoder;
-import javax.websocket.EndpointConfig;
-import javax.websocket.Session;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Encoder;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.Session;
 
 import org.glassfish.tyrus.core.l10n.LocalizationMessages;
 
@@ -140,20 +140,20 @@ public class ComponentProviderService {
     }
 
     /**
-     * Provide an instance of {@link javax.websocket.Encoder} or {@link javax.websocket.Decoder} descendant which is
+     * Provide an instance of {@link jakarta.websocket.Encoder} or {@link jakarta.websocket.Decoder} descendant which is
      * coupled to {@link Session}.
      * <p>
      * The first time the method is called the provider creates an instance, calls {@link
-     * javax.websocket.Encoder#init(javax.websocket.EndpointConfig)}
-     * or {@link javax.websocket.Decoder#init(javax.websocket.EndpointConfig)} and caches it.
+     * jakarta.websocket.Encoder#init(jakarta.websocket.EndpointConfig)}
+     * or {@link jakarta.websocket.Decoder#init(jakarta.websocket.EndpointConfig)} and caches it.
      * Next time the method is called the cached instance is returned.
      *
      * @param c              {@link Class} whose instance will be provided.
      * @param session        session to which the instance belongs (think of this as a scope).
      * @param collector      error collector.
      * @param endpointConfig configuration corresponding to current context. Used for
-     *                       {@link javax.websocket.Encoder#init(javax.websocket.EndpointConfig)} and
-     *                       {@link javax.websocket.Decoder#init(javax.websocket.EndpointConfig)}
+     *                       {@link jakarta.websocket.Encoder#init(jakarta.websocket.EndpointConfig)} and
+     *                       {@link jakarta.websocket.Decoder#init(jakarta.websocket.EndpointConfig)}
      * @param <T>            type of the provided instance.
      * @return instance
      */
@@ -273,7 +273,7 @@ public class ComponentProviderService {
      * interactions from a new client.
      * @throws InstantiationException if there was an error producing the
      *                                endpoint instance.
-     * @see javax.websocket.server.ServerEndpointConfig.Configurator#getEndpointInstance(Class)
+     * @see jakarta.websocket.server.ServerEndpointConfig.Configurator#getEndpointInstance(Class)
      */
     public <T> Object getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
         return getInstance(endpointClass);

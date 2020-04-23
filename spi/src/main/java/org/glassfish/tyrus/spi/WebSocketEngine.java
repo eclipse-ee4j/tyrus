@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,8 +16,8 @@
 
 package org.glassfish.tyrus.spi;
 
-import javax.websocket.DeploymentException;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.server.ServerEndpointConfig;
 
 import static org.glassfish.tyrus.spi.Connection.CloseListener;
 
@@ -52,7 +52,7 @@ public interface WebSocketEngine {
     void register(Class<?> endpointClass, String contextPath) throws DeploymentException;
 
     /**
-     * Register {@link javax.websocket.server.ServerEndpointConfig}.
+     * Register {@link jakarta.websocket.server.ServerEndpointConfig}.
      *
      * @param serverConfig server endpoint to be registered.
      * @param contextPath  context path of the registered endpoint.

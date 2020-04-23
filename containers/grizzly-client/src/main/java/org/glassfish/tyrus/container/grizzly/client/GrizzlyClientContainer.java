@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -21,8 +21,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.DeploymentException;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.DeploymentException;
 
 import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.spi.ClientContainer;

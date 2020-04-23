@@ -59,7 +59,7 @@ public final class ClientProperties {
      *     client.connectToServer(...);
      * </pre>
      *
-     * @see javax.websocket.ClientEndpointConfig#getUserProperties()
+     * @see jakarta.websocket.ClientEndpointConfig#getUserProperties()
      */
     public static final String PROXY_URI = "org.glassfish.tyrus.client.proxy";
 
@@ -81,9 +81,9 @@ public final class ClientProperties {
      * </pre>
      * Please note that these headers will be used only when establishing proxy connection, for modifying
      * WebSocket handshake headers, see
-     * {@link javax.websocket.ClientEndpointConfig.Configurator#beforeRequest(java.util.Map)}.
+     * {@link jakarta.websocket.ClientEndpointConfig.Configurator#beforeRequest(java.util.Map)}.
      *
-     * @see javax.websocket.ClientEndpointConfig#getUserProperties()
+     * @see jakarta.websocket.ClientEndpointConfig#getUserProperties()
      */
     public static final String PROXY_HEADERS = "org.glassfish.tyrus.client.proxy.headers";
 
@@ -118,7 +118,7 @@ public final class ClientProperties {
      * Property name for maximal incoming buffer size.
      * <p>
      * Can be set in properties map (see {@link
-     * org.glassfish.tyrus.spi.ClientContainer#openClientSocket(javax.websocket.ClientEndpointConfig, java.util.Map,
+     * org.glassfish.tyrus.spi.ClientContainer#openClientSocket(jakarta.websocket.ClientEndpointConfig, java.util.Map,
      * org.glassfish.tyrus.spi.ClientEngine)}.
      */
     public static final String INCOMING_BUFFER_SIZE = "org.glassfish.tyrus.incomingBufferSize";

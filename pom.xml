@@ -68,13 +68,10 @@
 
     <developers>
         <developer>
-            <id>roman_grigoriadi</id>
-            <name>Roman Grigoriadi</name>
+            <name>Jan Supol</name>
             <organization>Oracle Corporation</organization>
-            <organizationUrl>http://www.oracle.com</organizationUrl>
-            <roles>
-                <role>developer</role>
-            </roles>
+            <organizationUrl>http://www.oracle.com/</organizationUrl>
+            <url>http://blog.supol.info</url>
         </developer>
     </developers>
 
@@ -95,20 +92,27 @@
         <contributor>
             <name>Petr Janouch</name>
         </contributor>
+        <contributor>
+            <name>Roman Grigoriadi</name>
+        </contributor>
     </contributors>
 
     <properties>
-        <websocket-api.version>1.1</websocket-api.version>
+        <websocket-api.version>2.0.0-M1</websocket-api.version>
         <!--<websocket.api.build_number>18</websocket.api.build_number>-->
 
-        <servlet.api.version>3.1.0</servlet.api.version>
-        <grizzly.version>2.3.22</grizzly.version>
-        <javax.ejb-api.version>3.2</javax.ejb-api.version>
+        <annotation-api.version>1.3.5</annotation-api.version>
         <cdi-api.version>1.2</cdi-api.version>
+        <ejb-api.version>3.2</ejb-api.version>
+        <grizzly.version>2.3.22</grizzly.version>
         <json-api.version>1.0</json-api.version>
         <json-impl.version>1.0.4</json-impl.version>
+        <jaxb.api.version>2.3.2</jaxb.api.version>
+        <jaxb.ri.version>2.3.2</jaxb.ri.version>
+        <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
+        <servlet.api.version>3.1.0</servlet.api.version>
 
-        <api_package>javax.websocket</api_package>
+        <api_package>jakarta.websocket</api_package>
         <impl_namespace>org.glassfish</impl_namespace>
         <spec_version>0.0</spec_version>
         <new_spec_version>1.0</new_spec_version>
@@ -130,11 +134,6 @@
         <impljar.impl.version>${new_spec_version}-b${build_number}</impljar.impl.version>
 
         <netbeans.hint.license>gf-cddl-gpl</netbeans.hint.license>
-
-        <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
-        <jaxb.api.version>2.3.2</jaxb.api.version>
-        <jaxb.ri.version>2.3.2</jaxb.ri.version>
-        <javax.annotation.version>1.3.5</javax.annotation.version>
     </properties>
 
     <modules>
@@ -470,13 +469,13 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>javax.websocket</groupId>
-                <artifactId>javax.websocket-api</artifactId>
+                <groupId>jakarta.websocket</groupId>
+                <artifactId>jakarta.websocket-api</artifactId>
                 <version>${websocket-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.websocket</groupId>
-                <artifactId>javax.websocket-client-api</artifactId>
+                <groupId>jakarta.websocket</groupId>
+                <artifactId>jakarta.websocket-client-api</artifactId>
                 <version>${websocket-api.version}</version>
             </dependency>
             <dependency>
@@ -487,7 +486,7 @@
             <dependency>
                 <groupId>javax.ejb</groupId>
                 <artifactId>javax.ejb-api</artifactId>
-                <version>${javax.ejb-api.version}</version>
+                <version>${ejb-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.enterprise</groupId>
@@ -628,7 +627,7 @@
             <dependency>
                 <groupId>jakarta.annotation</groupId>
                 <artifactId>jakarta.annotation-api</artifactId>
-                <version>${javax.annotation.version}</version>
+                <version>${annotation-api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

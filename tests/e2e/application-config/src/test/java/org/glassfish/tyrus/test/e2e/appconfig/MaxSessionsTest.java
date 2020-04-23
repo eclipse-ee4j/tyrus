@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -22,18 +22,18 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.CloseReason;
-import javax.websocket.DeploymentException;
-import javax.websocket.Endpoint;
-import javax.websocket.EndpointConfig;
-import javax.websocket.MessageHandler;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
+import jakarta.websocket.server.ServerEndpointConfig;
 
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.core.MaxSessions;
@@ -49,10 +49,10 @@ import static org.junit.Assert.*;
 /**
  * Tests the implementation of a sessions limiter for both programmatic and annotated endpoint.
  * <p/>
- * Tests number of both {@link javax.websocket.CloseReason.CloseCodes#NORMAL_CLOSURE} and {@link
- * javax.websocket.CloseReason.CloseCodes#TRY_AGAIN_LATER} close codes on client-side and the fact that onOpen and
+ * Tests number of both {@link jakarta.websocket.CloseReason.CloseCodes#NORMAL_CLOSURE} and {@link
+ * jakarta.websocket.CloseReason.CloseCodes#TRY_AGAIN_LATER} close codes on client-side and the fact that onOpen and
  * onClose method on server-side are not called when the client is refused with {@link
- * javax.websocket.CloseReason.CloseCodes#TRY_AGAIN_LATER}.
+ * jakarta.websocket.CloseReason.CloseCodes#TRY_AGAIN_LATER}.
  *
  * @author Ondrej Kosatka (ondrej.kosatka at oracle.com)
  */

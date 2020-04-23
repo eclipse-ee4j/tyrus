@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -31,9 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.websocket.Decoder;
-import javax.websocket.MessageHandler;
-import javax.websocket.PongMessage;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.PongMessage;
 
 import org.glassfish.tyrus.core.coder.CoderWrapper;
 import org.glassfish.tyrus.core.l10n.LocalizationMessages;
@@ -44,7 +44,7 @@ import org.glassfish.tyrus.core.l10n.LocalizationMessages;
  * @author Stepan Kopriva (stepan.kopriva at oracle.com)
  * @author Pavel Bucek (pavel.bucek at oracle.com)
  * @see MessageHandler
- * @see javax.websocket.OnMessage
+ * @see jakarta.websocket.OnMessage
  */
 public class MessageHandlerManager {
 

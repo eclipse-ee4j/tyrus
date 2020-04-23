@@ -23,13 +23,13 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Future;
 
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.DeploymentException;
-import javax.websocket.Endpoint;
-import javax.websocket.Extension;
-import javax.websocket.Session;
-import javax.websocket.server.ServerApplicationConfig;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.Extension;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerApplicationConfig;
+import jakarta.websocket.server.ServerEndpointConfig;
 
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.core.BaseContainer;
@@ -65,7 +65,7 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
      * Create new {@link TyrusServerContainer}.
      *
      * @param classes classes to be included in this application instance. Can contain any combination of annotated
-     *                endpoints (see {@link javax.websocket.server.ServerEndpoint}) or {@link javax.websocket.Endpoint}
+     *                endpoints (see {@link jakarta.websocket.server.ServerEndpoint}) or {@link jakarta.websocket.Endpoint}
      *                descendants.
      */
     public TyrusServerContainer(Set<Class<?>> classes) {
@@ -225,7 +225,7 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
     }
 
     /**
-     * Non-blocking version of {@link javax.websocket.WebSocketContainer#connectToServer(Class, java.net.URI)}.
+     * Non-blocking version of {@link jakarta.websocket.WebSocketContainer#connectToServer(Class, java.net.URI)}.
      * <p>
      * Only simple checks are performed in the main thread; client container is created in different thread, same
      * applies to connecting etc.
@@ -240,8 +240,8 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
     }
 
     /**
-     * Non-blocking version of {@link javax.websocket.WebSocketContainer#connectToServer(Class,
-     * javax.websocket.ClientEndpointConfig, java.net.URI)}.
+     * Non-blocking version of {@link jakarta.websocket.WebSocketContainer#connectToServer(Class,
+     * jakarta.websocket.ClientEndpointConfig, java.net.URI)}.
      * <p>
      * Only simple checks are performed in the main thread; client container is created in different thread, same
      * applies to connecting etc.
@@ -251,7 +251,7 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
      * @param cec           the configuration used to configure the programmatic endpoint.
      * @return the Session created if the connection is successful.
      * @throws DeploymentException if the configuration is not valid
-     * @see javax.websocket.WebSocketContainer#connectToServer(Class, javax.websocket.ClientEndpointConfig,
+     * @see jakarta.websocket.WebSocketContainer#connectToServer(Class, jakarta.websocket.ClientEndpointConfig,
      * java.net.URI)
      */
     public Future<Session> asyncConnectToServer(Class<? extends Endpoint> endpointClass, ClientEndpointConfig cec,
@@ -260,8 +260,8 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
     }
 
     /**
-     * Non-blocking version of {@link javax.websocket.WebSocketContainer#connectToServer(javax.websocket.Endpoint,
-     * javax.websocket.ClientEndpointConfig, java.net.URI)}.
+     * Non-blocking version of {@link jakarta.websocket.WebSocketContainer#connectToServer(jakarta.websocket.Endpoint,
+     * jakarta.websocket.ClientEndpointConfig, java.net.URI)}.
      * <p>
      * Only simple checks are performed in the main thread; client container is created in different thread, same
      * applies to connecting etc.
@@ -271,8 +271,8 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
      * @param cec              the configuration used to configure the programmatic endpoint.
      * @return the Session created if the connection is successful.
      * @throws DeploymentException if the configuration is not valid
-     * @see javax.websocket.WebSocketContainer#connectToServer(javax.websocket.Endpoint,
-     * javax.websocket.ClientEndpointConfig, java.net.URI)
+     * @see jakarta.websocket.WebSocketContainer#connectToServer(jakarta.websocket.Endpoint,
+     * jakarta.websocket.ClientEndpointConfig, java.net.URI)
      */
     public Future<Session> asyncConnectToServer(Endpoint endpointInstance, ClientEndpointConfig cec, URI path) throws
             DeploymentException {
@@ -280,7 +280,7 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
     }
 
     /**
-     * Non-blocking version of {@link javax.websocket.WebSocketContainer#connectToServer(Object, java.net.URI)}.
+     * Non-blocking version of {@link jakarta.websocket.WebSocketContainer#connectToServer(Object, java.net.URI)}.
      * <p>
      * Only simple checks are performed in the main thread; client container is created in different thread, same
      * applies to connecting etc.
@@ -289,7 +289,7 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
      * @param path the complete path to the server endpoint.
      * @return the Session created if the connection is successful.
      * @throws DeploymentException if the annotated endpoint instance is not valid.
-     * @see javax.websocket.WebSocketContainer#connectToServer(Object, java.net.URI)
+     * @see jakarta.websocket.WebSocketContainer#connectToServer(Object, java.net.URI)
      */
     public Future<Session> asyncConnectToServer(Object obj, URI path) throws DeploymentException {
         return getClientManager().asyncConnectToServer(obj, path);
@@ -341,7 +341,7 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
     }
 
     /**
-     * Container is no longer required to accept {@link #addEndpoint(javax.websocket.server.ServerEndpointConfig)} and
+     * Container is no longer required to accept {@link #addEndpoint(jakarta.websocket.server.ServerEndpointConfig)} and
      * {@link #addEndpoint(Class)} calls.
      */
     public void doneDeployment() {

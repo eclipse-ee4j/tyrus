@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,13 +23,13 @@ import java.util.TimerTask;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import javax.websocket.ClientEndpointConfig;
-import javax.websocket.DeploymentException;
-import javax.websocket.Endpoint;
-import javax.websocket.EndpointConfig;
-import javax.websocket.MessageHandler;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.ClientEndpointConfig;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
 
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.server.Server;
@@ -72,12 +72,12 @@ public class SessionIdleTimeoutTest extends TestContainer {
                 }
 
                 @Override
-                public void onClose(javax.websocket.Session session, javax.websocket.CloseReason closeReason) {
+                public void onClose(jakarta.websocket.Session session, jakarta.websocket.CloseReason closeReason) {
 
                 }
 
                 @Override
-                public void onError(javax.websocket.Session session, Throwable thr) {
+                public void onError(jakarta.websocket.Session session, Throwable thr) {
                     thr.printStackTrace();
                 }
             }, cec, getURI(IdleTimeoutReceivingEndpoint.class.getAnnotation(ServerEndpoint.class).value()));
@@ -105,7 +105,7 @@ public class SessionIdleTimeoutTest extends TestContainer {
                 }
 
                 @Override
-                public void onError(javax.websocket.Session session, Throwable thr) {
+                public void onError(jakarta.websocket.Session session, Throwable thr) {
                     thr.printStackTrace();
                 }
 
@@ -150,12 +150,12 @@ public class SessionIdleTimeoutTest extends TestContainer {
                 }
 
                 @Override
-                public void onClose(javax.websocket.Session session, javax.websocket.CloseReason closeReason) {
+                public void onClose(jakarta.websocket.Session session, jakarta.websocket.CloseReason closeReason) {
                     timer.cancel();
                 }
 
                 @Override
-                public void onError(javax.websocket.Session session, Throwable thr) {
+                public void onError(jakarta.websocket.Session session, Throwable thr) {
                     thr.printStackTrace();
                 }
             }, cec, getURI(IdleTimeoutReceivingEndpoint.class.getAnnotation(ServerEndpoint.class).value()));
@@ -184,7 +184,7 @@ public class SessionIdleTimeoutTest extends TestContainer {
                 }
 
                 @Override
-                public void onError(javax.websocket.Session session, Throwable thr) {
+                public void onError(jakarta.websocket.Session session, Throwable thr) {
                     thr.printStackTrace();
                 }
 
@@ -230,12 +230,12 @@ public class SessionIdleTimeoutTest extends TestContainer {
                 }
 
                 @Override
-                public void onClose(javax.websocket.Session session, javax.websocket.CloseReason closeReason) {
+                public void onClose(jakarta.websocket.Session session, jakarta.websocket.CloseReason closeReason) {
                     timer.cancel();
                 }
 
                 @Override
-                public void onError(javax.websocket.Session session, Throwable thr) {
+                public void onError(jakarta.websocket.Session session, Throwable thr) {
                     thr.printStackTrace();
                 }
             }, cec, getURI(IdleTimeoutReceivingEndpoint.class.getAnnotation(ServerEndpoint.class).value()));
@@ -264,7 +264,7 @@ public class SessionIdleTimeoutTest extends TestContainer {
                 }
 
                 @Override
-                public void onError(javax.websocket.Session session, Throwable thr) {
+                public void onError(jakarta.websocket.Session session, Throwable thr) {
                     thr.printStackTrace();
                 }
 
@@ -304,12 +304,12 @@ public class SessionIdleTimeoutTest extends TestContainer {
                 }
 
                 @Override
-                public void onClose(javax.websocket.Session session, javax.websocket.CloseReason closeReason) {
+                public void onClose(jakarta.websocket.Session session, jakarta.websocket.CloseReason closeReason) {
 
                 }
 
                 @Override
-                public void onError(javax.websocket.Session session, Throwable thr) {
+                public void onError(jakarta.websocket.Session session, Throwable thr) {
                     thr.printStackTrace();
                 }
             }, cec, getURI(IdleTimeoutSendingEndpoint.class.getAnnotation(ServerEndpoint.class).value()));
@@ -338,7 +338,7 @@ public class SessionIdleTimeoutTest extends TestContainer {
                 }
 
                 @Override
-                public void onError(javax.websocket.Session session, Throwable thr) {
+                public void onError(jakarta.websocket.Session session, Throwable thr) {
                     thr.printStackTrace();
                 }
 
@@ -378,12 +378,12 @@ public class SessionIdleTimeoutTest extends TestContainer {
                 }
 
                 @Override
-                public void onClose(javax.websocket.Session session, javax.websocket.CloseReason closeReason) {
+                public void onClose(jakarta.websocket.Session session, jakarta.websocket.CloseReason closeReason) {
 
                 }
 
                 @Override
-                public void onError(javax.websocket.Session session, Throwable thr) {
+                public void onError(jakarta.websocket.Session session, Throwable thr) {
                     thr.printStackTrace();
                 }
             }, cec, getURI(IdleTimeoutSendingPingEndpoint.class.getAnnotation(ServerEndpoint.class).value()));
@@ -412,7 +412,7 @@ public class SessionIdleTimeoutTest extends TestContainer {
                 }
 
                 @Override
-                public void onError(javax.websocket.Session session, Throwable thr) {
+                public void onError(jakarta.websocket.Session session, Throwable thr) {
                     thr.printStackTrace();
                 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -37,14 +37,14 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.websocket.CloseReason;
-import javax.websocket.DecodeException;
-import javax.websocket.Decoder;
-import javax.websocket.Extension;
-import javax.websocket.MessageHandler;
-import javax.websocket.PongMessage;
-import javax.websocket.Session;
-import javax.websocket.WebSocketContainer;
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.DecodeException;
+import jakarta.websocket.Decoder;
+import jakarta.websocket.Extension;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.PongMessage;
+import jakarta.websocket.Session;
+import jakarta.websocket.WebSocketContainer;
 
 import org.glassfish.tyrus.core.cluster.ClusterContext;
 import org.glassfish.tyrus.core.cluster.DistributedSession;
@@ -179,13 +179,13 @@ public class TyrusSession implements Session, DistributedSession {
     }
 
     @Override
-    public javax.websocket.RemoteEndpoint.Async getAsyncRemote() {
+    public jakarta.websocket.RemoteEndpoint.Async getAsyncRemote() {
         checkConnectionState(State.CLOSED);
         return asyncRemote;
     }
 
     @Override
-    public javax.websocket.RemoteEndpoint.Basic getBasicRemote() {
+    public jakarta.websocket.RemoteEndpoint.Basic getBasicRemote() {
         checkConnectionState(State.CLOSED);
         return basicRemote;
     }
@@ -309,8 +309,8 @@ public class TyrusSession implements Session, DistributedSession {
     /**
      * {@inheritDoc}
      *
-     * @deprecated please use {@link #addMessageHandler(Class, javax.websocket.MessageHandler.Whole)} or {@link
-     * #addMessageHandler(Class, javax.websocket.MessageHandler.Partial)}
+     * @deprecated please use {@link #addMessageHandler(Class, jakarta.websocket.MessageHandler.Whole)} or {@link
+     * #addMessageHandler(Class, jakarta.websocket.MessageHandler.Partial)}
      */
     @Override
     public void addMessageHandler(MessageHandler handler) {
@@ -329,7 +329,7 @@ public class TyrusSession implements Session, DistributedSession {
      * message types please see {@link MessageHandler.Whole} and {@link MessageHandler.Partial}.
      * Adding more than one of any one type will result in a runtime exception.
      * <p>
-     * See {@link javax.websocket.Endpoint} for a usage example.
+     * See {@link jakarta.websocket.Endpoint} for a usage example.
      *
      * @param clazz   type of the message processed by message handler to be registered.
      * @param handler the MessageHandler to be added.
@@ -353,7 +353,7 @@ public class TyrusSession implements Session, DistributedSession {
      * message types please see {@link MessageHandler.Whole} and {@link MessageHandler.Partial}.
      * Adding more than one of any one type will result in a runtime exception.
      * <p>
-     * See {@link javax.websocket.Endpoint} for a usage example.
+     * See {@link jakarta.websocket.Endpoint} for a usage example.
      *
      * @param clazz   type of the message processed by message handler to be registered.
      * @param handler the MessageHandler to be added.

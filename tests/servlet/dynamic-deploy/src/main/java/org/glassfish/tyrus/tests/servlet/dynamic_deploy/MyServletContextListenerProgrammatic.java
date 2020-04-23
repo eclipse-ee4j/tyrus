@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -18,20 +18,20 @@ package org.glassfish.tyrus.tests.servlet.dynamic_deploy;
 
 import java.io.IOException;
 
-import javax.websocket.DeploymentException;
-import javax.websocket.Endpoint;
-import javax.websocket.EndpointConfig;
-import javax.websocket.MessageHandler;
-import javax.websocket.Session;
-import javax.websocket.server.ServerContainer;
-import javax.websocket.server.ServerEndpointConfig;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerEndpointConfig;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 /**
- * Calls {@link javax.websocket.server.ServerContainer#addEndpoint(javax.websocket.server.ServerEndpointConfig)}.
+ * Calls {@link jakarta.websocket.server.ServerContainer#addEndpoint(jakarta.websocket.server.ServerEndpointConfig)}.
  *
  * @author Pavel Bucek (pavel.bucek at oracle.com)
  */
@@ -41,7 +41,7 @@ public class MyServletContextListenerProgrammatic extends Endpoint implements Se
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         final ServerContainer serverContainer =
-                (ServerContainer) sce.getServletContext().getAttribute("javax.websocket.server.ServerContainer");
+                (ServerContainer) sce.getServletContext().getAttribute("jakarta.websocket.server.ServerContainer");
 
         try {
             // this is the important call
