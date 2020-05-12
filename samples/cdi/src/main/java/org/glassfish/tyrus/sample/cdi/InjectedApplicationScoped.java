@@ -10,7 +10,7 @@
 
 package org.glassfish.tyrus.sample.cdi;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  * @author Stepan Kopriva (stepan.kopriva at oracle.com)

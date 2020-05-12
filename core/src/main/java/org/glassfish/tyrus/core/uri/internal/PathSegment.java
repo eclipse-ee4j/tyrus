@@ -18,9 +18,9 @@ package org.glassfish.tyrus.core.uri.internal;
 
 /**
  * Represents a URI path segment and any associated matrix parameters. When an
- * instance of this type is injected with {@code javax.ws.rs.PathParam}, the
+ * instance of this type is injected with {@code jakarta.ws.rs.PathParam}, the
  * value of the annotation identifies which path segment is selected and the
- * presence of an {@code javax.ws.rs.Encoded} annotation will result in an
+ * presence of an {@code jakarta.ws.rs.Encoded} annotation will result in an
  * instance that supplies the path and matrix parameter values in
  * URI encoded form.
  *

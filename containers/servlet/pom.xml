@@ -54,7 +54,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Import-Package>javax.servlet.*;version="[3.1,5)",*</Import-Package>
+                        <Import-Package>jakarta.servlet.*;version="[5.0,6)",*</Import-Package>
                         <Export-Package>org.glassfish.tyrus.servlet.*;version=${project.version}</Export-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
@@ -70,10 +70,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
             <scope>provided</scope>
-            <version>${servlet.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.tyrus</groupId>

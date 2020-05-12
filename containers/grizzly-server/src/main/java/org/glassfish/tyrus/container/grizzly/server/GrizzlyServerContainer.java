@@ -25,8 +25,8 @@ import java.util.Set;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.server.ServerEndpointConfig;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 import org.glassfish.tyrus.core.DebugContext;
 import org.glassfish.tyrus.core.TyrusWebSocketEngine;

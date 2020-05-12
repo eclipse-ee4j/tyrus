@@ -41,8 +41,8 @@
 
         <para>
             <emphasis>Server endpoint classes</emphasis>
-            are POJOs (Plain Old Java Objects) that are annotated with <code>javax.websocket.server.ServerEndpoint</code>.
-            Similarly, <emphasis>client endpoint classes</emphasis> are POJOs annotated with javax.websocket.ClientEndpoint.
+            are POJOs (Plain Old Java Objects) that are annotated with <code>jakarta.websocket.server.ServerEndpoint</code>.
+            Similarly, <emphasis>client endpoint classes</emphasis> are POJOs annotated with jakarta.websocket.ClientEndpoint.
             This section shows how to use Tyrus to annotate Java objects to create WebSocket web services.
         </para>
 
@@ -80,13 +80,13 @@ public class EchoEndpoint {
         </para>
 
         <section>
-            <title>javax.websocket.server.ServerEndpoint</title>
-            <para>javax.websocket.server.ServerEndpoint has got one mandatory field - <emphasis>value</emphasis> and four optional fields.
+            <title>jakarta.websocket.server.ServerEndpoint</title>
+            <para>jakarta.websocket.server.ServerEndpoint has got one mandatory field - <emphasis>value</emphasis> and four optional fields.
                 See the example below.</para>
 
             <para>
                 <example xml:id="endpoints-serverendpoint-annotation">
-                    <title>javax.websocket.server.ServerEndpoint with all fields specified</title>
+                    <title>jakarta.websocket.server.ServerEndpoint with all fields specified</title>
 <programlisting language="java" linenumbering="numbered">@ServerEndpoint(
     value = "/sample",
     decoders = ChatDecoder.class,
@@ -108,7 +108,7 @@ public class SampleEndpoint {
                 <title>value</title>
                 <para>
                  Denotes a relative URI path at which the server endpoint will be deployed. In the example
-                    <link linkend="endpoints-serverendpoint-annotation">"javax.websocket.server.ServerEndpoint with all fields specified"</link>, the
+                    <link linkend="endpoints-serverendpoint-annotation">"jakarta.websocket.server.ServerEndpoint with all fields specified"</link>, the
                     Java class will be hosted at the URI path
                     <literal>/sample</literal>. The field <emphasis>value</emphasis> must begin with a '/' and may or may
                     not end in a '/', it makes no difference. Thus request URLs that end or do not end in a '/' will both
@@ -129,7 +129,7 @@ public class SampleEndpoint {
                     <literal>http://example.com/users/Galileo</literal>
                 </para>
 
-                <para>To obtain the value of the username variable the <code>javax.websocket.server.PathParam</code> may be used on method parameter
+                <para>To obtain the value of the username variable the <code>jakarta.websocket.server.PathParam</code> may be used on method parameter
                     of methods annotated with one of @OnOpen, @OnMessage, @OnError, @OnClose.
                     <example>
                         <title>Specifying URI path parameter</title>
@@ -296,7 +296,7 @@ public class UserEndpoint {
         </section>
 
         <section>
-            <title>javax.websocket.ClientEndpoint</title>
+            <title>jakarta.websocket.ClientEndpoint</title>
 
             <para>The @ClientEndpoint class-level annotation is used to turn a POJO into WebSocket client endpoint.
                 In the following sample the client sends text message "Hello!" and prints out each received message.
@@ -480,9 +480,9 @@ public class EchoEndpoint {
     <section>
         <title>MessageHandlers</title>
         <para>
-            Implementing the <code>javax.websocket.MessageHandler</code> interface is one of the ways how to receive messages
+            Implementing the <code>jakarta.websocket.MessageHandler</code> interface is one of the ways how to receive messages
             on endpoints (both server and client). It is aimed primarily on programmatic endpoints, as the annotated ones
-            use the method level annotation <code>javax.websocket.OnMessage</code> to denote the method which
+            use the method level annotation <code>jakarta.websocket.OnMessage</code> to denote the method which
             receives messages.
         </para>
         <para>
@@ -507,8 +507,8 @@ public class EchoEndpoint {
             There are two orthogonal criterions which classify MessageHandlers.
             According the &wsp; the message may be sent either complete, or in chunks. In &ja4w; this fact is reflected
             by the interface which the handler implements. Whole messages are processed by handler which implements
-            <code>javax.websocket.MessageHandler.Whole</code> interface. Partial
-            messages are processed by handlers that implement <code>javax.websocket.MessageHandler.Partial</code>
+            <code>jakarta.websocket.MessageHandler.Whole</code> interface. Partial
+            messages are processed by handlers that implement <code>jakarta.websocket.MessageHandler.Partial</code>
             interface. However, if user registers just the whole message handler, it doesn't mean that the handler will
             process solely whole messages. If partial message is received, the parts are cached by Tyrus until the final
             part is received. Then the whole message is passed to the handler. Similarly, if the user registers just the
@@ -532,8 +532,8 @@ public class EchoEndpoint {
                 </listitem>
                 <listitem>
                     <para>
-                        any developer object for which there is a corresponding <emphasis>javax.websocket.Decoder.Text</emphasis>
-                      or <emphasis>javax.websocket.Decoder.TextStream</emphasis>.
+                        any developer object for which there is a corresponding <emphasis>jakarta.websocket.Decoder.Text</emphasis>
+                      or <emphasis>jakarta.websocket.Decoder.TextStream</emphasis>.
                     </para>
                 </listitem>
             </itemizedlist>
@@ -552,8 +552,8 @@ public class EchoEndpoint {
                 </listitem>
                 <listitem>
                     <para>
-                        any developer object for which there is a corresponding <emphasis>javax.websocket.Decoder.Binary</emphasis>
-                        or <emphasis>javax.websocket.Decoder.BinaryStream</emphasis>.
+                        any developer object for which there is a corresponding <emphasis>jakarta.websocket.Decoder.Binary</emphasis>
+                        or <emphasis>jakarta.websocket.Decoder.BinaryStream</emphasis>.
                     </para>
                 </listitem>
             </itemizedlist>

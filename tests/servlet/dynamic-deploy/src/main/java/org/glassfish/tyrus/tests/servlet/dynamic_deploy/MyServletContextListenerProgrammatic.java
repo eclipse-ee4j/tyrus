@@ -26,9 +26,9 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerContainer;
 import jakarta.websocket.server.ServerEndpointConfig;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
 
 /**
  * Calls {@link jakarta.websocket.server.ServerContainer#addEndpoint(jakarta.websocket.server.ServerEndpointConfig)}.

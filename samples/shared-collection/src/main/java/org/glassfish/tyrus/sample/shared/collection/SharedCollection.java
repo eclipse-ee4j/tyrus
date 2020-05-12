@@ -13,7 +13,7 @@ package org.glassfish.tyrus.sample.shared.collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.json.JsonObject;
+import jakarta.json.JsonObject;
 
 /**
  * @author Pavel Bucek (pavel.bucek at oracle.com)

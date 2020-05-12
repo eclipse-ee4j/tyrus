@@ -14,8 +14,8 @@ import jakarta.websocket.CloseReason;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.Session;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
+import jakarta.ejb.Local;
+import jakarta.ejb.Remote;
 
 /**
  * Remote intefrace used with programmatic endpoints MUST declare all methods

@@ -20,8 +20,8 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import jakarta.ejb.EJB;
+import jakarta.ejb.Stateless;
 
 /**
  * @author Petr Janouch

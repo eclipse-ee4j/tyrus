@@ -15,9 +15,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.server.ServerEndpoint;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
-import javax.interceptor.Interceptors;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.Singleton;
+import jakarta.interceptor.Interceptors;
 
 
 /**

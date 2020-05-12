@@ -23,7 +23,7 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerApplicationConfig;
 import jakarta.websocket.server.ServerEndpointConfig;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 
 /**
  * @author Pavel Bucek (pavel.bucek at oracle.com)

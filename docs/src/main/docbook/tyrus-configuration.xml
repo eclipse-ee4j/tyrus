@@ -326,7 +326,7 @@ client.getProperties().put(ClientProperties.MASKING_KEY_GENERATOR, new MaskingKe
             unanswered ping messages.</para>
 
         <para>ExtendedExtension representation needs to be able to handle extension parameter negotiation and actual processing
-        of incoming and outgoing frames. It also should be compatible with existing javax.websocket.Extension class, since we
+        of incoming and outgoing frames. It also should be compatible with existing jakarta.websocket.Extension class, since we
         want to re-use existing registration API and be able to return new extension instance included in response
         from List&lt;Extension&gt; Session.getNegotiatedExtensions() call. Consider following:</para>
 
@@ -357,7 +357,7 @@ client.getProperties().put(ClientProperties.MASKING_KEY_GENERATOR, new MaskingKe
             assume current direction from frame instance or somehow from ExtensionContext, which is generally not a bad
             idea, but it resulted it slightly less readable code.</para>
 
-        <para>ExtensionContext and related lifecycle method is there because original javax.websocket.Extension is singleton
+        <para>ExtensionContext and related lifecycle method is there because original jakarta.websocket.Extension is singleton
         and ExtendedExtension must obey this fact. But it does not meet some requirements we stated previously, like per
         connection parameter negotiation and of course processing itself will most likely have some connection state.
         Lifecycle of ExtensionContext is defined as follows: ExtensionContext instance is created right before onExtensionNegotiation
@@ -1089,9 +1089,9 @@ serverProperties.put(ApplicationEventListener.APPLICATION_EVENT_LISTENER, new Se
             <para>
                 Set maximum number of sessions in annotated endpoint:
                 <programlisting language="java" linenumbering="numbered"><![CDATA[
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
 
 import org.glassfish.tyrus.core.MaxSessions;
 

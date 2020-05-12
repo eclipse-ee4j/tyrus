@@ -13,8 +13,8 @@ package org.glassfish.tyrus.sample.cdi;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.server.ServerEndpoint;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.Stateful;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.Stateful;
 
 /**
  * @author Stepan Kopriva (stepan.kopriva at oracle.com)

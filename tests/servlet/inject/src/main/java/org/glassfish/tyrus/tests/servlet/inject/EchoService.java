@@ -16,7 +16,7 @@
 
 package org.glassfish.tyrus.tests.servlet.inject;
 
-import javax.ejb.Remote;
+import jakarta.ejb.Remote;
 
 /**
  * @author Petr Janouch

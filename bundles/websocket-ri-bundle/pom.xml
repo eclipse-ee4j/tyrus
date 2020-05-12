@@ -31,22 +31,19 @@
 
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
             <scope>provided</scope>
-            <version>${servlet.api.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
-            <scope>provided</scope>
-            <version>${cdi-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>javax.ejb</groupId>
-            <artifactId>javax.ejb-api</artifactId>
-            <version>${ejb-api.version}</version>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.ejb</groupId>
+            <artifactId>jakarta.ejb-api</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.grizzly</groupId>
@@ -225,7 +222,7 @@
                             org.glassfish.tyrus.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            javax.servlet.*;version="${servlet.api.version}",
+                            jakarta.servlet.*;version="${servlet.api.version}",
                             org.glassfish.grizzly.http.server.*;version=${grizzly.version}
                             org.glassfish.grizzly.*;version=${grizzly.version},
                             *
