@@ -10,8 +10,8 @@
 
 package org.glassfish.tyrus.sample.cdi;
 
-import javax.ejb.Local;
-import javax.ejb.Remote;
+import jakarta.ejb.Local;
+import jakarta.ejb.Remote;
 
 /**
  * @author Pavel Bucek (pavel.bucek at oracle.com)

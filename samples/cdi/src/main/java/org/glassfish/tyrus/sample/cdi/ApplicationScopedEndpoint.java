@@ -13,7 +13,7 @@ package org.glassfish.tyrus.sample.cdi;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.server.ServerEndpoint;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * @author Stepan Kopriva (stepan.kopriva at oracle.com)

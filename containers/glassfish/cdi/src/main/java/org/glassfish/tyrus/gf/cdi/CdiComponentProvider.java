@@ -21,10 +21,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.context.spi.CreationalContext;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.InjectionTarget;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -73,9 +73,9 @@ public class CdiComponentProvider extends ComponentProvider {
 
         for (Annotation annotation : annotations) {
             String annotationClassName = annotation.annotationType().getCanonicalName();
-            if (annotationClassName.equals("javax.ejb.Singleton")
-                    || annotationClassName.equals("javax.ejb.Stateful")
-                    || annotationClassName.equals("javax.ejb.Stateless")) {
+            if (annotationClassName.equals("jakarta.ejb.Singleton")
+                    || annotationClassName.equals("jakarta.ejb.Stateful")
+                    || annotationClassName.equals("jakarta.ejb.Stateless")) {
                 return false;
             }
         }

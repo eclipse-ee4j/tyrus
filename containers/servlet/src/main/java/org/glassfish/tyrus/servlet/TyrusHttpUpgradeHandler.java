@@ -24,11 +24,11 @@ import java.util.logging.Logger;
 
 import jakarta.websocket.CloseReason;
 
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpUpgradeHandler;
-import javax.servlet.http.WebConnection;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.WebConnection;
 
 import org.glassfish.tyrus.core.CloseReasons;
 import org.glassfish.tyrus.spi.Connection;
@@ -223,7 +223,7 @@ public class TyrusHttpUpgradeHandler implements HttpUpgradeHandler, ReadListener
     }
 
     /**
-     * Called when related {@link javax.servlet.http.HttpSession} is destroyed or invalidated.
+     * Called when related {@link jakarta.servlet.http.HttpSession} is destroyed or invalidated.
      * <p>
      * Implementation is required to call onClose() on server-side with corresponding close code (1008, see
      * WebSocket spec 7.2) - only when there is an authorized user for this session.

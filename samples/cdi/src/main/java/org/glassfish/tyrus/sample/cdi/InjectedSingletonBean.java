@@ -10,8 +10,8 @@
 
 package org.glassfish.tyrus.sample.cdi;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
+import jakarta.annotation.PostConstruct;
+import jakarta.ejb.Singleton;
 
 /**
  * @author Stepan Kopriva (stepan.kopriva at oracle.com)

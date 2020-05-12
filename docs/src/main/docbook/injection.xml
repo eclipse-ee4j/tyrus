@@ -29,19 +29,19 @@
          xml:id="injection">
     <title>Injection Support</title>
     <para>
-        As required in &ja4w;, Tyrus supports full field, method and constructor injection using <code>javax.inject.Inject</code>
+        As required in &ja4w;, Tyrus supports full field, method and constructor injection using <code>jakarta.inject.Inject</code>
         into all websocket endpoint classes as well as the use of the interceptors on these classes.
-        Except this,  Tyrus also supports some of the EJB annotations. Currently <code>javax.ejb.Stateful</code>,
-        <code>javax.ejb.Singleton</code> and <code>javax.ejb.Stateless</code> annotations are supported.
+        Except this,  Tyrus also supports some of the EJB annotations. Currently <code>jakarta.ejb.Stateful</code>,
+        <code>jakarta.ejb.Singleton</code> and <code>jakarta.ejb.Stateless</code> annotations are supported.
     </para>
     <section>
-        <title><code>javax.inject.Inject</code> sample</title>
+        <title><code>jakarta.inject.Inject</code> sample</title>
         <para>
-            The following example presents how to inject a bean to the <code>javax.websocket.server.ServerEndpoint</code>
-            annotated class using <code>javax.inject.Inject</code>. Class <code>InjectedSimpleBean</code> gets injected
+            The following example presents how to inject a bean to the <code>jakarta.websocket.server.ServerEndpoint</code>
+            annotated class using <code>jakarta.inject.Inject</code>. Class <code>InjectedSimpleBean</code> gets injected
             into class <code>SimpleEndpoint</code> on line 15.
             <example xml:id="cdi-simple-bean">
-                <title>Injecting bean into <code>javax.websocket.server.ServerEndpoint</code></title>
+                <title>Injecting bean into <code>jakarta.websocket.server.ServerEndpoint</code></title>
 <programlisting language="java" linenumbering="numbered">public class InjectedSimpleBean {
 
     private static final String TEXT = " (from your server)";
@@ -70,8 +70,8 @@ public class SimpleEndpoint {
     <section>
         <title>EJB sample</title>
     <para>
-            The following sample presents how to turn <code>javax.websocket.server.ServerEndpoint</code> annotated class
-            into <code>javax.ejb.Singleton</code> and use interceptor on it.
+            The following sample presents how to turn <code>jakarta.websocket.server.ServerEndpoint</code> annotated class
+            into <code>jakarta.ejb.Singleton</code> and use interceptor on it.
             <example xml:id="cdi-singleton-bean">
                 <title>Echo sample server endpoint.</title>
 <programlisting language="java" linenumbering="numbered">@ServerEndpoint(value = "/singleton")

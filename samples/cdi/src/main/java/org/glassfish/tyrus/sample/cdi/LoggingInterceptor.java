@@ -12,8 +12,8 @@ package org.glassfish.tyrus.sample.cdi;
 
 import java.util.logging.Logger;
 
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
+import jakarta.interceptor.AroundInvoke;
+import jakarta.interceptor.InvocationContext;
 
 /**
  * Registered only for {@link SingletonEndpoint}.

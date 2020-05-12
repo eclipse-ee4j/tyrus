@@ -16,7 +16,7 @@
 
 package org.glassfish.tyrus.tests.servlet.inject;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 
 /**
  * @author Petr Janouch

@@ -29,18 +29,18 @@
          xml:id="configurations">
     <title>Configurations</title>
     <para>
-        <code>javax.websocket.server.ServerEndpointConfig</code> and <code>javax.websocket.ClientEndpointConfig</code> objects
+        <code>jakarta.websocket.server.ServerEndpointConfig</code> and <code>jakarta.websocket.ClientEndpointConfig</code> objects
         are used to provide the user the ability to configure websocket endpoints. Both server and client endpoints have some
         part of configuration in common, namely encoders, decoders, and user properties. The user properties may developers
         use to store the application specific data. For the developer's convenience the builders are provided for both
         ServerEndpointConfig and ClientEndpointConfig.
     </para>
     <section>
-        <title><code>javax.websocket.server.ServerEndpointConfig</code></title>
+        <title><code>jakarta.websocket.server.ServerEndpointConfig</code></title>
         <para>
-            The <code>javax.websocket.server.ServerEndpointConfig</code> is used when deploying the endpoint either via
-            implementing the <code>javax.websocket.server.ServerApplicationConfig</code>, or via registering the programmatic endpoint
-            at the <code>javax.websocket.server.ServerContainer</code> instance. It allows the user to create the configuration
+            The <code>jakarta.websocket.server.ServerEndpointConfig</code> is used when deploying the endpoint either via
+            implementing the <code>jakarta.websocket.server.ServerApplicationConfig</code>, or via registering the programmatic endpoint
+            at the <code>jakarta.websocket.server.ServerContainer</code> instance. It allows the user to create the configuration
             programmatically.
         </para>
         <para>
@@ -107,7 +107,7 @@
 }</programlisting>
         </example>
         <para>
-            To make the development easy the <emphasis>javax.websocket.server.ServerEndpointConfig</emphasis> provides a builder to construct
+            To make the development easy the <emphasis>jakarta.websocket.server.ServerEndpointConfig</emphasis> provides a builder to construct
             the configuration object:
             <example>
                 <title>ServerEndpointConfigu built using Builder</title>
@@ -118,12 +118,12 @@
         </para>
     </section>
     <section>
-        <title><code>javax.websocket.ClientEndpointConfig</code></title>
+        <title><code>jakarta.websocket.ClientEndpointConfig</code></title>
         <para>
-            The <code>javax.websocket.ClientEndpointConfig</code> is used when deploying the programmatic client endpoint
+            The <code>jakarta.websocket.ClientEndpointConfig</code> is used when deploying the programmatic client endpoint
             via registering the programmatic endpoint at the <code>WebSocketContainer</code> instance. Some of
             the configuration methods come from the <code>EndpointConfig</code>class, which is extended by both
-            <code>javax.websocket.server.ServerEndpointConfig</code> and <code>javax.websocket.ClientEndpointConfig</code>. Then there are methods
+            <code>jakarta.websocket.server.ServerEndpointConfig</code> and <code>jakarta.websocket.ClientEndpointConfig</code>. Then there are methods
             for configuring the preferred subprotocols the client endpoint wants to use and supported extensions. It is
             also possible to use the ClientEndpointConfig.Configurator in order to be able to affect the endpoint behaviour
             before and after request.

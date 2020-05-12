@@ -40,8 +40,8 @@
             <para>
                 First, to use the &ja4w; in your project you need to depend on the following artifact:
 <programlisting language="xml" linenumbering="unnumbered">&lt;dependency&gt;
-    &lt;groupId&gt;javax.websocket&lt;/groupId&gt;
-    &lt;artifactId&gt;javax.websocket-api&lt;/artifactId&gt;
+    &lt;groupId&gt;jakarta.websocket&lt;/groupId&gt;
+    &lt;artifactId&gt;jakarta.websocket-api&lt;/artifactId&gt;
     &lt;version&gt;&apiversion;&lt;/version&gt;
 &lt;/dependency&gt;
 </programlisting>
@@ -55,8 +55,8 @@
              <para>
                 In &ja4w; and Tyrus, there are two basic approaches how to create an endpoint - either annotated endpoint,
                 or programmatic endpoint.
-                By annotated endpoint we mean endpoint constructed by using annotations (<code>javax.websocket.server.ServerEndpoint</code>
-                for server endpoint and <code>javax.websocket.ClientEndpoint</code> for client endpoint), like in
+                By annotated endpoint we mean endpoint constructed by using annotations (<code>jakarta.websocket.server.ServerEndpoint</code>
+                for server endpoint and <code>jakarta.websocket.ClientEndpoint</code> for client endpoint), like in
                 <link linkend="websocket-annotated-echo-endpoint">"Annotated Echo Endpoint"</link>.
                 <example xml:id="websocket-annotated-echo-endpoint">
                     <title>Annotated Echo Endpoint</title>
@@ -95,16 +95,16 @@ public class EchoEndpointAnnotated {
                 <para>
                     The example <link linkend="websocket-client-endpoint">"Client Endpoint"</link> utilizes the concept
                     of the programmatic endpoint. By programmatic endpoint we mean endpoint which is created by extending
-                    class <code>javax.websocket.Endpoint</code>.
+                    class <code>jakarta.websocket.Endpoint</code>.
                     The example is standalone java application which needs to depend on some Tyrus artifacts to work
                     correctly, see <link linkend="standalone-mode">"Tyrus Standalone Mode"</link>.
                     In the example first the <code>CountDownLatch</code> is initialized. It is needed as a bocking data
                     structure - on line 31 it either waits for 100 seconds, or until it gets counted down (line 22).
-                    On line 9 the <code>javax.websocket.ClientEndpointConfig</code> is created -  we will need it later
+                    On line 9 the <code>jakarta.websocket.ClientEndpointConfig</code> is created -  we will need it later
                     to connect the endpoint to the server. On line 11 the <code>org.glassfish.tyrus.client.ClientManager</code>
-                    is created. it implements the <code>javax.websocket.WebSocketContainer</code> and is used to connect
+                    is created. it implements the <code>jakarta.websocket.WebSocketContainer</code> and is used to connect
                     to server. This happens on next line. The client endpoint functionality is contained in the <code>
-                    javax.websocket.Endpoint</code> lazy instantiation. In the <code>onOpen</code> method new MessageHandler
+                    jakarta.websocket.Endpoint</code> lazy instantiation. In the <code>onOpen</code> method new MessageHandler
                     is registered (the received message is just printed on the console and the latch is counted down). After
                     the registration the message is sent to the server (line 25).
                     <example xml:id="websocket-client-endpoint">
@@ -174,10 +174,10 @@ public class EchoEndpointAnnotated {
         </para>
         <para>
             The functionality of the <code>EchoEndpointProgrammatic</code> is fairly simple - to send the received message back to the sender.
-            The programmatic server endpoint needs to extend <code>javax.websocket.Endpoint</code> - line 1.
+            The programmatic server endpoint needs to extend <code>jakarta.websocket.Endpoint</code> - line 1.
             Mehod <code>public void onOpen(final Session session, EndpointConfig config)</code> gets called once new
             connection to this endpoin0t is opened. In this method the <code>MessageHandler</code> is registered to the
-            <code>javax.websocket.Session</code> instance, which opened the connection. Method <code>public void
+            <code>jakarta.websocket.Session</code> instance, which opened the connection. Method <code>public void
             onMessage(String message)</code> gets called once the message is received. On line 8 the message
             is sent back to the sender.
         </para>

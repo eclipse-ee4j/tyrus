@@ -233,7 +233,7 @@ public final class RequestContext extends UpgradeRequest {
         /**
          * Set http session.
          *
-         * @param httpSession {@code javax.servlet.http.HttpSession} session to be set.
+         * @param httpSession {@code jakarta.servlet.http.HttpSession} session to be set.
          * @return updated {@link RequestContext.Builder} instance.
          */
         public Builder httpSession(Object httpSession) {

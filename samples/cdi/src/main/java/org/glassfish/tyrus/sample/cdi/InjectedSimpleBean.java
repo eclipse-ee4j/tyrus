@@ -10,7 +10,7 @@
 
 package org.glassfish.tyrus.sample.cdi;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 /**
  * @author Stepan Kopriva (stepan.kopriva at oracle.com)

@@ -13,7 +13,7 @@ package org.glassfish.tyrus.sample.cdi;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.server.ServerEndpoint;
 
-import javax.ejb.Remote;
+import jakarta.ejb.Remote;
 
 /**
  * @author Pavel Bucek (pavel.bucek at oracle.com)

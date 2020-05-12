@@ -29,11 +29,11 @@ import jakarta.websocket.server.ServerContainer;
 import jakarta.websocket.server.ServerEndpoint;
 import jakarta.websocket.server.ServerEndpointConfig;
 
-import javax.servlet.FilterRegistration;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.HandlesTypes;
+import jakarta.servlet.FilterRegistration;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.HandlesTypes;
 
 import org.glassfish.tyrus.core.DebugContext;
 import org.glassfish.tyrus.core.TyrusWebSocketEngine;
@@ -135,7 +135,7 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
     }
 
     /**
-     * Get {@link Integer} parameter from {@link javax.servlet.ServletContext}.
+     * Get {@link Integer} parameter from {@link jakarta.servlet.ServletContext}.
      *
      * @param ctx       used to retrieve init parameter.
      * @param paramName parameter name.
@@ -157,7 +157,7 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
     }
 
     /**
-     * Get {@link java.lang.Boolean} parameter from {@link javax.servlet.ServletContext}.
+     * Get {@link java.lang.Boolean} parameter from {@link jakarta.servlet.ServletContext}.
      *
      * @param ctx       used to retrieve init parameter.
      * @param paramName parameter name.

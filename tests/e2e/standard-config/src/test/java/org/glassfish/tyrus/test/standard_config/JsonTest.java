@@ -34,9 +34,9 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
-import javax.json.Json;
-import javax.json.JsonException;
-import javax.json.JsonObject;
+import jakarta.json.Json;
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
 
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.core.coder.CoderAdapter;

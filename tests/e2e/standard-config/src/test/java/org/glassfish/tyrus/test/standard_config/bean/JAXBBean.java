@@ -16,7 +16,7 @@
 
 package org.glassfish.tyrus.test.standard_config.bean;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Pavel Bucek (pavel.bucek at oracle.com)
