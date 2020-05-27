@@ -98,7 +98,7 @@
     </contributors>
 
     <properties>
-        <websocket-api.version>2.0.0-M1</websocket-api.version>
+        <websocket-api.version>2.0.0-RC1</websocket-api.version>
         <!--<websocket.api.build_number>18</websocket.api.build_number>-->
 
         <annotation-api.version>2.0.0-RC1</annotation-api.version>
