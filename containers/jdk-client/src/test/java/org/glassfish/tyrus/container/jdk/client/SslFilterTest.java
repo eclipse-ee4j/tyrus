@@ -46,13 +46,14 @@ import org.glassfish.tyrus.client.SslContextConfigurator;
 import org.glassfish.tyrus.client.SslEngineConfigurator;
 import org.glassfish.tyrus.client.ThreadPoolConfig;
 import org.glassfish.tyrus.spi.CompletionHandler;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
  * @author Petr Janouch
  */
 
-public abstract class SslFilterTest {
+public class SslFilterTest {
 
     protected static final int PORT = 8321;
     protected static final String SERVER_KEY_STORE = "/keystore_server";
@@ -60,6 +61,14 @@ public abstract class SslFilterTest {
     protected static final String CLIENT_KEY_STORE = "/keystore_client";
     protected static final String CLIENT_TRUST_STORE = "/truststore_client";
     protected static final String PASSWORD = "asdfgh";
+
+    @Before
+    public void before() {
+        System.setProperty("javax.net.ssl.keyStore", this.getClass().getResource(SERVER_KEY_STORE).getPath());
+        System.setProperty("javax.net.ssl.keyStorePassword", PASSWORD);
+        System.setProperty("javax.net.ssl.trustStore", this.getClass().getResource(SERVER_TRUST_STORE).getPath());
+        System.setProperty("javax.net.ssl.trustStorePassword", PASSWORD);
+    }
 
     @Test
     public void testBasicEcho() throws Throwable {
