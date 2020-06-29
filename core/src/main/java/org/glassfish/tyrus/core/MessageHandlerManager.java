@@ -301,6 +301,10 @@ public class MessageHandlerManager {
         }
     }
 
+    Map<Class<?>, MessageHandler> getRegisteredHandlers() {
+        return new HashMap<>(registeredHandlers);
+    }
+
     /**
      * Get all successfully registered {@link MessageHandler}s.
      *
@@ -308,14 +312,14 @@ public class MessageHandlerManager {
      */
     public Set<MessageHandler> getMessageHandlers() {
         if (messageHandlerCache == null) {
-            messageHandlerCache = Collections.unmodifiableSet(new HashSet<MessageHandler>(registeredHandlers.values()));
+            messageHandlerCache = Collections.unmodifiableSet(new HashSet<>(registeredHandlers.values()));
         }
 
         return messageHandlerCache;
     }
 
     public List<Map.Entry<Class<?>, MessageHandler>> getOrderedWholeMessageHandlers() {
-        List<Map.Entry<Class<?>, MessageHandler>> result = new ArrayList<Map.Entry<Class<?>, MessageHandler>>();
+        List<Map.Entry<Class<?>, MessageHandler>> result = new ArrayList<>();
         for (final Map.Entry<Class<?>, MessageHandler> entry : registeredHandlers.entrySet()) {
             if (entry.getValue() instanceof MessageHandler.Whole) {
                 result.add(entry);
@@ -325,7 +329,7 @@ public class MessageHandlerManager {
         return result;
     }
 
-    static Class<?> getHandlerType(MessageHandler handler) {
+    private static Class<?> getHandlerType(MessageHandler handler) {
         Class<?> root;
         if (handler instanceof AsyncMessageHandler) {
             return ((AsyncMessageHandler) handler).getType();
