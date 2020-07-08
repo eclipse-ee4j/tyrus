@@ -104,7 +104,7 @@
         <annotation-api.version>2.0.0-RC1</annotation-api.version>
         <cdi-api.version>3.0.0-M3</cdi-api.version>
         <ejb-api.version>4.0.0-RC2</ejb-api.version>
-        <grizzly.version>2.3.22</grizzly.version>
+        <grizzly.version>3.0.0-M1</grizzly.version>
         <json-api.version>2.0.0-RC2</json-api.version>
         <json-impl.version>2.0.0-RC2</json-impl.version>
         <jaxb.api.version>3.0.0-RC3</jaxb.api.version>
