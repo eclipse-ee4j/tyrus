@@ -17,6 +17,7 @@
 package org.glassfish.tyrus.servlet;
 
 import java.io.IOException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
 import java.util.logging.Level;
@@ -171,7 +172,7 @@ public class TyrusHttpUpgradeHandler implements HttpUpgradeHandler, ReadListener
         if (buf == null) {
             LOGGER.finest("No Buffer. Allocating new one");
             buf = ByteBuffer.wrap(data);
-            buf.limit(len);
+            ((Buffer) buf).limit(len);
         } else {
             int limit = buf.limit();
             int capacity = buf.capacity();
@@ -180,18 +181,18 @@ public class TyrusHttpUpgradeHandler implements HttpUpgradeHandler, ReadListener
             if (capacity - limit >= len) {
                 // Remaining data need not be changed. New data is just appended
                 LOGGER.finest("Remaining data need not be moved. New data is just appended");
-                buf.mark();
-                buf.position(limit);
-                buf.limit(capacity);
+                ((Buffer) buf).mark();
+                ((Buffer) buf).position(limit);
+                ((Buffer) buf).limit(capacity);
                 buf.put(data, 0, len);
-                buf.limit(limit + len);
-                buf.reset();
+                ((Buffer) buf).limit(limit + len);
+                ((Buffer) buf).reset();
             } else if (remaining + len < capacity) {
                 // Remaining data is moved to left. Then new data is appended
                 LOGGER.finest("Remaining data is moved to left. Then new data is appended");
                 buf.compact();
                 buf.put(data, 0, len);
-                buf.flip();
+                ((Buffer) buf).flip();
             } else {
                 // Remaining data + new > capacity. So allocate new one
                 LOGGER.finest("Remaining data + new > capacity. So allocate new one");
@@ -199,7 +200,7 @@ public class TyrusHttpUpgradeHandler implements HttpUpgradeHandler, ReadListener
                 buf.get(array, 0, remaining);
                 System.arraycopy(data, 0, array, remaining, len);
                 buf = ByteBuffer.wrap(array);
-                buf.limit(remaining + len);
+                ((Buffer) buf).limit(remaining + len);
             }
         }
 

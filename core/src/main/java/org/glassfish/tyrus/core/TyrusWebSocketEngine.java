@@ -16,8 +16,8 @@
 
 package org.glassfish.tyrus.core;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -507,7 +507,7 @@ public class TyrusWebSocketEngine implements WebSocketEngine {
                                     ? ((newSize / BUFFER_STEP_SIZE) + 1) * BUFFER_STEP_SIZE : newSize;
                             final ByteBuffer result =
                                     ByteBuffer.allocate(roundedSize > incomingBufferSize ? newSize : roundedSize);
-                            result.flip();
+                            ((Buffer) result).flip();
                             data = Utils.appendBuffers(result, data, incomingBufferSize, BUFFER_STEP_SIZE);
                         }
                     }

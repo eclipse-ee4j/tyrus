@@ -17,6 +17,7 @@
 package org.glassfish.tyrus.container.jdk.client;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -44,7 +45,7 @@ class HttpResponseParser {
 
     HttpResponseParser() {
         buffer = ByteBuffer.allocate(1024);
-        buffer.flip(); //buffer created for read
+        ((Buffer) buffer).flip(); //buffer created for read
     }
 
     TyrusUpgradeResponse parseUpgradeResponse() throws ParseException {
@@ -84,11 +85,11 @@ class HttpResponseParser {
         }
 
         int limit = data.limit();
-        data.limit(responseEndPosition + 1);
+        ((Buffer) data).limit(responseEndPosition + 1);
         checkResponseSize(data);
         buffer = Utils.appendBuffers(buffer, data, BUFFER_MAX_SIZE, BUFFER_STEP_SIZE);
-        data.limit(limit);
-        data.position(responseEndPosition + 1);
+        ((Buffer) data).limit(limit);
+        ((Buffer) data).position(responseEndPosition + 1);
         complete = true;
     }
 
@@ -160,8 +161,8 @@ class HttpResponseParser {
     }
 
     void clear() {
-        buffer.clear();
-        buffer.flip();
+        ((Buffer) buffer).clear();
+        ((Buffer) buffer).flip();
         complete = false;
         findEndState = State.INIT;
     }
