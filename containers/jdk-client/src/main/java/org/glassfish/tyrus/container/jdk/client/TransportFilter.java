@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousChannelGroup;
 import java.nio.channels.AsynchronousCloseException;
@@ -290,7 +291,7 @@ class TransportFilter extends Filter {
                     return;
                 }
 
-                inputBuffer.flip();
+                ((Buffer) inputBuffer).flip();
                 onRead(inputBuffer);
                 inputBuffer.compact();
                 _read(inputBuffer);

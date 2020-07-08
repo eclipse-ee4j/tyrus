@@ -17,6 +17,7 @@
 package org.glassfish.tyrus.core;
 
 import java.net.URI;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -303,18 +304,18 @@ public class Utils {
         // buffer1 will be appended to buffer
         if (len < (capacity - limit)) {
 
-            buffer.mark();
-            buffer.position(limit);
-            buffer.limit(capacity);
+            ((Buffer) buffer).mark();
+            ((Buffer) buffer).position(limit);
+            ((Buffer) buffer).limit(capacity);
             buffer.put(buffer1);
-            buffer.limit(limit + len);
-            buffer.reset();
+            ((Buffer) buffer).limit(limit + len);
+            ((Buffer) buffer).reset();
             return buffer;
             // Remaining data is moved to left. Then new data is appended
         } else if (remaining + len < capacity) {
             buffer.compact();
             buffer.put(buffer1);
-            buffer.flip();
+            ((Buffer) buffer).flip();
             return buffer;
             // create new buffer
         } else {
@@ -328,7 +329,7 @@ public class Utils {
                 final ByteBuffer result = ByteBuffer.allocate(roundedSize > incomingBufferSize ? newSize : roundedSize);
                 result.put(buffer);
                 result.put(buffer1);
-                result.flip();
+                ((Buffer) result).flip();
                 return result;
             }
         }

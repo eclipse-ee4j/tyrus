@@ -19,6 +19,7 @@ package org.glassfish.tyrus.client;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -694,7 +695,7 @@ public class TyrusClientEngine implements ClientEngine {
                                     + 1) * BUFFER_STEP_SIZE : newSize;
                             final ByteBuffer result = ByteBuffer.allocate(roundedSize > incomingBufferSize ? newSize
                                                                                   : roundedSize);
-                            result.flip();
+                            ((Buffer) result).flip();
                             data = Utils.appendBuffers(result, data, incomingBufferSize, BUFFER_STEP_SIZE);
                         }
                     }

@@ -16,6 +16,7 @@
 
 package org.glassfish.tyrus.core.frame;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -123,13 +124,13 @@ public class CloseFrame extends TyrusFrame {
             CoderResult result = decoder.decode(b, cb, true);
             if (result.isUnderflow()) {
                 decoder.flush(cb);
-                cb.flip();
+                ((Buffer) cb).flip();
                 reason = cb.toString();
                 break;
             }
             if (result.isOverflow()) {
                 CharBuffer tmp = CharBuffer.allocate(2 * n + 1);
-                cb.flip();
+                ((Buffer) cb).flip();
                 tmp.put(cb);
                 cb = tmp;
                 continue;

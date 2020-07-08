@@ -16,6 +16,7 @@
 
 package org.glassfish.tyrus.core;
 
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +69,7 @@ class BinaryBuffer {
             b.put(buffered);
         }
 
-        b.flip();
+        ((Buffer) b).flip();
         resetBuffer(0);
         return b;
     }

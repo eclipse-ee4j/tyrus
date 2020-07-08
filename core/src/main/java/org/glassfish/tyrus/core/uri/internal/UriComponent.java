@@ -19,6 +19,7 @@ package org.glassfish.tyrus.core.uri.internal;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -775,7 +776,7 @@ public class UriComponent {
         if (bb == null) {
             bb = ByteBuffer.allocate(1);
         } else {
-            bb.clear();
+            ((Buffer) bb).clear();
         }
 
         while (true) {
@@ -794,7 +795,7 @@ public class UriComponent {
 
             // Check if the byte buffer needs to be increased in size
             if (bb.position() == bb.capacity()) {
-                bb.flip();
+                ((Buffer) bb).flip();
                 // Create a new byte buffer with the maximum number of possible
                 // octets, hence resize should only occur once
                 final ByteBuffer bb_new = ByteBuffer.allocate(s.length() / 3);
@@ -803,7 +804,7 @@ public class UriComponent {
             }
         }
 
-        bb.flip();
+        ((Buffer) bb).flip();
         return bb;
     }
 

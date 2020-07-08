@@ -79,13 +79,13 @@ public class StrictUtf8 extends Charset {
     }
 
     private static void updatePositions(ByteBuffer src, int sp, CharBuffer dst, int dp) {
-        src.position(sp - src.arrayOffset());
-        dst.position(dp - dst.arrayOffset());
+        ((Buffer) src).position(sp - src.arrayOffset());
+        ((Buffer) dst).position(dp - dst.arrayOffset());
     }
 
     private static void updatePositions(CharBuffer src, int sp, ByteBuffer dst, int dp) {
-        src.position(sp - src.arrayOffset());
-        dst.position(dp - dst.arrayOffset());
+        ((Buffer) src).position(sp - src.arrayOffset());
+        ((Buffer) dst).position(dp - dst.arrayOffset());
     }
 
     private static class Decoder extends CharsetDecoder {
@@ -166,7 +166,7 @@ public class StrictUtf8 extends Charset {
         }
 
         private static CoderResult malformed(ByteBuffer src, int sp, CharBuffer dst, int dp, int nb) {
-            src.position(sp - src.arrayOffset());
+            ((Buffer) src).position(sp - src.arrayOffset());
             CoderResult cr = malformedN(src, nb);
             updatePositions(src, sp, dst, dp);
             return cr;
@@ -174,9 +174,9 @@ public class StrictUtf8 extends Charset {
 
 
         private static CoderResult malformed(ByteBuffer src, int mark, int nb) {
-            src.position(mark);
+            ((Buffer) src).position(mark);
             CoderResult cr = malformedN(src, nb);
-            src.position(mark);
+            ((Buffer) src).position(mark);
             return cr;
         }
 
@@ -186,7 +186,7 @@ public class StrictUtf8 extends Charset {
         }
 
         private static CoderResult malformedForLength(ByteBuffer src, int mark, int malformedNB) {
-            src.position(mark);
+            ((Buffer) src).position(mark);
             return CoderResult.malformedForLength(malformedNB);
         }
 
@@ -197,7 +197,7 @@ public class StrictUtf8 extends Charset {
         }
 
         private static CoderResult xflow(Buffer src, int mark, int nb) {
-            src.position(mark);
+            ((Buffer) src).position(mark);
             return (nb == 0 || src.remaining() < nb) ? CoderResult.UNDERFLOW : CoderResult.OVERFLOW;
         }
 
@@ -378,7 +378,7 @@ public class StrictUtf8 extends Charset {
             if (bb == null) {
                 bb = ByteBuffer.wrap(ba);
             }
-            bb.position(sp);
+            ((Buffer) bb).position(sp);
             return bb;
         }
 
@@ -529,7 +529,7 @@ public class StrictUtf8 extends Charset {
         }
 
         private static CoderResult overflow(CharBuffer src, int mark) {
-            src.position(mark);
+            ((Buffer) src).position(mark);
             return CoderResult.OVERFLOW;
         }
 
@@ -621,7 +621,7 @@ public class StrictUtf8 extends Charset {
                     }
                     int uc = sgp.parse(c, src);
                     if (uc < 0) {
-                        src.position(mark);
+                        ((Buffer) src).position(mark);
                         return sgp.error();
                     }
                     if (dst.remaining() < 4) {
@@ -643,7 +643,7 @@ public class StrictUtf8 extends Charset {
                 }
                 mark++;
             }
-            src.position(mark);
+            ((Buffer) src).position(mark);
             return CoderResult.UNDERFLOW;
         }
 
