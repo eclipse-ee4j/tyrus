@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -62,6 +62,7 @@ class SslFilter extends Filter {
     /* Some operations on SSL engine require a buffer as a parameter even if they don't need any data.
     This buffer is for that purpose. */
     private static final ByteBuffer emptyBuffer = ByteBuffer.allocate(0);
+    private static final String TLSV13 = "TLSv1.3";
 
     // buffer for passing data to the upper filter
     private final ByteBuffer applicationInputBuffer;
@@ -73,6 +74,7 @@ class SslFilter extends Filter {
     private final WriteQueue writeQueue = new WriteQueue();
 
     private volatile State state = State.NOT_STARTED;
+    private volatile boolean tlsv13 = false;
     /*
      * Pending write operation stored when writing data was not possible. It will be resumed when write operation is
      * available again. Only one write operation can be in progress at a time. Trying to store more than one pending
@@ -193,14 +195,14 @@ class SslFilter extends Filter {
                 }
 
                 case CLOSED: {
-                    state = State.CLOSED;
+                    setState(State.CLOSED);
                     break;
                 }
 
                 case OK: {
                     // check if we started re-handshaking
-                    if (result.getHandshakeStatus() != SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING) {
-                        state = State.REHANDSHAKING;
+                    if (isHandshaking(result.getHandshakeStatus())) {
+                        setState(State.REHANDSHAKING);
                     }
 
                     ((Buffer) networkOutputBuffer).flip();
@@ -362,7 +364,6 @@ class SslFilter extends Filter {
         try {
             ((Buffer) applicationInputBuffer).clear();
             SSLEngineResult result = sslEngine.unwrap(networkData, applicationInputBuffer);
-
             switch (result.getStatus()) {
                 case BUFFER_OVERFLOW: {
                     /* This means that the content of the ssl packet (max 16kB) did not fit into
@@ -392,12 +393,11 @@ class SslFilter extends Filter {
                         // signal that there is nothing useful left in this buffer
                         return false;
                     }
-
                     // we started re-handshaking
-                    if (result.getHandshakeStatus() != SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING
+                    if (!tlsv13 && isHandshaking(result.getHandshakeStatus())
                             // make sure we don't confuse re-handshake with closing handshake
                             && !sslEngine.isOutboundDone()) {
-                        state = State.REHANDSHAKING;
+                        setState(State.REHANDSHAKING);
                         return doHandshakeStep(networkData);
                     }
 
@@ -419,19 +419,18 @@ class SslFilter extends Filter {
         boolean handshakeFinished = false;
 
         synchronized (this) {
-            if (SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING.equals(sslEngine.getHandshakeStatus())) {
+            SSLEngineResult.HandshakeStatus hs = sslEngine.getHandshakeStatus();
+            if (!isHandshaking(hs)) {
                 // we stopped handshaking while waiting for the lock
                 return true;
             }
-
             try {
                 /* we don't use networkOutputBuffer, because there might be a write operation still in progress ->
                 we don't want to corrupt the buffer it is using */
                 LazyBuffer outputBuffer = new LazyBuffer();
                 boolean stepFinished = false;
                 while (!stepFinished) {
-                    SSLEngineResult.HandshakeStatus hs = sslEngine.getHandshakeStatus();
-
+                    hs = sslEngine.getHandshakeStatus();
                     switch (hs) {
                         case NOT_HANDSHAKING: {
                             /* This should never happen. If we are here and not handshaking, it means a bug
@@ -441,25 +440,18 @@ class SslFilter extends Filter {
                             throw new IllegalStateException("Trying to handshake, but SSL engine not in HANDSHAKING state."
                                     + "SSL filter state: \n" + getDebugState());
                         }
-
                         case FINISHED: {
-                            /* According to SSLEngine javadoc FINISHED status can be returned only in SSLEngineResult,
-                            but just to make sure we don't end up in an infinite loop when presented with an SSLEngine
-                            implementation that does not respect this:*/
-                            stepFinished = true;
-                            handshakeFinished = true;
-                            break;
+                            throw new IllegalStateException("Trying to handshake, but SSL engine not in HANDSHAKING state."
+                                    + "SSL filter state: \n" + getDebugState());
                         }
                         // needs to write data to the network
                         case NEED_WRAP: {
                             ByteBuffer byteBuffer = outputBuffer.get();
                             SSLEngineResult result = sslEngine.wrap(emptyBuffer, byteBuffer);
-
                             if (result.getHandshakeStatus() == SSLEngineResult.HandshakeStatus.FINISHED) {
                                 stepFinished = true;
                                 handshakeFinished = true;
                             }
-
                             switch (result.getStatus()) {
                                 case BUFFER_OVERFLOW: {
                                     outputBuffer.resize();
@@ -476,7 +468,7 @@ class SslFilter extends Filter {
 
                                 case CLOSED: {
                                     stepFinished = true;
-                                    state = State.CLOSED;
+                                    setState(State.CLOSED);
                                     break;
                                 }
                             }
@@ -517,7 +509,7 @@ class SslFilter extends Filter {
 
                                 case CLOSED: {
                                     stepFinished = true;
-                                    state = State.CLOSED;
+                                    setState(State.CLOSED);
                                     break;
                                 }
                             }
@@ -559,6 +551,7 @@ class SslFilter extends Filter {
 
         if (handshakeFinished) {
             handleHandshakeFinished();
+            tlsv13 = TLSV13.equals(sslEngine.getSession().getProtocol());
             // indicate that there still might be usable data in the input buffer
             return true;
         }
@@ -576,12 +569,11 @@ class SslFilter extends Filter {
             return;
         }
 
-
         if (state == State.HANDSHAKING) {
-            state = State.DATA;
+            setState(State.DATA);
             upstreamFilter.onSslHandshakeCompleted();
         } else if (state == State.REHANDSHAKING) {
-            state = State.DATA;
+            setState(State.DATA);
             if (pendingApplicationWrite != null) {
                 Runnable write = pendingApplicationWrite;
                 // set pending write to null to cover the extremely improbable case that we start re-handshaking again
@@ -599,7 +591,7 @@ class SslFilter extends Filter {
     @Override
     void startSsl() {
         try {
-            state = State.HANDSHAKING;
+            setState(State.HANDSHAKING);
             sslEngine.beginHandshake();
             doHandshakeStep(emptyBuffer);
         } catch (SSLException e) {
@@ -740,5 +732,15 @@ class SslFilter extends Filter {
                         + '}';
             }
         }
+    }
+
+    private void setState(State state) {
+        this.state = state;
+    }
+
+    private boolean isHandshaking(SSLEngineResult.HandshakeStatus hs) {
+        return SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING != hs
+                // TLSv1.3 introduces this, and it is considered as not handshaking
+                && SSLEngineResult.HandshakeStatus.FINISHED != hs;
     }
 }
