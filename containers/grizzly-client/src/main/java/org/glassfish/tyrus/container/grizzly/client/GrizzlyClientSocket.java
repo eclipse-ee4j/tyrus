@@ -376,8 +376,10 @@ public class GrizzlyClientSocket {
                     try {
                         sslHandshakeFuture.get(timeoutMs, TimeUnit.MILLISECONDS);
                     } catch (ExecutionException e) {
+                        closeTransport(privateTransport);
                         throw new DeploymentException("SSL handshake has failed", e.getCause());
                     } catch (Exception e) {
+                        closeTransport(privateTransport);
                         throw new DeploymentException(String.format("Connection to '%s' failed.", requestURI),
                                                       e.getCause());
                     }

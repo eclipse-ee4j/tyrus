@@ -16,6 +16,10 @@
 
 package org.glassfish.tyrus.container.jdk.client;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,29 +46,28 @@ import org.glassfish.tyrus.client.SslContextConfigurator;
 import org.glassfish.tyrus.client.SslEngineConfigurator;
 import org.glassfish.tyrus.client.ThreadPoolConfig;
 import org.glassfish.tyrus.spi.CompletionHandler;
-
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * @author Petr Janouch
  */
+
 public class SslFilterTest {
 
-    private static final int PORT = 8321;
+    protected static final int PORT = 8321;
+    protected static final String SERVER_KEY_STORE = "/keystore_server";
+    protected static final String SERVER_TRUST_STORE = "/truststore_server";
+    protected static final String CLIENT_KEY_STORE = "/keystore_client";
+    protected static final String CLIENT_TRUST_STORE = "/truststore_client";
+    protected static final String PASSWORD = "asdfgh";
 
     @Before
-    public void beforeTest() {
-        System.setProperty("javax.net.ssl.keyStore", this.getClass().getResource("/keystore_server").getPath());
-        System.setProperty("javax.net.ssl.keyStorePassword", "asdfgh");
-        System.setProperty("javax.net.ssl.trustStore", this.getClass().getResource("/truststore_server").getPath());
-        System.setProperty("javax.net.ssl.trustStorePassword", "asdfgh");
-        System.setProperty("jdk.tls.server.protocols", "TLSv1.2");
-        System.setProperty("jdk.tls.client.protocols", "TLSv1.2");
+    public void before() {
+        System.setProperty("javax.net.ssl.keyStore", this.getClass().getResource(SERVER_KEY_STORE).getPath());
+        System.setProperty("javax.net.ssl.keyStorePassword", PASSWORD);
+        System.setProperty("javax.net.ssl.trustStore", this.getClass().getResource(SERVER_TRUST_STORE).getPath());
+        System.setProperty("javax.net.ssl.trustStorePassword", PASSWORD);
     }
 
     @Test
@@ -376,10 +379,10 @@ public class SslFilterTest {
     private Filter openClientSocket(String host, final ByteBuffer readBuffer, final CountDownLatch completionLatch,
                                     HostnameVerifier customHostnameVerifier) throws Throwable {
         SslContextConfigurator sslConfig = SslContextConfigurator.DEFAULT_CONFIG;
-        sslConfig.setTrustStoreFile(this.getClass().getResource("/truststore_client").getPath())
-                .setTrustStorePassword("asdfgh")
-                .setKeyStoreFile(this.getClass().getResource("/keystore_client").getPath())
-                .setKeyStorePassword("asdfgh");
+        sslConfig.setTrustStoreFile(this.getClass().getResource(CLIENT_TRUST_STORE).getPath())
+                .setTrustStorePassword(PASSWORD)
+                .setKeyStoreFile(this.getClass().getResource(CLIENT_KEY_STORE).getPath())
+                .setKeyStorePassword(PASSWORD);
         SslEngineConfigurator sslEngineConfigurator = new SslEngineConfigurator(sslConfig.createSSLContext());
         sslEngineConfigurator.setHostnameVerifier(customHostnameVerifier);
 
@@ -461,7 +464,6 @@ public class SslFilterTest {
             clientSocket.close();
             throw exception.get();
         }
-
         return clientSocket;
     }
 
