@@ -14,4 +14,4 @@ cache:
 install: true
 
 script:
-  - mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true
+  - mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pstaging -Pbundles clean install -Dmaven.javadoc.skip=true
