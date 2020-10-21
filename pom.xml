@@ -103,7 +103,7 @@
 
         <annotation-api.version>2.0.0</annotation-api.version>
         <cdi-api.version>3.0.0</cdi-api.version>
-        <ejb-api.version>4.0.0-RC2</ejb-api.version>
+        <ejb-api.version>4.0.0</ejb-api.version>
         <grizzly.version>3.0.0-M1</grizzly.version>
         <json-api.version>2.0.0</json-api.version>
         <json-impl.version>2.0.0</json-impl.version>
@@ -115,10 +115,10 @@
         <api_package>jakarta.websocket</api_package>
         <impl_namespace>org.glassfish</impl_namespace>
         <spec_version>0.0</spec_version>
-        <new_spec_version>1.0</new_spec_version>
-        <new_impl_version>1.0</new_impl_version>
+        <new_spec_version>2.0</new_spec_version>
+        <new_impl_version>2.0</new_impl_version>
         <build_number>11</build_number>
-        <spec_impl_version>1.0.0</spec_impl_version>
+        <spec_impl_version>2.0.0</spec_impl_version>
         <impl_version>0.0.0</impl_version>
 
         <impljar.extensionName>${api_package}</impljar.extensionName>
@@ -126,7 +126,7 @@
         <packages.private>org.glassfish.*</packages.private>
 
         <!-- Non Final properties for impl jar -->
-        <apijar.bundle.version>1.1</apijar.bundle.version>
+        <apijar.bundle.version>2.0.0</apijar.bundle.version>
         <impljar.bundle.specversion>${spec_version}.99.b${build_number}</impljar.bundle.specversion>
         <impljar.maven.version>${new_impl_version}-b${build_number}</impljar.maven.version>
         <impljar.bundle.version>${spec_version}.99.b${build_number}</impljar.bundle.version>
@@ -597,7 +597,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.10</version>
+                <version>4.13.1</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.main.extras</groupId>

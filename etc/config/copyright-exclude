@@ -29,6 +29,7 @@ nbactions.xml
 /META-INF/services/
 /etc/config/copyright-exclude
 /etc/config/copyright.txt
+/etc/config/travis/
 /LICENSE.html
 /LICENSE.txt
 README.txt
