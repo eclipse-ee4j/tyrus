@@ -14,33 +14,32 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
-package org.glassfish.tyrus.container.jdk.client;
+package org.glassfish.tyrus.test.e2e.non_deployable;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.websocket.ClientEndpoint;
+import javax.websocket.DeploymentException;
 
 import org.glassfish.tyrus.client.ClientManager;
-import org.glassfish.tyrus.client.ClientProperties;
+import org.glassfish.tyrus.container.jdk.client.JdkClientContainer;
 import org.glassfish.tyrus.test.tools.TestContainer;
 
 import org.junit.Test;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
+ * Cannot be moved to standard tests due the expected deployment exception.
+ *
  * @author Vladimir Golyakov
  */
-public class ConnectSynchronouslyHangTest extends TestContainer {
+public class JdkClientContainerHangTest extends TestContainer {
 
     @Test
     public void testConnectSynchronouslyHang() throws IOException, InterruptedException {
-        final ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());
         Thread clientThread = null;
         ServerSocket server = startBadServer();
         try {
@@ -48,10 +47,9 @@ public class ConnectSynchronouslyHangTest extends TestContainer {
                 @Override
                 public void run() {
                     try {
-                        client.getProperties().put(ClientProperties.HANDSHAKE_TIMEOUT, 1);
-                        client.getProperties().put(ClientProperties.SHARED_CONTAINER_IDLE_TIMEOUT, 1);
+                        final ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());
                         client.connectToServer(AnnotatedClientEndpoint.class, getURI("/any-endpoint", "wss"));
-                    } catch (Exception e) {
+                    } catch (DeploymentException | IOException e) {
                         // ignore
                     }
                 }
@@ -66,7 +64,6 @@ public class ConnectSynchronouslyHangTest extends TestContainer {
                 clientThread.interrupt();
             }
             server.close();
-            waitForThreadPoolShutdown(client);
         }
     }
 
@@ -84,7 +81,7 @@ public class ConnectSynchronouslyHangTest extends TestContainer {
                     } finally {
                         clientSocket.close();
                     }
-                } catch (Exception e) {
+                } catch (IOException | InterruptedException e) {
                     // ignore
                 }
             }
@@ -94,19 +91,5 @@ public class ConnectSynchronouslyHangTest extends TestContainer {
 
     @ClientEndpoint
     public static class AnnotatedClientEndpoint {
-    }
-
-    private void waitForThreadPoolShutdown(ClientManager client) {
-        try {
-            /* Tests in the package are sensitive to freeing resources. Unclosed sessions might hinder the next test
-            (if the next test requires a fresh client thread pool) */
-            ExecutorService executorService = client.getExecutorService();
-            ScheduledExecutorService scheduledExecutorService = client.getScheduledExecutorService();
-            client.shutdown();
-            assertTrue(executorService.awaitTermination(5, TimeUnit.SECONDS));
-            assertTrue(scheduledExecutorService.awaitTermination(5, TimeUnit.SECONDS));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 }
