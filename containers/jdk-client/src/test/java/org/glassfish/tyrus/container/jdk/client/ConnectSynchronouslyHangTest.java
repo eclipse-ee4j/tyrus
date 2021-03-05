@@ -42,13 +42,11 @@ public class ConnectSynchronouslyHangTest extends TestContainer {
             clientThread = new Thread() {
                 @Override
                 public void run() {
-                    ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());
                     try {
+                        ClientManager client = ClientManager.createClient(JdkClientContainer.class.getName());
                         client.connectToServer(AnnotatedClientEndpoint.class, getURI("/any-endpoint", "wss"));
                     } catch (Exception e) {
                         // ignore
-                    } finally {
-                        client.shutdown();
                     }
                 }
             };
