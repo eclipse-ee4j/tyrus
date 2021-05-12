@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -61,7 +62,7 @@ import org.glassfish.tyrus.core.l10n.LocalizationMessages;
  * @author Martin Matula (martin.matula at oracle.com)
  * @author Pavel Bucek (pavel.bucek at oracle.com)
  */
-public class TyrusSession implements Session, DistributedSession {
+public class TyrusSession implements DistributedSession {
 
     private static final Logger LOGGER = Logger.getLogger(TyrusSession.class.getName());
 
@@ -587,9 +588,10 @@ public class TyrusSession implements Session, DistributedSession {
     void notifyMessageHandlers(Object message, boolean last) {
         boolean handled = false;
 
-        for (MessageHandler handler : getMessageHandlers()) {
+        for (Entry<Class<?>, MessageHandler> e : this.handlerManager.getRegisteredHandlers().entrySet()) {
+            MessageHandler handler = e.getValue();
             if ((handler instanceof MessageHandler.Partial)
-                    && MessageHandlerManager.getHandlerType(handler).isAssignableFrom(message.getClass())) {
+                    && e.getKey().isAssignableFrom(message.getClass())) {
 
                 if (handler instanceof AsyncMessageHandler) {
                     checkMessageSize(message, ((AsyncMessageHandler) handler).getMaxMessageSize());
@@ -615,11 +617,9 @@ public class TyrusSession implements Session, DistributedSession {
     }
 
     void notifyPongHandler(PongMessage pongMessage) {
-        final Set<MessageHandler> messageHandlers = getMessageHandlers();
-        for (MessageHandler handler : messageHandlers) {
-            if (MessageHandlerManager.getHandlerType(handler).equals(PongMessage.class)) {
-                ((MessageHandler.Whole<PongMessage>) handler).onMessage(pongMessage);
-            }
+        final MessageHandler.Whole<PongMessage> handler = getMessageHandler(PongMessage.class);
+        if (handler != null) {
+            handler.onMessage(pongMessage);
         }
     }
 
