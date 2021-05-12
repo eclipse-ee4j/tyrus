@@ -65,7 +65,7 @@ import org.glassfish.tyrus.spi.Writer;
 class TyrusServletFilter implements Filter, HttpSessionListener {
 
     private static final Logger LOGGER = Logger.getLogger(TyrusServletFilter.class.getName());
-    private final TyrusWebSocketEngine engine;
+    private TyrusWebSocketEngine engine;
     private final boolean wsadlEnabled;
 
     // I don't like this map, but it seems like it is necessary. I am forced to handle subscriptions
@@ -303,5 +303,7 @@ class TyrusServletFilter implements Filter, HttpSessionListener {
     public void destroy() {
         serverContainer.stop();
         engine.getApplicationEventListener().onApplicationDestroyed();
+        serverContainer = null;
+        engine = null;
     }
 }
