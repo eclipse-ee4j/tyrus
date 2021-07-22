@@ -71,7 +71,7 @@ public class MaxMessageSizeDeploymentTest extends TestContainer {
             public void publish(LogRecord record) {
                 String expectedWarningMessage =
                         LocalizationMessages.ENDPOINT_MAX_MESSAGE_SIZE_TOO_LONG(
-                                2, LargeMaxMessageSizeServerEndpoint.class.getMethods()[0].getName(),
+                                2, "onTooBigMessage",
                                 LargeMaxMessageSizeServerEndpoint.class.getName(), 1);
                 System.out.println("Expected message: " + expectedWarningMessage);
                 System.out.println("Logged message: " + record.getMessage());
@@ -148,7 +148,7 @@ public class MaxMessageSizeDeploymentTest extends TestContainer {
                 public void publish(LogRecord record) {
                     String expectedWarningMessage =
                             LocalizationMessages.ENDPOINT_MAX_MESSAGE_SIZE_TOO_LONG(
-                                    2, LargeMaxMessageSizeClientEndpoint.class.getMethods()[0].getName(),
+                                    2, "onTooBigMessage",
                                     LargeMaxMessageSizeClientEndpoint.class.getName(), 1);
                     System.out.println("Expected message: " + expectedWarningMessage);
                     System.out.println("Logged message: " + record.getMessage());
