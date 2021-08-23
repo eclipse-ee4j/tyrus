@@ -58,6 +58,7 @@ public class ExtendedExtensionTest extends TestContainer {
 
     @Test
     public void extendedExtensionTest() throws DeploymentException {
+        EXTENDED_EXTENSION = new MyExtendedExtension();
 
         Server server = startServer(ExtendedExtensionApplicationConfig.class);
         final CountDownLatch messageLatch = new CountDownLatch(1);
@@ -123,7 +124,7 @@ public class ExtendedExtensionTest extends TestContainer {
         }
     }
 
-    private static final MyExtendedExtension EXTENDED_EXTENSION = new MyExtendedExtension();
+    private static MyExtendedExtension EXTENDED_EXTENSION;
 
     public static class ExtendedExtensionEndpoint extends Endpoint {
 
