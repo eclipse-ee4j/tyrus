@@ -21,8 +21,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
-import javax.websocket.ClientEndpoint;
-import javax.websocket.DeploymentException;
+import jakarta.websocket.ClientEndpoint;
+import jakarta.websocket.DeploymentException;
 
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.container.jdk.client.JdkClientContainer;
