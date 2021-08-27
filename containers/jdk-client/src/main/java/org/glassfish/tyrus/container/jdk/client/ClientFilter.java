@@ -210,6 +210,9 @@ class ClientFilter extends Filter {
     @Override
     public void processConnectionClosed() {
         LOGGER.log(Level.FINE, "Connection has been closed by the server");
+        if (connectCompletionHandler != null) {
+            connectCompletionHandler.failed(new IOException("Connection closed by server"));
+        }
 
         if (wsConnection == null) {
             return;

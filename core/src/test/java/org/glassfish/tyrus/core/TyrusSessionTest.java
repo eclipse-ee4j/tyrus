@@ -294,7 +294,6 @@ public class TyrusSessionTest {
     public void multiplePongHandlersAsync() {
         Session session = createSession(endpointWrapper);
 
-
         session.addMessageHandler(new MessageHandler.Partial<PongMessage>() {
             @Override
             public void onMessage(PongMessage message, boolean last) {
@@ -311,7 +310,6 @@ public class TyrusSessionTest {
     @Test(expected = IllegalStateException.class)
     public void multipleBasicDecodableAsync() {
         Session session = createSession(endpointWrapper);
-
 
         session.addMessageHandler(new MessageHandler.Partial<TyrusSessionTest>() {
             @Override
@@ -359,7 +357,6 @@ public class TyrusSessionTest {
     public void removeHandlers() {
         Session session = createSession(endpointWrapper);
 
-
         final MessageHandler.Partial<String> handler1 = new MessageHandler.Partial<String>() {
             @Override
             public void onMessage(String message, boolean last) {
@@ -406,6 +403,44 @@ public class TyrusSessionTest {
         assertFalse(session1.getId().equals(session2.getId()));
         assertFalse(session1.getId().equals(session3.getId()));
         assertFalse(session2.getId().equals(session3.getId()));
+    }
+
+    @Test
+    public void getLambdaHandlers() {
+        Session session = createSession(endpointWrapper);
+
+        final MessageHandler.Partial<String> handler1 = this::stringPartialHandler;
+        final MessageHandler.Whole<ByteBuffer> handler2 = this::bytesHandler;
+        final MessageHandler.Whole<PongMessage> handler3 = this::pongHandler;
+
+        session.addMessageHandler(String.class, handler1);
+        session.addMessageHandler(ByteBuffer.class, handler2);
+        session.addMessageHandler(PongMessage.class, handler3);
+
+        assertTrue(session.getMessageHandlers().contains(handler1));
+        assertTrue(session.getMessageHandlers().contains(handler2));
+        assertTrue(session.getMessageHandlers().contains(handler3));
+
+        session.removeMessageHandler(handler3);
+
+        assertTrue(session.getMessageHandlers().contains(handler1));
+        assertTrue(session.getMessageHandlers().contains(handler2));
+        assertFalse(session.getMessageHandlers().contains(handler3));
+
+        session.removeMessageHandler(handler2);
+
+        assertTrue(session.getMessageHandlers().contains(handler1));
+        assertFalse(session.getMessageHandlers().contains(handler2));
+        assertFalse(session.getMessageHandlers().contains(handler3));
+    }
+
+    private void stringPartialHandler(String message, boolean last) {
+    }
+
+    private void bytesHandler(ByteBuffer message) {
+    }
+
+    private void pongHandler(PongMessage message) {
     }
 
 
