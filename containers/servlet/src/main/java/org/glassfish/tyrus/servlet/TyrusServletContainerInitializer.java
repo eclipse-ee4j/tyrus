@@ -83,34 +83,9 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
                                     DebugContext.TracingThreshold.TRACE);
 
         final ApplicationEventListener applicationEventListener = createApplicationEventListener(ctx);
-        final TyrusServerContainer serverContainer = new TyrusServerContainer(classes) {
-
-            private final WebSocketEngine engine =
-                    TyrusWebSocketEngine.builder(this)
-                                        .applicationEventListener(applicationEventListener)
-                                        .incomingBufferSize(incomingBufferSize)
-                                        .maxSessionsPerApp(maxSessionsPerApp)
-                                        .maxSessionsPerRemoteAddr(maxSessionsPerRemoteAddr)
-                                        .parallelBroadcastEnabled(parallelBroadcastEnabled)
-                                        .tracingType(tracingType)
-                                        .tracingThreshold(tracingThreshold)
-                                        .build();
-
-            @Override
-            public void register(Class<?> endpointClass) throws DeploymentException {
-                engine.register(endpointClass, ctx.getContextPath());
-            }
-
-            @Override
-            public void register(ServerEndpointConfig serverEndpointConfig) throws DeploymentException {
-                engine.register(serverEndpointConfig, ctx.getContextPath());
-            }
-
-            @Override
-            public WebSocketEngine getWebSocketEngine() {
-                return engine;
-            }
-        };
+        final TyrusServerContainer serverContainer = new TyrusServerContainerImpl(classes, applicationEventListener,
+                incomingBufferSize, maxSessionsPerApp, maxSessionsPerRemoteAddr, parallelBroadcastEnabled, tracingType,
+                tracingThreshold, ctx.getContextPath());
         ctx.setAttribute(ServerContainer.class.getName(), serverContainer);
         Boolean wsadlEnabled = getBooleanContextParam(ctx, TyrusWebSocketEngine.WSADL_SUPPORT);
         if (wsadlEnabled == null) {
@@ -223,5 +198,56 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
                     + "have been instantiated", e);
         }
         return null;
+    }
+
+    private static class TyrusServerContainerImpl extends TyrusServerContainer {
+        private final ApplicationEventListener applicationEventListener;
+        private final Integer incomingBufferSize;
+        private final Integer maxSessionsPerApp;
+        private final Integer maxSessionsPerRemoteAddr;
+        private final Boolean parallelBroadcastEnabled;
+        private final DebugContext.TracingType tracingType;
+        private final DebugContext.TracingThreshold tracingThreshold;
+        private final String contextPath;
+        private final WebSocketEngine engine;
+
+        public TyrusServerContainerImpl(Set<Class<?>> set, ApplicationEventListener applicationEventListener,
+                Integer incomingBufferSize, Integer maxSessionsPerApp, Integer maxSessionsPerRemoteAddr,
+                Boolean parallelBroadcastEnabled, DebugContext.TracingType tracingType,
+                DebugContext.TracingThreshold tracingThreshold, String contextPath) {
+            super(set);
+            this.applicationEventListener = applicationEventListener;
+            this.incomingBufferSize = incomingBufferSize;
+            this.maxSessionsPerApp = maxSessionsPerApp;
+            this.maxSessionsPerRemoteAddr = maxSessionsPerRemoteAddr;
+            this.parallelBroadcastEnabled = parallelBroadcastEnabled;
+            this.tracingType = tracingType;
+            this.tracingThreshold = tracingThreshold;
+            this.contextPath = contextPath;
+            this.engine = TyrusWebSocketEngine.builder(this)
+                        .applicationEventListener(applicationEventListener)
+                        .incomingBufferSize(incomingBufferSize)
+                        .maxSessionsPerApp(maxSessionsPerApp)
+                        .maxSessionsPerRemoteAddr(maxSessionsPerRemoteAddr)
+                        .parallelBroadcastEnabled(parallelBroadcastEnabled)
+                        .tracingType(tracingType)
+                        .tracingThreshold(tracingThreshold)
+                        .build();
+        }
+
+        @Override
+        public void register(Class<?> endpointClass) throws DeploymentException {
+            engine.register(endpointClass, contextPath);
+        }
+
+        @Override
+        public void register(ServerEndpointConfig serverEndpointConfig) throws DeploymentException {
+            engine.register(serverEndpointConfig, contextPath);
+        }
+
+        @Override
+        public WebSocketEngine getWebSocketEngine() {
+            return engine;
+        }
     }
 }
