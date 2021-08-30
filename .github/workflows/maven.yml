@@ -1,0 +1,40 @@
+#
+# Copyright (c) 2021 Contributors to the Eclipse Foundation
+#
+# This program and the accompanying materials are made available under the
+# terms of the Eclipse Public License v. 2.0 which is available at
+# http://www.eclipse.org/legal/epl-2.0,
+# or the Eclipse Distribution License v. 1.0 which is available at
+# http://www.eclipse.org/org/documents/edl-v10.php.
+#
+# SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+#
+
+name: Tyrus
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Build on JDK ${{ matrix.java_version }}
+    runs-on: ubuntu-latest
+    env:
+      script-directory: $GITHUB_WORKSPACE/etc/jenkins
+
+    strategy:
+      matrix:
+        java_version: [ 11, 17-ea ]
+    continue-on-error: false
+
+    steps:
+    - name: Checkout for build
+      uses: actions/checkout@v2.3.4
+      with:
+        fetch-depth: 0
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'zulu'
+        java-version: ${{ matrix.java_version }}
+    - name: Build
+      run: mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true
