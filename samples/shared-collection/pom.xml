@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -40,13 +40,13 @@
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>3.0.0-M1</version>
+            <version>3.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-sse</artifactId>
-            <version>2.19</version>
+            <version>3.0.1</version>
             <scope>provided</scope>
         </dependency>
 
@@ -87,8 +87,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>jakarta.json</artifactId>
+            <groupId>org.eclipse.parsson</groupId>
+            <artifactId>parsson</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
