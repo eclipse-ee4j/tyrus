@@ -240,6 +240,7 @@
                         <warn>true</warn>
                         <!-- for use with repair -->
                         <update>false</update>
+                        <quiet>false</quiet>
                         <!-- check that year is correct -->
                         <ignoreYear>false</ignoreYear>
                         <templateFile>etc/config/copyright.txt</templateFile>
