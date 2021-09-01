@@ -5,7 +5,7 @@
 Eclipse Tyrus is the open source
 <a href="https://projects.eclipse.org/projects/ee4j.websocket">JSR 356 - Java API for WebSocket</a>
 reference implementation
-for easy development of WebSocket applications.Eclipse Tyrus is also 
+for easy development of WebSocket applications. Eclipse Tyrus is also 
 a Jakarta WebSocket 2.0 compatible implementation.
 
  WebSocket protocol defined by IETF 
