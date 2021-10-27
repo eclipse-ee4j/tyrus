@@ -3,49 +3,51 @@ pipeline {
 
     stages {
         stage('Jersey build') {
-            parallel {
-                stage('JDK 8 ') {
-                    agent {
-                        label 'centos-7'
+            timeout(unit: 'MINUTES', time: 120) {
+                parallel {
+                    stage('JDK 8 ') {
+                        agent {
+                            label 'centos-7'
+                        }
+                        tools {
+                            jdk 'oracle-jdk8-latest'
+                            maven 'apache-maven-latest'
+                        }
+                        steps {
+                            sh '''
+                                   mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true
+                                '''
+                        }
                     }
-                    tools {
-                        jdk 'oracle-jdk8-latest'
-                        maven 'apache-maven-latest'
+                    stage('JDK 13 ') {
+                        agent {
+                            label 'centos-7'
+                        }
+                        tools {
+                            jdk 'openjdk-jdk13-latest'
+                            maven 'apache-maven-latest'
+                        }
+                        steps {
+                            sh '''
+                                   mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true
+                                '''
+                        }
                     }
-                    steps {
-                        sh '''
-				mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true
-                            '''
-                    }
+                    //stage('JDK 17 ') {
+                    //    agent {
+                    //        label 'centos-7'
+                    //    }
+                    //    tools {
+                    //        jdk 'openjdk-jdk17-latest'
+                    //        maven 'apache-maven-latest'
+                    //    }
+                    //    steps {
+                    //        sh '''
+                    //                mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true
+                    //            '''
+                    //    }
+                    //}
                 }
-                stage('JDK 13 ') {
-                    agent {
-                        label 'centos-7'
-                    }
-                    tools {
-                        jdk 'openjdk-jdk13-latest'
-                        maven 'apache-maven-latest'
-                    }
-                    steps {
-                        sh '''
-                                mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true
-                            '''
-                    }
-                }
-                //stage('JDK 17 ') {
-                //    agent {
-                //        label 'centos-7'
-                //    }
-                //    tools {
-                //        jdk 'openjdk-jdk17-latest'
-                //        maven 'apache-maven-latest'
-                //    }
-                //    steps {
-                //        sh '''
-                //                mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true
-                //            '''
-                //    }
-                //}
             }
         }
     }
