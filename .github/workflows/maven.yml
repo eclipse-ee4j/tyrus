@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        java_version: [ 11, 17-ea ]
+        java_version: [ 11 ]
     continue-on-error: false
 
     steps:
@@ -37,4 +37,4 @@ jobs:
         distribution: 'zulu'
         java-version: ${{ matrix.java_version }}
     - name: Build
-      run: mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true
+      run: mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true -DskipTests
