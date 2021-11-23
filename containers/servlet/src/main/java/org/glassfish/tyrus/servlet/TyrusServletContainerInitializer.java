@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,14 +16,21 @@
 
 package org.glassfish.tyrus.servlet;
 
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.Endpoint;
+import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerApplicationConfig;
 import jakarta.websocket.server.ServerContainer;
 import jakarta.websocket.server.ServerEndpoint;
@@ -38,6 +45,8 @@ import jakarta.servlet.annotation.HandlesTypes;
 import org.glassfish.tyrus.core.DebugContext;
 import org.glassfish.tyrus.core.TyrusWebSocketEngine;
 import org.glassfish.tyrus.core.monitoring.ApplicationEventListener;
+import org.glassfish.tyrus.core.uri.internal.PathSegment;
+import org.glassfish.tyrus.core.uri.internal.UriComponent;
 import org.glassfish.tyrus.server.TyrusServerContainer;
 import org.glassfish.tyrus.spi.WebSocketEngine;
 
@@ -81,20 +90,19 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
         final DebugContext.TracingThreshold tracingThreshold =
                 getEnumContextParam(ctx, TyrusWebSocketEngine.TRACING_THRESHOLD, DebugContext.TracingThreshold.class,
                                     DebugContext.TracingThreshold.TRACE);
-
-        final ApplicationEventListener applicationEventListener = createApplicationEventListener(ctx);
-        final TyrusServerContainer serverContainer = new TyrusServerContainerImpl(classes, applicationEventListener,
-                incomingBufferSize, maxSessionsPerApp, maxSessionsPerRemoteAddr, parallelBroadcastEnabled, tracingType,
-                tracingThreshold, ctx.getContextPath());
-        ctx.setAttribute(ServerContainer.class.getName(), serverContainer);
         Boolean wsadlEnabled = getBooleanContextParam(ctx, TyrusWebSocketEngine.WSADL_SUPPORT);
         if (wsadlEnabled == null) {
             wsadlEnabled = false;
         }
         LOGGER.config("WSADL enabled: " + wsadlEnabled);
 
-        TyrusServletFilter filter =
-                new TyrusServletFilter((TyrusWebSocketEngine) serverContainer.getWebSocketEngine(), wsadlEnabled);
+        final ApplicationEventListener applicationEventListener = createApplicationEventListener(ctx);
+        final TyrusServerContainerImpl serverContainer = new TyrusServerContainerImpl(classes, applicationEventListener,
+                incomingBufferSize, maxSessionsPerApp, maxSessionsPerRemoteAddr, parallelBroadcastEnabled, tracingType,
+                tracingThreshold, ctx.getContextPath(), wsadlEnabled);
+        ctx.setAttribute(ServerContainer.class.getName(), serverContainer);
+
+        final TyrusServletFilter filter = new TyrusServletFilter(serverContainer.getServletUpgrade());
 
         // HttpSessionListener registration
         ctx.addListener(filter);
@@ -210,11 +218,12 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
         private final DebugContext.TracingThreshold tracingThreshold;
         private final String contextPath;
         private final WebSocketEngine engine;
+        private final TyrusServletUpgrade tyrusServletUpgrade;
 
         public TyrusServerContainerImpl(Set<Class<?>> set, ApplicationEventListener applicationEventListener,
                 Integer incomingBufferSize, Integer maxSessionsPerApp, Integer maxSessionsPerRemoteAddr,
                 Boolean parallelBroadcastEnabled, DebugContext.TracingType tracingType,
-                DebugContext.TracingThreshold tracingThreshold, String contextPath) {
+                DebugContext.TracingThreshold tracingThreshold, String contextPath, boolean wsadlEnabled) {
             super(set);
             this.applicationEventListener = applicationEventListener;
             this.incomingBufferSize = incomingBufferSize;
@@ -233,6 +242,8 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
                         .tracingType(tracingType)
                         .tracingThreshold(tracingThreshold)
                         .build();
+            this.tyrusServletUpgrade = new TyrusServletUpgrade((TyrusWebSocketEngine) engine, wsadlEnabled);
+
         }
 
         @Override
@@ -248,6 +259,64 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
         @Override
         public WebSocketEngine getWebSocketEngine() {
             return engine;
+        }
+
+        @Override
+        public void upgradeHttpToWebSocket(Object servletRequest, Object servletResponse, ServerEndpointConfig sec,
+                                           Map<String, String> pathParameters) throws IOException, DeploymentException {
+            final String requestUri = computeRequestPath(sec.getPath(), pathParameters);
+
+            final HttpServletRequest httpServletRequest = new HttpServletRequestWrapper((HttpServletRequest) servletRequest) {
+                @Override
+                public String getRequestURI() {
+                    return requestUri;
+                }
+
+                @Override
+                public String getContextPath() {
+                    return "/";
+                }
+
+            };
+
+            try {
+                tyrusServletUpgrade.upgrade(httpServletRequest, (HttpServletResponse) servletResponse);
+            } catch (ServletException e) {
+                throw new DeploymentException(e.getMessage(), e);
+            }
+        }
+
+        private TyrusServletUpgrade getServletUpgrade() {
+            return tyrusServletUpgrade;
+        }
+
+        private static String computeRequestPath(String path, Map<String, String> pathParams) {
+            final StringBuilder resultPath = new StringBuilder();
+
+            final List<PathSegment> endpointPathSegments = UriComponent.decodePath(path, true);
+            for (int i = 0; i < endpointPathSegments.size(); i++) {
+                resultPath.append('/');
+                String endpointSegment = endpointPathSegments.get(i).getPath();
+
+                if (isVariable(endpointSegment)) {
+                    final String pathParam = pathParams.get(getVariableName(endpointSegment));
+                    resultPath.append(pathParam == null ? endpointSegment : pathParam);
+                } else {
+                    resultPath.append(endpointSegment);
+                }
+            }
+
+            final String result = resultPath.toString();
+
+            return result.startsWith("//") ? result.substring(1) : result;
+        }
+
+        private static boolean isVariable(String segment) {
+            return segment.startsWith("{") && segment.endsWith("}");
+        }
+
+        private static String getVariableName(String segment) {
+            return segment.substring(1, segment.length() - 1);
         }
     }
 }
