@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 
@@ -39,9 +40,9 @@ import org.glassfish.tyrus.spi.ServerContainer;
 /**
  * Server Container Implementation.
  *
- * @author Martin Matula (martin.matula at oracle.com)
- * @author Pavel Bucek (pavel.bucek at oracle.com)
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Martin Matula
+ * @author Pavel Bucek
+ * @author Stepan Kopriva
  */
 public abstract class TyrusServerContainer extends BaseContainer implements ServerContainer {
     private final ErrorCollector collector;
@@ -51,7 +52,7 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
     private final Set<Class<?>> classes;
     private final ServerApplicationConfig serverApplicationConfig;
 
-    private boolean canDeploy = true;
+    private boolean notYetStarted = true;
     private long defaultMaxSessionIdleTimeout = 0;
     private long defaultAsyncSendTimeout = 0;
     private int maxTextMessageBufferSize = Integer.MAX_VALUE;
@@ -163,19 +164,17 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
 
     @Override
     public void addEndpoint(Class<?> endpointClass) throws DeploymentException {
-        if (canDeploy) {
-            dynamicallyAddedClasses.add(endpointClass);
-        } else {
-            throw new IllegalStateException("Not in 'deploy' scope.");
+        dynamicallyAddedClasses.add(endpointClass);
+        if (!notYetStarted) {
+            register(endpointClass);
         }
     }
 
     @Override
     public void addEndpoint(ServerEndpointConfig serverEndpointConfig) throws DeploymentException {
-        if (canDeploy) {
-            dynamicallyAddedEndpointConfigs.add(serverEndpointConfig);
-        } else {
-            throw new IllegalStateException("Not in 'deploy' scope.");
+        dynamicallyAddedEndpointConfigs.add(serverEndpointConfig);
+        if (!notYetStarted) {
+            register(serverEndpointConfig);
         }
     }
 
@@ -345,6 +344,12 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
      * {@link #addEndpoint(Class)} calls.
      */
     public void doneDeployment() {
-        canDeploy = false;
+        notYetStarted = false;
+    }
+
+    // @Override in 2.1
+    public void upgradeHttpToWebSocket(Object httpServletRequest, Object httpServletResponse, ServerEndpointConfig sec,
+                                       Map<String, String> pathParameters) throws IOException, DeploymentException {
+        throw new UnsupportedOperationException();
     }
 }
