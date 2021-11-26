@@ -175,8 +175,12 @@ public abstract class ServletTestBase {
 
         WebArchive archive = ShrinkWrap.create(WebArchive.class, "servlet-test.war");
         archive.addClasses(OnOpenCloseEndpoint.class, PlainEchoEndpoint.class,
-                DispatchingServletFilter.ProgramaticEndpoint.class, DispatchingServletFilter.class,
-                DispatchingServletProgrammaticEndpointConfig.class
+                DispatchingServletFilter.class,
+                DispatchingServletFilter.OP.class,
+                DispatchingServletFilter.ProgramaticEndpoint.class,
+                DispatchingServletFilter.ProgramaticEndpoint.ProgramaticEndpointMessageHandler.class,
+                DispatchingServletProgrammaticEndpointConfig.class,
+                DispatchingServletProgrammaticEndpointConfig.ProgrammaticEndpointConfigurator.class
         );
         archive.addAsWebInfResource(new StringAsset(webXml), "glassfish-web.xml");
         System.out.println(archive.toString(true));

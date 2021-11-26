@@ -45,7 +45,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.glassfish.tyrus.spi.*;version=${project.version}</Export-Package>
-                        <Import-Package>jakarta.websocket;version=${apijar.bundle.version},*</Import-Package>
+                        <Import-Package>jakarta.websocket.*</Import-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
                 </configuration>
