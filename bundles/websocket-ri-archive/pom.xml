@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -100,6 +100,7 @@
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${assembly.directory}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.tyrus</groupId>
@@ -108,6 +109,7 @@
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${assembly.directory}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.tyrus</groupId>
@@ -116,6 +118,7 @@
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${assembly.directory}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.tyrus</groupId>
@@ -124,6 +127,7 @@
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${assembly.directory}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.tyrus</groupId>
@@ -132,6 +136,7 @@
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${assembly.directory}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.tyrus</groupId>
@@ -140,6 +145,7 @@
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${assembly.directory}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.tyrus</groupId>
@@ -148,6 +154,7 @@
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${assembly.directory}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
