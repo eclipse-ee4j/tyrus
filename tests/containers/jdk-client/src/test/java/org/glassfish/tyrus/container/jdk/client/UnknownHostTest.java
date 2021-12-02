@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,6 +17,7 @@
 package org.glassfish.tyrus.container.jdk.client;
 
 import org.junit.Assume;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,7 +30,6 @@ import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.*;
 
 public class UnknownHostTest {
 
@@ -53,7 +53,7 @@ public class UnknownHostTest {
             container.connectToServer(webSocketClientEndpoint, uri);
         } catch (Exception e) {
             LOG.log(Level.FINE, e.getMessage());
-            assertTrue(e.getMessage().contains("Connection failed"));
+            Assert.assertTrue(e.getMessage().contains("Connection failed"));
         }
 
         LOG.log(Level.INFO, "AFTER WARMUP COUNT: {0}", getOpenFileDescriptorCount());
@@ -69,8 +69,8 @@ public class UnknownHostTest {
                 session = container.connectToServer(webSocketClientEndpoint, uri);
             } catch (Exception e) {
                 LOG.log(Level.FINE, e.getMessage());
-                assertTrue(e.getMessage().contains("Connection failed"));
-                assertNull(session);
+                Assert.assertTrue(e.getMessage().contains("Connection failed"));
+                Assert.assertNull(session);
 
             }
         }
@@ -79,7 +79,7 @@ public class UnknownHostTest {
 
         //Then
         LOG.log(Level.INFO, "END COUNT: {0}", getOpenFileDescriptorCount());
-        assertEquals(fileDescriptorsBefore, fileDescriptorsAfter);
+        Assert.assertEquals(fileDescriptorsBefore, fileDescriptorsAfter);
 
     }
 

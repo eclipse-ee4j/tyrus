@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -62,6 +62,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -71,6 +72,15 @@
                         <configuration>
                             <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml
                             </dependencyReducedPomLocation>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resource>**/module-info.*</resource>
+                                    <resource>LICENSE</resource>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
+                                    <resource>about.html</resource>
+                                </transformer>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>
@@ -93,6 +103,7 @@
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${gen-src-dir}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.tyrus</groupId>
@@ -101,6 +112,7 @@
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${gen-src-dir}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.tyrus</groupId>
@@ -109,6 +121,7 @@
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${gen-src-dir}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.tyrus</groupId>
@@ -117,6 +130,7 @@
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${gen-src-dir}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.tyrus</groupId>
@@ -125,6 +139,7 @@
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${gen-src-dir}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.grizzly</groupId>
@@ -133,6 +148,7 @@
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${gen-src-dir}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.grizzly</groupId>
@@ -141,6 +157,7 @@
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${gen-src-dir}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.grizzly</groupId>
@@ -149,6 +166,7 @@
                                     <classifier>sources</classifier>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${gen-src-dir}</outputDirectory>
+                                    <excludes>**/module-info.java</excludes>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

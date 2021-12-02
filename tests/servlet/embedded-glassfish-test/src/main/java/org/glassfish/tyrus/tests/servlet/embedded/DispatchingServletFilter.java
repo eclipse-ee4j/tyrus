@@ -83,23 +83,35 @@ public class DispatchingServletFilter implements Filter {
 
         @Override
         public void onOpen(Session session, EndpointConfig config) {
-            Map<String, String> parameters = session.getPathParameters();
-            session.addMessageHandler(new MessageHandler.Whole<String>() {
-                @Override
-                public void onMessage(String message) {
-                    try {
-                        session.getBasicRemote().sendText(parameters.get("a"));
-                        session.getBasicRemote().sendText(parameters.get("b"));
-                    } catch (IOException e) {
-                        onError(session, e);
-                    }
-                }
-            });
+            session.addMessageHandler(new ProgramaticEndpointMessageHandler(session));
         }
 
         @Override
         public void onError(Session session, Throwable thr) {
             thr.printStackTrace();
+        }
+
+        /*
+         * Anonymous classes do not work with Arquillian archive and module-info.
+         */
+        class ProgramaticEndpointMessageHandler implements MessageHandler.Whole<String> {
+            private final Session session;
+            private final Map<String, String> parameters;
+
+            public ProgramaticEndpointMessageHandler(Session session) {
+                this.session = session;
+                this.parameters = session.getPathParameters();
+            }
+
+            @Override
+            public void onMessage(String message) {
+                try {
+                    session.getBasicRemote().sendText(parameters.get("a"));
+                    session.getBasicRemote().sendText(parameters.get("b"));
+                } catch (IOException e) {
+                    onError(session, e);
+                }
+            }
         }
     }
 }

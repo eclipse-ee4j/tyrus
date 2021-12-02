@@ -31,7 +31,7 @@
     <name>Tyrus Servlet Tests on Glassfish</name>
 
     <properties>
-        <glassfish.container.version>6.1.0</glassfish.container.version>
+        <glassfish.container.version>6.2.1</glassfish.container.version>
         <junit.jupiter.version>5.7.2</junit.jupiter.version>
     </properties>
 
@@ -54,6 +54,12 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.tyrus</groupId>
+            <artifactId>tyrus-server</artifactId>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.glassfish.tyrus</groupId>
@@ -106,11 +112,6 @@
             <artifactId>simple-glassfish-api</artifactId>
             <version>${glassfish.container.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.tyrus</groupId>
-            <artifactId>tyrus-server</artifactId>
-            <version>2.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.main.web</groupId>

@@ -58,15 +58,7 @@ public class DispatchingServletProgrammaticEndpointConfig implements ServerEndpo
 
     @Override
     public Configurator getConfigurator() {
-        return new Configurator() {
-            @Override
-            public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
-                if (DispatchingServletFilter.ProgramaticEndpoint.class.equals(endpointClass)) {
-                    return (T) new DispatchingServletFilter.ProgramaticEndpoint();
-                }
-                return super.getEndpointInstance(endpointClass);
-            }
-        };
+        return new ProgrammaticEndpointConfigurator();
     }
 
     @Override
@@ -82,5 +74,18 @@ public class DispatchingServletProgrammaticEndpointConfig implements ServerEndpo
     @Override
     public Map<String, Object> getUserProperties() {
         return Collections.emptyMap();
+    }
+
+    /*
+     * Anonymous classes do not work with Arquillian archive and module-info.
+     */
+    static class ProgrammaticEndpointConfigurator extends Configurator {
+        @Override
+        public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
+            if (DispatchingServletFilter.ProgramaticEndpoint.class.equals(endpointClass)) {
+                return (T) new DispatchingServletFilter.ProgramaticEndpoint();
+            }
+            return super.getEndpointInstance(endpointClass);
+        }
     }
 }
