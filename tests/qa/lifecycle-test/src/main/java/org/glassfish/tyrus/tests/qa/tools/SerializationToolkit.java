@@ -31,7 +31,7 @@ import org.apache.commons.io.FileUtils;
 import org.glassfish.tyrus.tests.qa.regression.Issue;
 
 /**
- * @author Michal Conos (michal.conos at oracle.com)
+ * @author Michal Conos
  */
 public class SerializationToolkit {
 

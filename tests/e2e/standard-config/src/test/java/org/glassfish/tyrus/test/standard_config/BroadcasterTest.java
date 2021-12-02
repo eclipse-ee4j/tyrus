@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -41,7 +41,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Tests broadcasting to several clients.
  *
- * @author Martin Matula (martin.matula at oracle.com)
+ * @author Martin Matula
  */
 public class BroadcasterTest extends TestContainer {
     private static final String SENT_MESSAGE = "Hello World";
@@ -157,8 +157,8 @@ public class BroadcasterTest extends TestContainer {
     }
 
     /**
-     * @author Martin Matula (martin.matula at oracle.com)
-     * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+     * @author Martin Matula
+     * @author Stepan Kopriva
      */
     @ServerEndpoint(value = "/broadcast")
     public static class BroadcasterTestEndpoint {

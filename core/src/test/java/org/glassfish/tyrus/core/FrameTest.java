@@ -25,7 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class FrameTest {
     @Test

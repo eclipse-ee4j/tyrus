@@ -57,7 +57,7 @@ import javax.net.ssl.TrustManagerFactory;
  * @author Alexey Stashok
  * @author Hubert Iwaniuk
  * @author Bruno Harbulot
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  * @deprecated Please use {@link org.glassfish.tyrus.client.SslContextConfigurator}.
  */
 public class SslContextConfigurator {

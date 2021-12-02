@@ -14,7 +14,7 @@ import org.glassfish.tyrus.sample.auction.Auction;
 import org.glassfish.tyrus.sample.auction.AuctionItem;
 
 /**
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 public class AuctionMessage {
 
@@ -90,7 +90,7 @@ public class AuctionMessage {
 
 
     /**
-     * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+     * @author Stepan Kopriva
      */
     public static class AuctionListResponseMessage extends AuctionMessage {
 
@@ -100,7 +100,7 @@ public class AuctionMessage {
     }
 
     /**
-     * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+     * @author Stepan Kopriva
      */
     public static class AuctionTimeBroadcastMessage extends AuctionMessage {
 
@@ -117,7 +117,7 @@ public class AuctionMessage {
     }
 
     /**
-     * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+     * @author Stepan Kopriva
      */
     public static class PriceUpdateResponseMessage extends AuctionMessage {
 
@@ -127,7 +127,7 @@ public class AuctionMessage {
     }
 
     /**
-     * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+     * @author Stepan Kopriva
      */
     public static class ResultMessage extends AuctionMessage {
 

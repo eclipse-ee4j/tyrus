@@ -36,8 +36,8 @@ import org.glassfish.tyrus.core.ComponentProvider;
 /**
  * Provides the instance for the supported EJB classes.
  *
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Stepan Kopriva
+ * @author Pavel Bucek
  */
 public class EjbComponentProvider extends ComponentProvider {
 

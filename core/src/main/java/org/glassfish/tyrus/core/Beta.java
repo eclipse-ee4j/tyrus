@@ -44,7 +44,7 @@ import static java.lang.annotation.ElementType.TYPE;
  * Once a {@code @Beta}-annotated Tyrus API reaches the desired maturity, the {@code @Beta} annotation
  * will be removed from such API and the API will become part of a stable public Tyrus API.
  *
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  */
 @Retention(RetentionPolicy.CLASS)
 @Documented

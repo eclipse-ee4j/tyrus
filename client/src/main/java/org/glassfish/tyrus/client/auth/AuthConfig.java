@@ -30,7 +30,7 @@ import org.glassfish.tyrus.core.Beta;
  * An instance of this class can be created by {@link AuthConfig} and it must be registered to property bag in {@link
  * ClientManager}.
  *
- * @author Ondrej Kosatka (ondrej.kosatka at oracle.com)
+ * @author Ondrej Kosatka
  * @see Authenticator
  * @see ClientManager#getProperties()
  */

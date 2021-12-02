@@ -29,7 +29,7 @@ import org.glassfish.jersey.media.sse.SseBroadcaster;
 import org.glassfish.jersey.media.sse.SseFeature;
 
 /**
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 @Path("collection")
 public class SharedCollectionResource {

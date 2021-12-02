@@ -26,7 +26,7 @@ import static org.junit.Assert.assertNull;
 /**
  * Tests {@link org.glassfish.tyrus.core.Utils} properties methods.
  *
- * @author Ondrej Kosatka (ondrej.kosatka at oracle.com)
+ * @author Ondrej Kosatka
  */
 public class UtilsPropertiesTest {
 

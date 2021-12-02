@@ -19,7 +19,7 @@ package org.glassfish.tyrus.core;
 import java.util.HashMap;
 
 /**
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 class PrimitivesToWrappers {
 

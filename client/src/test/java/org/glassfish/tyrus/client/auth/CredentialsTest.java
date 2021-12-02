@@ -21,7 +21,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class CredentialsTest {
 

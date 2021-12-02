@@ -35,7 +35,7 @@ import org.glassfish.tyrus.core.l10n.LocalizationMessages;
  * of a URI.
  *
  * @author Paul Sandoz
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  */
 public class UriComponent {
 

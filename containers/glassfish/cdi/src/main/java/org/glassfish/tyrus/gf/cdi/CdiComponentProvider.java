@@ -33,7 +33,7 @@ import org.glassfish.tyrus.core.ComponentProvider;
 /**
  * Provides the instance for CDI class.
  *
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 public class CdiComponentProvider extends ComponentProvider {
 

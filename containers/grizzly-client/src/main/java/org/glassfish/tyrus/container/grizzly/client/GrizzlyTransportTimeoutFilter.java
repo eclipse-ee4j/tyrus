@@ -33,7 +33,7 @@ import org.glassfish.grizzly.filterchain.NextAction;
 /**
  * Timeout filter used for shared container.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 class GrizzlyTransportTimeoutFilter extends BaseFilter {
 

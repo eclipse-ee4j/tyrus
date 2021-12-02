@@ -22,7 +22,7 @@ package org.glassfish.tyrus.core.uri.internal;
  * The parser is not thread safe.
  *
  * @author Paul Sandoz
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  */
 class UriParser {
     private static final String ERROR_STATE = "The parser was not executed yet. Call the parse() method first.";

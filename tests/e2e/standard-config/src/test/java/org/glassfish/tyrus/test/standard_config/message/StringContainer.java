@@ -19,7 +19,7 @@ package org.glassfish.tyrus.test.standard_config.message;
 /**
  * Used
  *
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 public class StringContainer {
     private String string;

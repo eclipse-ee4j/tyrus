@@ -28,8 +28,8 @@ import org.glassfish.tyrus.core.l10n.LocalizationMessages;
 /**
  * Save received partial messages to a list and concatenate them.
  *
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Stepan Kopriva
+ * @author Pavel Bucek
  */
 class BinaryBuffer {
     private final List<ByteBuffer> list = new ArrayList<ByteBuffer>();

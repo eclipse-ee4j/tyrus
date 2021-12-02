@@ -56,7 +56,7 @@ import org.glassfish.tyrus.spi.WebSocketEngine;
  * All requests will be handled by registered filter if not specified otherwise.
  *
  * @author Jitendra Kotamraju
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 @HandlesTypes({ServerEndpoint.class, ServerApplicationConfig.class, Endpoint.class})
 public class TyrusServletContainerInitializer implements ServletContainerInitializer {

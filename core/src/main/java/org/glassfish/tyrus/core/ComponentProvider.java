@@ -24,9 +24,9 @@ import java.lang.reflect.Method;
  * Method {@link #isApplicable(Class)} is called first to check whether the provider is able to provide the given
  * {@link Class}.  Method {@link #create(Class)} is called to get the instance.
  *
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
- * @author Martin Matula (martin.matula at oracle.com)
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Stepan Kopriva
+ * @author Martin Matula
+ * @author Pavel Bucek
  */
 public abstract class ComponentProvider {
     /**

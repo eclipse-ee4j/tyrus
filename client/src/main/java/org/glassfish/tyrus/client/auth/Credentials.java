@@ -23,7 +23,7 @@ import org.glassfish.tyrus.core.l10n.LocalizationMessages;
 /**
  * Credentials can be used when configuring authentication properties used during client handshake.
  *
- * @author Ondrej Kosatka (ondrej.kosatka at oracle.com)
+ * @author Ondrej Kosatka
  * @see ClientProperties#CREDENTIALS
  */
 @Beta

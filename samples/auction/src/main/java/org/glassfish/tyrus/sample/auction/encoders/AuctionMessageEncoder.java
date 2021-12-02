@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -17,7 +17,7 @@ import jakarta.websocket.EndpointConfig;
 import org.glassfish.tyrus.sample.auction.message.AuctionMessage;
 
 /**
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class AuctionMessageEncoder implements Encoder.Text<AuctionMessage> {
 

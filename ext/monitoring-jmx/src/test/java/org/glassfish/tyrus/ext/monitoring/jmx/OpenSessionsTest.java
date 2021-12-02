@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -42,7 +42,7 @@ import static org.junit.Assert.fail;
  * Tests that open sessions statistics (number of currently open sessions and maximal number of open sessions since
  * the beginning of monitoring) are collected correctly.
  *
- * @author Petr Janouch (petr.janouch at oracle.com
+ * @author Petr Janouch
  */
 public class OpenSessionsTest extends TestContainer {
 

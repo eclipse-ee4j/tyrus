@@ -24,7 +24,7 @@ import org.glassfish.tyrus.core.l10n.LocalizationMessages;
 /**
  * Generates a value of {@code Authorization} header of HTTP request for Basic Http Authentication scheme.
  *
- * @author Ondrej Kosatka (ondrej.kosatka at oracle.com)
+ * @author Ondrej Kosatka
  */
 final class BasicAuthenticator extends Authenticator {
 

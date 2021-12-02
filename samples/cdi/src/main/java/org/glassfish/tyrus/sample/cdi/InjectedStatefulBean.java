@@ -14,7 +14,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Stateful;
 
 /**
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 @Stateful
 public class InjectedStatefulBean {

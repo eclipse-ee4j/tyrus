@@ -17,7 +17,7 @@
 package org.glassfish.tyrus.tests.qa.lifecycle;
 
 /**
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class MyException extends RuntimeException {
 

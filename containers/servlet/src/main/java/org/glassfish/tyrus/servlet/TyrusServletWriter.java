@@ -32,7 +32,7 @@ import org.glassfish.tyrus.spi.Writer;
 /**
  * {@link org.glassfish.tyrus.spi.Writer} implementation used in Servlet integration.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 class TyrusServletWriter extends Writer implements WriteListener {
 

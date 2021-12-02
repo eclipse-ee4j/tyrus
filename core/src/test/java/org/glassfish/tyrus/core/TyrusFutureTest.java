@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Sanity tests for TyrusFuture.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class TyrusFutureTest {
 

@@ -19,7 +19,7 @@ package org.glassfish.tyrus.container.grizzly.client;
 /**
  * Grizzly client properties.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public final class GrizzlyClientProperties {
 

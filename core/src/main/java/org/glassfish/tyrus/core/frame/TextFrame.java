@@ -32,7 +32,7 @@ import org.glassfish.tyrus.core.Utf8DecodingException;
 /**
  * Text frame representation.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class TextFrame extends TyrusFrame {
 

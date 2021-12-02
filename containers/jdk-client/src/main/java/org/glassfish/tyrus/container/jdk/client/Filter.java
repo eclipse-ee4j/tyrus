@@ -26,7 +26,7 @@ import org.glassfish.tyrus.spi.CompletionHandler;
  * create JDK client transport.
  *
  * @author Petr Janouch
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 class Filter {
 

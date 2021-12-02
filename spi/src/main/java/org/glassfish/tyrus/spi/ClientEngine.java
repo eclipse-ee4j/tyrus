@@ -19,8 +19,8 @@ package org.glassfish.tyrus.spi;
 /**
  * Facade for handling client operations from containers.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
- * @author Ondrej Kosatka (ondrej.kosatka at oracle.com)
+ * @author Pavel Bucek
+ * @author Ondrej Kosatka
  */
 public interface ClientEngine {
 

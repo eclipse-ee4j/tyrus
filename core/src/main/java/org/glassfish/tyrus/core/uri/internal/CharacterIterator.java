@@ -21,7 +21,7 @@ import java.util.NoSuchElementException;
 /**
  * Iterator which iterates through the input string and returns characters from that string.
  *
- * @author Miroslav Fuksa (miroslav.fuksa at oracle.com)
+ * @author Miroslav Fuksa
  */
 final class CharacterIterator {
     private int pos;

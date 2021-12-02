@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -22,7 +22,7 @@ import jakarta.websocket.Encoder;
 /**
  * Fall-back encoder - encoders any object to string using {@link Object#toString()} method.
  *
- * @author Martin Matula (martin.matula at oracle.com)
+ * @author Martin Matula
  */
 public class ToStringEncoder extends CoderAdapter implements Encoder.Text<Object> {
     @Override

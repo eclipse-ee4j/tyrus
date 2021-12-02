@@ -19,7 +19,7 @@ package org.glassfish.tyrus.test.standard_config.message;
 /**
  * Message for testing TestDecoder.
  *
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 public class TestMessage {
     public static final String PREFIX = "prefix";

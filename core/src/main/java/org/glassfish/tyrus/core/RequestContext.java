@@ -30,7 +30,7 @@ import org.glassfish.tyrus.spi.UpgradeRequest;
 /**
  * Implementation of all possible request interfaces. Should be the only point of truth.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public final class RequestContext extends UpgradeRequest {
 

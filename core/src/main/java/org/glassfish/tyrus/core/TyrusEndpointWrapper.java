@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -86,10 +86,10 @@ import org.glassfish.tyrus.spi.UpgradeResponse;
  * <p>
  * There is one {@link TyrusEndpointWrapper} for each application class, which handles all the methods.
  *
- * @author Danny Coward (danny.coward at oracle.com)
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
- * @author Martin Matula (martin.matula at oracle.com)
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Danny Coward
+ * @author Stepan Kopriva
+ * @author Martin Matula
+ * @author Pavel Bucek
  */
 public class TyrusEndpointWrapper {
 

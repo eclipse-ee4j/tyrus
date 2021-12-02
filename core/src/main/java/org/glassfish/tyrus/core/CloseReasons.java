@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -22,7 +22,7 @@ import jakarta.websocket.CloseReason;
  * Enum containing standard CloseReasons defined in RFC 6455, see chapter
  * <a href="https://tools.ietf.org/html/rfc6455#section-7.4.1">7.4.1 Defined Status Codes</a>.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public enum CloseReasons {
 

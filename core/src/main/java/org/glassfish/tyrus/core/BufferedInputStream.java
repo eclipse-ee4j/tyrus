@@ -22,8 +22,8 @@ import java.io.InputStream;
 /**
  * Passed to the (@link MessageHandler.Whole} in case that partial messages are being received.
  *
- * @author Danny Coward (danny.coward at oracle.com)
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Danny Coward
+ * @author Stepan Kopriva
  */
 class BufferedInputStream extends InputStream {
     private final InputStreamBuffer buffer;

@@ -13,7 +13,7 @@ package org.glassfish.tyrus.sample.cdi;
 import jakarta.enterprise.context.ApplicationScoped;
 
 /**
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 @ApplicationScoped
 public class InjectedApplicationScoped {

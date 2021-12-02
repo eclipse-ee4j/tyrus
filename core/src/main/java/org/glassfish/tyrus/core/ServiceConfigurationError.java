@@ -27,7 +27,7 @@ package org.glassfish.tyrus.core;
  * </ul>
  *
  * @author Mark Reinhold
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  */
 public class ServiceConfigurationError extends Error {
 

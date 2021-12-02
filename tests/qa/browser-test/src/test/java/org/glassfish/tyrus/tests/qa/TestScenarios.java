@@ -29,7 +29,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
 /**
- * @author Michal Čonos (michal.conos at oracle.com)
+ * @author Michal Čonos
  */
 public class TestScenarios {
 

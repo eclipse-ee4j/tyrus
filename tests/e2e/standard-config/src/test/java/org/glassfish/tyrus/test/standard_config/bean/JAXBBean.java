@@ -19,7 +19,7 @@ package org.glassfish.tyrus.test.standard_config.bean;
 import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 @XmlRootElement
 public class JAXBBean {

@@ -26,7 +26,7 @@ import static org.junit.Assert.fail;
 /**
  * Tests Utils
  *
- * @author Ondrej Kosatka (ondrej.kosatka at oracle.com)
+ * @author Ondrej Kosatka
  */
 public class UtilsTest {
 

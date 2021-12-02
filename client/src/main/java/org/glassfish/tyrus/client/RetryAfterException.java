@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -27,7 +27,7 @@ import org.glassfish.tyrus.spi.UpgradeResponse;
  * WebSocketContainer}.connectToServer(...) when HTTP response status code {@code 503 - Service Unavailable} is
  * received.
  *
- * @author Ondrej Kosatka (ondrej.kosatka at oracle.com)
+ * @author Ondrej Kosatka
  * @see ClientManager.ReconnectHandler
  * @see ClientProperties#RETRY_AFTER_SERVICE_UNAVAILABLE
  */

@@ -32,8 +32,8 @@ import org.glassfish.tyrus.core.l10n.LocalizationMessages;
  *
  * @author raphael.jolivet@gmail.com
  * @author Stefan Katerkamp (stefan@katerkamp.de)
- * @author Miroslav Fuksa (miroslav.fuksa at oracle.com)
- * @author Ondrej Kosatka (ondrej.kosatka at oracle.com)
+ * @author Miroslav Fuksa
+ * @author Ondrej Kosatka
  */
 final class DigestAuthenticator extends Authenticator {
     private static final Logger logger = Logger.getLogger(DigestAuthenticator.class.getName());
