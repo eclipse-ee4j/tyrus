@@ -45,8 +45,8 @@ import org.glassfish.tyrus.spi.UpgradeResponse;
  * to
  * {@link FilterChain}.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Pavel Bucek
+ * @author Stepan Kopriva
  */
 class TyrusServletFilter implements Filter, HttpSessionListener {
 

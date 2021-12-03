@@ -21,9 +21,9 @@ import java.util.Collections;
 import org.glassfish.tyrus.server.Server;
 
 /**
- * @author Danny Coward (danny.coward at oracle.com)
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
- * @author Michal Conos (michal.conos at oracle.com)
+ * @author Danny Coward
+ * @author Stepan Kopriva
+ * @author Michal Conos
  */
 public class Main {
 

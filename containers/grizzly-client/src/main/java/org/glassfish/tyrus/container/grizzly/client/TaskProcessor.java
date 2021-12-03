@@ -25,7 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * A class responsible for processing {@link Task}. It ensures that only one task will be processed at a time, because
  * Grizzly Worker-thread IOStrategy does not wait until one message is processed before dispatching another one.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  * @author Petr Janouch
  */
 public class TaskProcessor {

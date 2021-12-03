@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -24,7 +24,7 @@ import java.io.Writer;
 /**
  * Simple Writer that writes its data to an async sink.
  *
- * @author Danny Coward (danny.coward at oracle.com)
+ * @author Danny Coward
  */
 class WriterToAsyncTextAdapter extends Writer {
     private final TyrusWebSocket socket;

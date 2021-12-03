@@ -17,7 +17,7 @@
 package org.glassfish.tyrus.tests.qa;
 
 /**
- * @author Michal Čonos (michal.conos at oracle.com)
+ * @author Michal Čonos
  */
 public enum ConnState {
 

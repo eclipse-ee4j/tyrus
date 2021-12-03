@@ -24,7 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Michal Čonos (michal.conos at oracle.com)
+ * @author Michal Čonos
  */
 public class AppConfig {
 

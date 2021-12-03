@@ -18,7 +18,7 @@ import jakarta.interceptor.InvocationContext;
 /**
  * Registered only for {@link SingletonEndpoint}.
  *
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 public class LoggingInterceptor {
 

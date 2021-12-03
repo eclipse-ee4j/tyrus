@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 import org.glassfish.tyrus.core.l10n.LocalizationMessages;
 
 /**
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 class TextBuffer {
     private StringBuffer buffer;

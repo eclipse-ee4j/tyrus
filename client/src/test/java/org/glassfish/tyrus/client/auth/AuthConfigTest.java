@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 
 
 /**
- * @author Ondrej Kosatka (ondrej.kosatka at oracle.com)
+ * @author Ondrej Kosatka
  */
 public class AuthConfigTest {
 

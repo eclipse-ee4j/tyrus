@@ -14,7 +14,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.ejb.Singleton;
 
 /**
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 @Singleton
 public class InjectedSingletonBean {

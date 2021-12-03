@@ -11,7 +11,7 @@
 package org.glassfish.tyrus.sample.auction;
 
 /**
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 public class AuctionItem {
 

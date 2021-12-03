@@ -20,7 +20,7 @@ package org.glassfish.tyrus.core;
  * {@link Exception}, which describes the error, occurred during the handshake phase.
  *
  * @author Alexey Stashok
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class HandshakeException extends Exception {
 

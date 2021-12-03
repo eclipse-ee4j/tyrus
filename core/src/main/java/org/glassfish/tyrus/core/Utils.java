@@ -38,7 +38,7 @@ import org.glassfish.tyrus.spi.UpgradeResponse;
 /**
  * Utility methods shared among Tyrus modules.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class Utils {
 

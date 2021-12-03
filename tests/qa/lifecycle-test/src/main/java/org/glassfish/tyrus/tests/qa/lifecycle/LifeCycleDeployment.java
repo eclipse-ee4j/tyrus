@@ -17,7 +17,7 @@
 package org.glassfish.tyrus.tests.qa.lifecycle;
 
 /**
- * @author Michal Čonos (michal.conos at oracle.com)
+ * @author Michal Čonos
  */
 public interface LifeCycleDeployment {
     public static final String INSTALL_ROOT = System.getenv("HOME") + "/glassfish4/glassfish";

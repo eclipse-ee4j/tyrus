@@ -23,7 +23,7 @@ package org.glassfish.tyrus.core.frame;
  * - validation
  * - payloadLength is limited to int</pre>
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class Frame {
 

@@ -27,7 +27,7 @@ import org.glassfish.tyrus.core.TyrusWebSocket;
  * <p>
  * Enriched {@link Frame} representation.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public abstract class TyrusFrame extends Frame {
 

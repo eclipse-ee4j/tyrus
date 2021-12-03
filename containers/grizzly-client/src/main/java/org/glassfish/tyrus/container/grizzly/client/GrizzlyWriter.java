@@ -33,7 +33,7 @@ import org.glassfish.grizzly.memory.Buffers;
 import static org.glassfish.tyrus.container.grizzly.client.TaskProcessor.Task;
 
 /**
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class GrizzlyWriter extends Writer {
 

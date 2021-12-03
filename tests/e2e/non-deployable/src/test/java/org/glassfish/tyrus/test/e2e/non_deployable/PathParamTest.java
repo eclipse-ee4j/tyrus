@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -55,8 +55,8 @@ import static org.junit.Assert.fail;
  * Tests @PathParam annotation in @OnMessage method signature. Cannot be moved to standard tests due the expected
  * deployment exception.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Pavel Bucek
+ * @author Stepan Kopriva
  */
 public class PathParamTest extends TestContainer {
 

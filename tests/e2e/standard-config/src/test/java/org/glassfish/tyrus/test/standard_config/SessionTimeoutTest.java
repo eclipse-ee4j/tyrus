@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -42,7 +42,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 public class SessionTimeoutTest extends TestContainer {
 
@@ -274,8 +274,13 @@ public class SessionTimeoutTest extends TestContainer {
     @ServerEndpoint(value = "/timeout1")
     public static class SessionClientTimeoutEndpoint {
         public static final AtomicBoolean clientOnCloseCalled = new AtomicBoolean(false);
-
     }
+
+    @ServerEndpoint(value = "/timeout1b")
+    public static class SessionClientTimeoutEndpoint2 {
+        public static final AtomicBoolean clientOnCloseCalled = new AtomicBoolean(false);
+    }
+
 
     @Test
     public void testSessionClientTimeoutSession() throws DeploymentException {
@@ -451,9 +456,9 @@ public class SessionTimeoutTest extends TestContainer {
 
     @Test
     public void testSessionTimeoutReset2() throws DeploymentException {
-        Server server = startServer(SessionClientTimeoutEndpoint.class);
+        Server server = startServer(SessionClientTimeoutEndpoint2.class);
         final CountDownLatch onCloseLatch = new CountDownLatch(1);
-        SessionClientTimeoutEndpoint.clientOnCloseCalled.set(false);
+        SessionClientTimeoutEndpoint2.clientOnCloseCalled.set(false);
 
         try {
             final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
@@ -477,16 +482,16 @@ public class SessionTimeoutTest extends TestContainer {
                 @Override
                 public void onClose(Session session, CloseReason closeReason) {
                     System.out.println(System.currentTimeMillis() + "### !closed " + closeReason);
-                    SessionClientTimeoutEndpoint.clientOnCloseCalled.set(true);
+                    SessionClientTimeoutEndpoint2.clientOnCloseCalled.set(true);
                     onCloseLatch.countDown();
                 }
-            }, cec, getURI(SessionClientTimeoutEndpoint.class));
+            }, cec, getURI(SessionClientTimeoutEndpoint2.class));
 
             assertTrue(session.getMaxIdleTimeout() == 1000);
             session.setMaxIdleTimeout(-10);
 
             assertFalse(onCloseLatch.await(4, TimeUnit.SECONDS));
-            assertFalse(SessionClientTimeoutEndpoint.clientOnCloseCalled.get());
+            assertFalse(SessionClientTimeoutEndpoint2.clientOnCloseCalled.get());
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage(), e);

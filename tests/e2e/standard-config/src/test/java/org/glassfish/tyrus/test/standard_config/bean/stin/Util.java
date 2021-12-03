@@ -17,7 +17,7 @@
 package org.glassfish.tyrus.test.standard_config.bean.stin;
 
 /**
- * @author Danny Coward (danny.coward at oracle.com)
+ * @author Danny Coward
  */
 public class Util {
     public static String PASS = "PASS";

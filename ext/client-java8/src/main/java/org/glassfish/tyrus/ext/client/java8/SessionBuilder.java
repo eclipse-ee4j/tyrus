@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -63,7 +63,7 @@ import org.glassfish.tyrus.core.MessageHandlerManager;
  *      .onClose((session1, closeReason) -&gt; onCloseLatch.countDown())
  *      .connect();</pre>
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 @Beta
 public class SessionBuilder {

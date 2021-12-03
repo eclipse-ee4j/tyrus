@@ -26,7 +26,7 @@ import org.glassfish.tyrus.spi.UpgradeResponse;
 /**
  * HTTP response representation.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class TyrusUpgradeResponse extends UpgradeResponse {
 

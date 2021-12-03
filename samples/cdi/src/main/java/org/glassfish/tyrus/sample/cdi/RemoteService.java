@@ -14,7 +14,7 @@ import jakarta.ejb.Local;
 import jakarta.ejb.Remote;
 
 /**
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 @Remote
 @Local

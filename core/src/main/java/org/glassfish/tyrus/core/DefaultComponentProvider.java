@@ -21,7 +21,7 @@ import java.lang.reflect.Method;
 /**
  * Provides instances using reflection.
  *
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 public class DefaultComponentProvider extends ComponentProvider {
 

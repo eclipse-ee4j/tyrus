@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import jakarta.json.JsonObject;
 
 /**
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 class SharedCollection {
 

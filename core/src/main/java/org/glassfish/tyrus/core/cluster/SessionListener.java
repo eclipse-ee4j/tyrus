@@ -21,7 +21,7 @@ package org.glassfish.tyrus.core.cluster;
  * <p>
  * Allows to keep track of opened/closed sessions.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public interface SessionListener {
 

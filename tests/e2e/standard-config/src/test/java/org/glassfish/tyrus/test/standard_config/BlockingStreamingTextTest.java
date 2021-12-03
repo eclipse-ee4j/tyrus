@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -40,8 +40,8 @@ import org.junit.Test;
 /**
  * Tests the basic client behavior, sending and receiving message
  *
- * @author Danny Coward (danny.coward at oracle.com)
- * @author Martin Matula (martin.matula at oracle.com)
+ * @author Danny Coward
+ * @author Martin Matula
  */
 public class BlockingStreamingTextTest extends TestContainer {
 
@@ -73,8 +73,8 @@ public class BlockingStreamingTextTest extends TestContainer {
     }
 
     /**
-     * @author Danny Coward (danny.coward at oracle.com)
-     * @author Martin Matula (martin.matula at oracle.com)
+     * @author Danny Coward
+     * @author Martin Matula
      */
     @ServerEndpoint(value = "/blocking-streaming")
     public static class BlockingStreamingTextEndpoint {
@@ -119,7 +119,7 @@ public class BlockingStreamingTextTest extends TestContainer {
     }
 
     /**
-     * @author Danny Coward (danny.coward at oracle.com)
+     * @author Danny Coward
      */
     public static class BlockingStreamingTextClient extends Endpoint {
         String receivedMessage;

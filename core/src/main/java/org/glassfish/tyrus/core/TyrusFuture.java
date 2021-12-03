@@ -25,7 +25,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * Simple {@link Future} implementation.
  *
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 public class TyrusFuture<T> implements Future<T> {
 

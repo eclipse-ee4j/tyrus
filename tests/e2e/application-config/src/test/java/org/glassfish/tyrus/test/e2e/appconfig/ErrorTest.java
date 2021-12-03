@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -46,8 +46,8 @@ import org.junit.Test;
 /**
  * Tests the onError method of the WebSocket API.
  *
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Stepan Kopriva
+ * @author Pavel Bucek
  */
 public class ErrorTest extends TestContainer {
 
@@ -70,7 +70,7 @@ public class ErrorTest extends TestContainer {
     /**
      * Exception thrown during execution @OnOpen annotated method.
      *
-     * @author Danny Coward (danny.coward at oracle.com)
+     * @author Danny Coward
      */
     @ServerEndpoint("/openserver")
     public static class OnOpenErrorTestEndpoint {
@@ -127,7 +127,7 @@ public class ErrorTest extends TestContainer {
     /**
      * Exception thrown during execution @OnError annotated method.
      *
-     * @author Danny Coward (danny.coward at oracle.com)
+     * @author Danny Coward
      */
     @ServerEndpoint("/close")
     public static class OnCloseErrorTestEndpoint {

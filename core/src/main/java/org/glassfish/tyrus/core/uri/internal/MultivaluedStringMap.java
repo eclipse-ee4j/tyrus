@@ -27,7 +27,7 @@ import java.util.List;
  * individual string values as a constructor parameters.
  *
  * @author Paul Sandoz
- * @author Marek Potociar (marek.potociar at oracle.com)
+ * @author Marek Potociar
  */
 public class MultivaluedStringMap extends MultivaluedHashMap<String, String> {
 

@@ -19,7 +19,7 @@ package org.glassfish.tyrus.core.cluster;
 /**
  * Broadcast listener.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public interface BroadcastListener {
 

@@ -21,7 +21,7 @@ package org.glassfish.tyrus.ext.extension.deflate;
  * <p>
  * Very same as {@link PerMessageDeflateExtension}, only name differs.
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class XWebkitDeflateExtension extends PerMessageDeflateExtension {
     @Override

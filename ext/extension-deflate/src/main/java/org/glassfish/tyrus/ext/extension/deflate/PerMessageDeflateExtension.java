@@ -39,7 +39,7 @@ import org.glassfish.tyrus.core.frame.Frame;
  * - context (some utility methods to get the typed params - T getParam(Class&lt;T&gt;))
  * </pre>
  *
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Pavel Bucek
  */
 public class PerMessageDeflateExtension implements ExtendedExtension {
 
@@ -244,7 +244,7 @@ public class PerMessageDeflateExtension implements ExtendedExtension {
      * Generic pool that instances of T which are expensive to create.
      *
      * @author Jitendra Kotamraju
-     * @author Pavel Bucek (pavel.bucek at oracle.com)
+     * @author Pavel Bucek
      */
     private abstract static class Pool<T> {
 

@@ -31,7 +31,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * @author Michal Conos (michal.conos at oracle.com)
+ * @author Michal Conos
  */
 public class TestRuntimeWarGeneration extends AbstractLifeCycleTestBase {
 

@@ -13,7 +13,7 @@ package org.glassfish.tyrus.sample.cdi;
 import jakarta.annotation.PostConstruct;
 
 /**
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
+ * @author Stepan Kopriva
  */
 public class InjectedSimpleBean {
 
