@@ -57,8 +57,13 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.glassfish.tyrus.container.grizzly.server.*;version=${project.version}
+                        <Export-Package>
+                            org.glassfish.tyrus.container.grizzly.server.*;version=${project.version}
                         </Export-Package>
+                        <Import-Package>
+                            jakarta.xml.bind.*;version="[3.0,5)",
+                            *
+                        </Import-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
                 </configuration>

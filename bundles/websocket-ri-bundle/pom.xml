@@ -230,9 +230,12 @@
                             org.glassfish.tyrus.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            jakarta.servlet.*;version="${servlet.api.version}",
-                            org.glassfish.grizzly.http.server.*;version=${grizzly.version}
-                            org.glassfish.grizzly.*;version=${grizzly.version},
+                            jakarta.servlet.*;version="[5.0,7)",
+                            jakarta.enterprise.context.spi;version="[3.0,5)",
+                            jakarta.enterprise.inject.spi;version="[3.0,5)",
+                            jakarta.xml.bind.*;version="[3.0,5)",
+<!--                            org.glassfish.grizzly.http.server.*;version=${grizzly.version}-->
+<!--                            org.glassfish.grizzly.*;version=${grizzly.version},-->
                             *
                         </Import-Package>
                     </instructions>

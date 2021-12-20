@@ -75,7 +75,17 @@ public class UnknownHostTest {
             }
         }
 
-        long fileDescriptorsAfter = getOpenFileDescriptorCount();
+        long fileDescriptorsAfter = 0;
+        try {
+            for (int i = 0; i != 10; i++) {
+                fileDescriptorsAfter = getOpenFileDescriptorCount();
+                if (fileDescriptorsBefore != fileDescriptorsAfter) {
+                    Thread.sleep(100L);
+                }
+            }
+        } catch (Exception e) {
+            // ignore
+        }
 
         //Then
         LOG.log(Level.INFO, "END COUNT: {0}", getOpenFileDescriptorCount());
