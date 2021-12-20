@@ -50,7 +50,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.glassfish.tyrus.gf.cdi;version=${project.version}</Export-Package>
-                        <Import-Package>jakarta.enterprise.context.spi;version="[3.0,4)",jakarta.enterprise.inject.spi;version="[3.0,4)",*</Import-Package>
+                        <Import-Package>jakarta.enterprise.context.spi;version="[3.0,5)",jakarta.enterprise.inject.spi;version="[3.0,5)",*</Import-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
                 </configuration>

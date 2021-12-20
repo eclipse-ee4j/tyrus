@@ -58,7 +58,10 @@
                             org.glassfish.tyrus.core.*;version=${project.version},org.glassfish.tyrus.core.extension.*;version=${project.version},org.glassfish.tyrus.core.cluster.*;version=${project.version},org.glassfish.tyrus.core.coder.*;version=${project.version},org.glassfish.tyrus.core.frame.*;version=${project.version},org.glassfish.tyrus.core.wsadl.model.*;version=${project.version}
                         </Export-Package>
                         <Import-Package>
-                            jakarta.websocket;version=${apijar.bundle.version},jakarta.websocket.server;version=${apijar.bundle.version},javax.naming,*
+<!--                            jakarta.websocket;version=${apijar.bundle.version},-->
+<!--                            jakarta.websocket.server;version=${apijar.bundle.version},-->
+                            jakarta.xml.bind.*;version="[3.0,5)",
+                            javax.naming,*
                         </Import-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>

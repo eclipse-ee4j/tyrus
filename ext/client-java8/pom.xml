@@ -72,7 +72,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.glassfish.tyrus.ext.client.java8;version=${project.version}</Export-Package>
-                        <Import-Package>jakarta.websocket;version=${apijar.bundle.version},*</Import-Package>
+<!--                        <Import-Package>jakarta.websocket;version=${apijar.bundle.version},*</Import-Package>-->
                     </instructions>
                     <unpackBundle>true</unpackBundle>
                 </configuration>
