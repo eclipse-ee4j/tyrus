@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -220,8 +220,8 @@ public class SslEngineConfigurator {
     /**
      * Will {@link SSLEngine} be configured to work in client mode.
      *
-     * @return <tt>true</tt>, if {@link SSLEngine} will be configured to work
-     * in <tt>client</tt> mode, or <tt>false</tt> for <tt>server</tt> mode.
+     * @return <code>true</code>, if {@link SSLEngine} will be configured to work
+     * in <code>client</code> mode, or <code>false</code> for <code>server</code> mode.
      */
     public boolean isClientMode() {
         return clientMode;
@@ -230,8 +230,8 @@ public class SslEngineConfigurator {
     /**
      * Set {@link SSLEngine} to be configured to work in client mode.
      *
-     * @param clientMode <tt>true</tt>, if {@link SSLEngine} will be configured
-     *                   to work in <tt>client</tt> mode, or <tt>false</tt> for <tt>server</tt>
+     * @param clientMode <code>true</code>, if {@link SSLEngine} will be configured
+     *                   to work in <code>client</code> mode, or <code>false</code> for <code>server</code>
      *                   mode.
      * @return updated configurator instance.
      */

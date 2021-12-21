@@ -59,7 +59,7 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 /**
  * WebSocket {@link Filter} implementation, which supposed to be placed into a {@link FilterChain} right after HTTP
  * Filter: {@link HttpServerFilter}, {@link HttpClientFilter}; depending whether it's server or client side. The
- * <tt>WebSocketFilter</tt> handles websocket connection, handshake phases and, when receives a websocket frame -
+ * <code>WebSocketFilter</code> handles websocket connection, handshake phases and, when receives a websocket frame -
  * redirects it to appropriate connection ({@link org.glassfish.tyrus.core.TyrusEndpointWrapper}, {@link
  * org.glassfish.tyrus.core.TyrusWebSocket}) for processing.
  *
