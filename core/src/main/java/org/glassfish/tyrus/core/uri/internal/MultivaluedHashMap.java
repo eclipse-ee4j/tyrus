@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -34,7 +34,7 @@ import java.util.Map;
  * {@link #addFirstNull(List) addFirstNull(...)} methods.
  * <p>
  * This implementation provides constant-time performance for the basic
- * operations (<tt>get</tt> and <tt>put</tt>), assuming the hash function
+ * operations (<code>get</code> and <code>put</code>), assuming the hash function
  * disperses the elements properly among the buckets. Iteration over
  * collection views requires time proportional to the "capacity" of the
  * map instance (the number of buckets) plus its size (the number
@@ -42,7 +42,7 @@ import java.util.Map;
  * capacity too high (or the load factor too low) if iteration performance is
  * important.
  * <p>
- * An instance of <tt>MultivaluedHashMap</tt> has two parameters that affect its
+ * An instance of <code>MultivaluedHashMap</code> has two parameters that affect its
  * performance: <i>initial capacity</i> and <i>load factor</i>. The <i>capacity</i>
  * is the number of buckets in the hash table, and the initial capacity is simply
  * the capacity at the time the hash table is created. The <i>load factor</i> is
@@ -55,14 +55,14 @@ import java.util.Map;
  * As a general rule, the default load factor (.75) offers a good tradeoff
  * between time and space costs. Higher values decrease the space overhead
  * but increase the lookup cost (reflected in most of the operations of the
- * <tt>HashMap</tt> class, including <tt>get</tt> and <tt>put</tt>). The
+ * <code>HashMap</code> class, including <code>get</code> and <code>put</code>). The
  * expected number of entries in the map and its load factor should be taken
  * into account when setting its initial capacity, so as to minimize the
  * number of rehash operations. If the initial capacity is greater
  * than the maximum number of entries divided by the load factor, no
  * rehash operations will ever occur.
  * <p>
- * If many mappings are to be stored in a <tt>MultivaluedHashMap</tt> instance,
+ * If many mappings are to be stored in a <code>MultivaluedHashMap</code> instance,
  * creating it with a sufficiently large capacity will allow the mappings to
  * be stored more efficiently than letting it perform automatic rehashing as
  * needed to grow the table.
@@ -79,7 +79,7 @@ import java.util.Map;
  * The iterators returned by all of this class's "collection view methods"
  * are <i>fail-fast</i>: if the map is structurally modified at any time after
  * the iterator is created, in any way except through the iterator's own
- * <tt>remove</tt> method, the iterator will throw a {@link java.util.ConcurrentModificationException}.
+ * <code>remove</code> method, the iterator will throw a {@link java.util.ConcurrentModificationException}.
  * Thus, in the face of concurrent modification, the iterator fails quickly and
  * cleanly, rather than risking arbitrary, non-deterministic behavior at an
  * undetermined time in the future.
@@ -87,7 +87,7 @@ import java.util.Map;
  * Note that the fail-fast behavior of an iterator cannot be guaranteed
  * as it is, generally speaking, impossible to make any hard guarantees in the
  * presence of unsynchronized concurrent modification. Fail-fast iterators
- * throw <tt>ConcurrentModificationException</tt> on a best-effort basis.
+ * throw <code>ConcurrentModificationException</code> on a best-effort basis.
  * Therefore, it would be wrong to write a program that depended on this
  * exception for its correctness: <i>the fail-fast behavior of iterators
  * should be used only to detect bugs.</i>

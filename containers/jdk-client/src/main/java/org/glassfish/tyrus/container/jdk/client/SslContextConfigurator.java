@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -68,7 +68,7 @@ public class SslContextConfigurator {
      * <p>
      * No default value is set.
      * <p>
-     * The name of the configuration property is <tt>{@value}</tt>.
+     * The name of the configuration property is <code>{@value}</code>.
      */
     public static final String TRUST_STORE_PROVIDER = "javax.net.ssl.trustStoreProvider";
     /**
@@ -78,7 +78,7 @@ public class SslContextConfigurator {
      * <p>
      * No default value is set.
      * <p>
-     * The name of the configuration property is <tt>{@value}</tt>.
+     * The name of the configuration property is <code>{@value}</code>.
      */
     public static final String KEY_STORE_PROVIDER = "javax.net.ssl.keyStoreProvider";
     /**
@@ -88,7 +88,7 @@ public class SslContextConfigurator {
      * <p>
      * No default value is set.
      * <p>
-     * The name of the configuration property is <tt>{@value}</tt>.
+     * The name of the configuration property is <code>{@value}</code>.
      */
     public static final String TRUST_STORE_FILE = "javax.net.ssl.trustStore";
     /**
@@ -98,7 +98,7 @@ public class SslContextConfigurator {
      * <p>
      * No default value is set.
      * <p>
-     * The name of the configuration property is <tt>{@value}</tt>.
+     * The name of the configuration property is <code>{@value}</code>.
      */
     public static final String KEY_STORE_FILE = "javax.net.ssl.keyStore";
     /**
@@ -108,7 +108,7 @@ public class SslContextConfigurator {
      * <p>
      * No default value is set.
      * <p>
-     * The name of the configuration property is <tt>{@value}</tt>.
+     * The name of the configuration property is <code>{@value}</code>.
      */
     public static final String TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
     /**
@@ -118,7 +118,7 @@ public class SslContextConfigurator {
      * <p>
      * No default value is set.
      * <p>
-     * The name of the configuration property is <tt>{@value}</tt>.
+     * The name of the configuration property is <code>{@value}</code>.
      */
     public static final String KEY_STORE_PASSWORD = "javax.net.ssl.keyStorePassword";
     /**
@@ -128,7 +128,7 @@ public class SslContextConfigurator {
      * <p>
      * No default value is set.
      * <p>
-     * The name of the configuration property is <tt>{@value}</tt>.
+     * The name of the configuration property is <code>{@value}</code>.
      */
     public static final String TRUST_STORE_TYPE = "javax.net.ssl.trustStoreType";
     /**
@@ -138,7 +138,7 @@ public class SslContextConfigurator {
      * <p>
      * No default value is set.
      * <p>
-     * The name of the configuration property is <tt>{@value}</tt>.
+     * The name of the configuration property is <code>{@value}</code>.
      */
     public static final String KEY_STORE_TYPE = "javax.net.ssl.keyStoreType";
     /**
@@ -148,7 +148,7 @@ public class SslContextConfigurator {
      * <p>
      * No default value is set.
      * <p>
-     * The name of the configuration property is <tt>{@value}</tt>.
+     * The name of the configuration property is <code>{@value}</code>.
      */
     public static final String KEY_FACTORY_MANAGER_ALGORITHM = "ssl.KeyManagerFactory.algorithm";
     /**
@@ -158,7 +158,7 @@ public class SslContextConfigurator {
      * <p>
      * No default value is set.
      * <p>
-     * The name of the configuration property is <tt>{@value}</tt>.
+     * The name of the configuration property is <code>{@value}</code>.
      */
     public static final String TRUST_FACTORY_MANAGER_ALGORITHM = "ssl.TrustManagerFactory.algorithm";
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,10 +23,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * Client thread pool configuration, which might be used to customize client thread pool.
  * <p>
- * One can get a default <tt>ThreadPoolConfig</tt> using {@link ThreadPoolConfig#defaultConfig()}
+ * One can get a default <code>ThreadPoolConfig</code> using {@link ThreadPoolConfig#defaultConfig()}
  * and customize it according to the application specific requirements.
  * <p>
- * A <tt>ThreadPoolConfig</tt> object might be customized in a "Builder"-like fashion:
+ * A <code>ThreadPoolConfig</code> object might be customized in a "Builder"-like fashion:
  * <pre>
  *      ThreadPoolConfig.defaultConfig()
  *               .setPoolName("App1Pool")
@@ -53,7 +53,7 @@ public final class ThreadPoolConfig {
             null, Thread.NORM_PRIORITY, true, null);
 
     /**
-     * Create new client thread pool configuration instance. The returned <tt>ThreadPoolConfig</tt> instance will be
+     * Create new client thread pool configuration instance. The returned <code>ThreadPoolConfig</code> instance will be
      * pre-configured with a default values.
      *
      * @return client thread pool configuration instance.
@@ -295,7 +295,7 @@ public final class ThreadPoolConfig {
      * <p>
      * Value less than 0 means unlimited queue. The default is -1.
      *
-     * @param queueLimit the thread pool queue limit. The <tt>queueLimit</tt> value less than 0 means unlimited queue.
+     * @param queueLimit the thread pool queue limit. The <code>queueLimit</code> value less than 0 means unlimited queue.
      * @return the {@link ThreadPoolConfig} with the new queue limit.
      */
     public ThreadPoolConfig setQueueLimit(int queueLimit) {
