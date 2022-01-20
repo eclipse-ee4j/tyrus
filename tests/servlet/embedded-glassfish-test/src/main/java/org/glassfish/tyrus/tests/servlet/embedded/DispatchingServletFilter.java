@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -54,7 +54,7 @@ public class DispatchingServletFilter implements Filter {
             return;
         }
         if (servletRequest.getQueryString().equals(OP.UpgradeHttpToWebSocket.toString())) {
-            final String path = "/servlet-test/test/{a}/{b}";
+            final String path = "/test/{a}/{b}";
             final Map<String, String> parameters = new HashMap<>();
             parameters.put("a", "hello");
             parameters.put("b", "world");

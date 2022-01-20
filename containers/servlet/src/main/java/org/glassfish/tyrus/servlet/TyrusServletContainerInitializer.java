@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -269,7 +269,7 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
             final HttpServletRequest httpServletRequest = new HttpServletRequestWrapper((HttpServletRequest) servletRequest) {
                 @Override
                 public String getRequestURI() {
-                    return requestUri;
+                    return contextPath + requestUri;
                 }
 
                 @Override
@@ -307,7 +307,6 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
             }
 
             final String result = resultPath.toString();
-
             return result.startsWith("//") ? result.substring(1) : result;
         }
 
