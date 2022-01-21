@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -31,7 +31,10 @@
     <name>Tyrus Servlet Tests on Glassfish</name>
 
     <properties>
-        <glassfish.container.version>6.2.1</glassfish.container.version>
+        <glassfish.home>${project.build.directory}/glassfish7</glassfish.home>
+        <modules.dir>${glassfish.home}/glassfish/modules</modules.dir>
+<!--        <websocket-api.version>2.1.0-SNAPSHOT</websocket-api.version>-->
+        <glassfish.container.version>7.0.0-M1</glassfish.container.version>
         <junit.jupiter.version>5.7.2</junit.jupiter.version>
     </properties>
 
@@ -49,6 +52,13 @@
         <dependency>
             <groupId>jakarta.websocket</groupId>
             <artifactId>jakarta.websocket-api</artifactId>
+            <version>${websocket-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.websocket</groupId>
+            <artifactId>jakarta.websocket-client-api</artifactId>
+            <version>${websocket-api.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -139,7 +149,7 @@
                                 <junit.log.traceflag>true</junit.log.traceflag>
                             </systemPropertyVariables>
                             <environmentVariables>
-                                <GLASSFISH_HOME>${project.build.directory}/glassfish6</GLASSFISH_HOME>
+                                <GLASSFISH_HOME>${glassfish.home}</GLASSFISH_HOME>
                             </environmentVariables>
                         </configuration>
                     </execution>
@@ -200,8 +210,17 @@
                                     <version>${websocket-api.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/glassfish6/glassfish/modules</outputDirectory>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
                                     <destFileName>jakarta.websocket-api.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>jakarta.websocket</groupId>
+                                    <artifactId>jakarta.websocket-client-api</artifactId>
+                                    <version>${websocket-api.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
+                                    <destFileName>jakarta.websocket-client-api.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.glassfish.tyrus</groupId>
@@ -209,7 +228,7 @@
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/glassfish6/glassfish/modules</outputDirectory>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
                                     <destFileName>tyrus-client.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
@@ -218,7 +237,7 @@
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/glassfish6/glassfish/modules</outputDirectory>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
                                     <destFileName>tyrus-container-glassfish-cdi.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
@@ -227,7 +246,7 @@
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/glassfish6/glassfish/modules</outputDirectory>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
                                     <destFileName>tyrus-container-glassfish-ejb.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
@@ -236,7 +255,7 @@
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/glassfish6/glassfish/modules</outputDirectory>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
                                     <destFileName>tyrus-container-grizzly-client.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
@@ -245,7 +264,7 @@
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/glassfish6/glassfish/modules</outputDirectory>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
                                     <destFileName>tyrus-container-servlet.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
@@ -254,7 +273,7 @@
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/glassfish6/glassfish/modules</outputDirectory>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
                                     <destFileName>tyrus-core.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
@@ -263,7 +282,7 @@
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/glassfish6/glassfish/modules</outputDirectory>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
                                     <destFileName>tyrus-server.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
@@ -272,7 +291,7 @@
                                     <version>${project.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/glassfish6/glassfish/modules</outputDirectory>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
                                     <destFileName>tyrus-spi.jar</destFileName>
                                 </artifactItem>
                             </artifactItems>
