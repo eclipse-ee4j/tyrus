@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2021 Contributors to the Eclipse Foundation
+# Copyright (c) 2021, 2022 Contributors to the Eclipse Foundation
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,4 +37,4 @@ jobs:
         distribution: 'zulu'
         java-version: ${{ matrix.java_version }}
     - name: Build
-      run: mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true -DskipTests
+      run: mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles -Pstaging clean install -Dmaven.javadoc.skip=true -DskipTests
