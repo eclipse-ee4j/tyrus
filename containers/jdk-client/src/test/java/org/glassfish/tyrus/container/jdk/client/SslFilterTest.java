@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -28,6 +28,9 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -48,11 +51,14 @@ import org.glassfish.tyrus.client.ThreadPoolConfig;
 import org.glassfish.tyrus.spi.CompletionHandler;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 /**
  * @author Petr Janouch
  */
 
+@RunWith(Parameterized.class)
 public class SslFilterTest {
 
     protected static final int PORT = 8321;
@@ -61,6 +67,25 @@ public class SslFilterTest {
     protected static final String CLIENT_KEY_STORE = "/keystore_client";
     protected static final String CLIENT_TRUST_STORE = "/truststore_client";
     protected static final String PASSWORD = "asdfgh";
+    private final SslFilterTestParameter sslFilterTestParameter;
+
+    private static class SslFilterTestParameter {
+        private SslFilterTestParameter(boolean useSSLContext) {
+            this.useSSLContext = useSSLContext;
+        }
+        boolean useSSLContext;
+    }
+
+    @Parameterized.Parameters()
+    public static Collection<SslFilterTestParameter[]> generateTestCases() {
+        return Arrays.asList(
+            new SslFilterTestParameter[][]{{new SslFilterTestParameter(true)}, {new SslFilterTestParameter(false)}}
+        );
+    }
+
+    public SslFilterTest(SslFilterTestParameter sslFilterTestParameter) {
+        this.sslFilterTestParameter = sslFilterTestParameter;
+    }
 
     @Before
     public void before() {
@@ -78,7 +103,7 @@ public class SslFilterTest {
             server.start();
             String message = "Hello world\n";
             ByteBuffer readBuffer = ByteBuffer.allocate(message.length());
-            Filter clientSocket = openClientSocket("localhost", readBuffer, latch, null);
+            Filter clientSocket = openClientSocket("localhost", readBuffer, latch, null, sslFilterTestParameter);
 
             clientSocket.write(stringToBuffer(message), new CompletionHandler<ByteBuffer>() {
                 @Override
@@ -109,7 +134,7 @@ public class SslFilterTest {
             }
             String message = sb.toString() + "\n";
             ByteBuffer readBuffer = ByteBuffer.allocate(message.length());
-            Filter clientSocket = openClientSocket("localhost", readBuffer, latch, null);
+            Filter clientSocket = openClientSocket("localhost", readBuffer, latch, null, sslFilterTestParameter);
 
             clientSocket.write(stringToBuffer(message), new CompletionHandler<ByteBuffer>() {
                 @Override
@@ -139,7 +164,7 @@ public class SslFilterTest {
             server.start();
             String message = "Hello world\n";
             ByteBuffer readBuffer = ByteBuffer.allocate(message.length());
-            Filter clientSocket = openClientSocket("localhost", readBuffer, latch, null);
+            Filter clientSocket = openClientSocket("localhost", readBuffer, latch, null, sslFilterTestParameter);
 
             clientSocket.write(stringToBuffer(message), new CompletionHandler<ByteBuffer>() {
                 @Override
@@ -178,7 +203,7 @@ public class SslFilterTest {
             String message2 = sb.toString() + "\n";
             ByteBuffer readBuffer = ByteBuffer.allocate(message1.length() + message2.length());
             final CountDownLatch message1Latch = new CountDownLatch(1);
-            Filter clientSocket = openClientSocket("localhost", readBuffer, latch, null);
+            Filter clientSocket = openClientSocket("localhost", readBuffer, latch, null, sslFilterTestParameter);
 
             clientSocket.write(stringToBuffer(message1), new CompletionHandler<ByteBuffer>() {
                 @Override
@@ -236,7 +261,7 @@ public class SslFilterTest {
             String message2 = sb.toString() + "\n";
             ByteBuffer readBuffer = ByteBuffer.allocate(message1.length() + message2.length());
             final CountDownLatch message1Latch = new CountDownLatch(1);
-            final Filter clientSocket = openClientSocket("localhost", readBuffer, latch, null);
+            final Filter clientSocket = openClientSocket("localhost", readBuffer, latch, null, sslFilterTestParameter);
 
             clientSocket.write(stringToBuffer(message1), new CompletionHandler<ByteBuffer>() {
                 @Override
@@ -279,7 +304,7 @@ public class SslFilterTest {
         try {
             server.start();
             System.out.println("=== SSLHandshakeException (certificate_unknown) on the server expected ===");
-            openClientSocket("127.0.0.1", ByteBuffer.allocate(0), latch, null);
+            openClientSocket("127.0.0.1", ByteBuffer.allocate(0), latch, null, new SslFilterTestParameter(false));
             fail();
         } catch (SSLException e) {
             // expected
@@ -301,7 +326,7 @@ public class SslFilterTest {
                 }
             };
 
-            openClientSocket("localhost", ByteBuffer.allocate(0), latch, verifier);
+            openClientSocket("localhost", ByteBuffer.allocate(0), latch, verifier, new SslFilterTestParameter(false));
             fail();
         } catch (SSLException e) {
             // expected
@@ -323,7 +348,7 @@ public class SslFilterTest {
                 }
             };
 
-            openClientSocket("127.0.0.1", ByteBuffer.allocate(0), latch, verifier);
+            openClientSocket("127.0.0.1", ByteBuffer.allocate(0), latch, verifier, new SslFilterTestParameter(false));
         } finally {
             server.stop();
         }
@@ -338,7 +363,7 @@ public class SslFilterTest {
             server.start();
             String message = "Hello world\n";
             ByteBuffer readBuffer = ByteBuffer.allocate(message.length());
-            final Filter clientSocket = openClientSocket("localhost", readBuffer, latch, null);
+            final Filter clientSocket = openClientSocket("localhost", readBuffer, latch, null, sslFilterTestParameter);
 
             clientSocket.write(stringToBuffer(message), new CompletionHandler<ByteBuffer>() {
                 @Override
@@ -377,7 +402,7 @@ public class SslFilterTest {
      * @throws Throwable any exception that occurs until SSL handshake has completed.
      */
     private Filter openClientSocket(String host, final ByteBuffer readBuffer, final CountDownLatch completionLatch,
-                                    HostnameVerifier customHostnameVerifier) throws Throwable {
+                                    HostnameVerifier customHostnameVerifier, SslFilterTestParameter parameter) throws Throwable {
         SslContextConfigurator sslConfig = SslContextConfigurator.DEFAULT_CONFIG;
         sslConfig.setTrustStoreFile(this.getClass().getResource(CLIENT_TRUST_STORE).getPath())
                 .setTrustStorePassword(PASSWORD)
@@ -387,7 +412,9 @@ public class SslFilterTest {
         sslEngineConfigurator.setHostnameVerifier(customHostnameVerifier);
 
         final TransportFilter transportFilter = new TransportFilter(17_000, ThreadPoolConfig.defaultConfig(), null, null);
-        final SslFilter sslFilter = new SslFilter(transportFilter, sslEngineConfigurator, host);
+        final SslFilter sslFilter = parameter.useSSLContext
+                ? new SslFilter(transportFilter, sslEngineConfigurator.getSslContext(), host)
+                : new SslFilter(transportFilter, sslEngineConfigurator, host);
 
         // exceptions errors that occur before SSL handshake has finished are thrown from this method
         final AtomicReference<Throwable> exception = new AtomicReference<>();
