@@ -177,7 +177,7 @@ public abstract class ServletTestBase {
         WebArchive archive = ShrinkWrap.create(WebArchive.class, archiveName + ".war");
         archive.addClasses(classes);
         archive.addAsWebInfResource(new StringAsset(newWebXml), newWebXmlName);
-        System.out.println(archive.toString(true));
+//        System.out.println(archive.toString(true));
 
         return archive;
 
@@ -213,10 +213,7 @@ public abstract class ServletTestBase {
                     || (port == 443 && "wss".equalsIgnoreCase(currentScheme))) {
                 port = -1;
             }
-            URI uri = new URI(currentScheme, null, getHost(), port, contextPath + endpointPath, null, null);
-            System.out.println(uri.toString());
-            //return new URI(currentScheme, null, getHost(), port, contextPath + endpointPath, null, null);
-            return uri;
+            return new URI(currentScheme, null, getHost(), port, contextPath + endpointPath, null, null);
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return null;
