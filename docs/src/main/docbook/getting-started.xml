@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -33,7 +33,7 @@
         This chapter provides a quick introduction on how to get started building
         WebSocket services using &ja4w; and Tyrus. The example described here presents how to implement
         simple websocket service as JavaEE web application that can be deployed on any servlet container
-        supporting Servlet 3.1 and higher. It also discusses starting Tyrus in standalone mode.
+        supporting Servlet 5 and higher. It also discusses starting Tyrus in standalone mode.
     </para>
     <section xml:id="getting-started-wsapi-artifact">
         <title>WebSocket Services Using &ja4w;</title>
@@ -226,6 +226,191 @@ public class EchoEndpointAnnotated {
         server.stop();
     }
 }</programlisting>
+            </para>
+        </section>
+    </section>
+    <section xml:id="getting-started-using-archetype">
+        <title>Creating a New Project from Maven Archetype</title>
+        <section>
+            <title>Executing maven</title>
+            Since starting from a Maven project is the most convenient way for working with Tyrus, let's now have a look
+            at this approach. We will now create a new Tyrus project that runs on top of a &grizzly.link; container. We will
+            use a Tyrus-provided maven archetype. To create the project, execute the following Maven command in the directory
+            where the new project should reside:
+
+            <programlisting language="bash" linenumbering="unnumbered">mvn archetype:generate -DarchetypeArtifactId=tyrus-archetype-echo \
+-DarchetypeGroupId=org.glassfish.tyrus.archetypes -DinteractiveMode=false \
+-DgroupId=com.example -DartifactId=echo-service -Dpackage=com.example \
+-DarchetypeVersion=&version;</programlisting>
+
+            Feel free to adjust the <literal>groupId</literal>, <literal>package</literal> and/or <literal>artifactId</literal>
+            of your new project. Alternatively, you can change it by updating the new project pom.xml once it gets generated.
+        </section>
+        <section>
+            <title>Exploring the Newly Created Project</title>
+
+            <para>
+                Once the project generation from a Tyrus maven archetype is successfully finished, you should see the new
+                <literal>echo-service</literal> project directory created in your current location. The directory contains
+                a standard Maven project structure:
+
+                <simplelist>
+                    <member>
+                        Project build and management configuration is described in the <literal>pom.xml</literal> located
+                        in the project root directory.
+                    </member>
+                    <member>Project sources are located under <literal>src/main/java</literal>.</member>
+                    <member>Project resources are located under <literal>src/main/resources</literal>.</member>
+                    <member>Project web application files are located under <literal>src/main/webapp</literal>.</member>
+                </simplelist>
+
+                The project contains the simple <literal>EchoEndpoint</literal> class which looks
+                (similar to <link linkend="websocket-annotated-echo-endpoint">"Annotated Echo Endpoint"</link>) as follows:
+                <programlisting language="java" linenumbering="numbered">package com.example;
+
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.Session;
+import jakarta.websocket.server.ServerEndpoint;
+
+/**
+* Server endpoint "listening" on path "/echo".
+*/
+@ServerEndpoint("/echo")
+public class EchoEndpoint {
+
+    /**
+    * Method handling incoming text messages.
+    * <p/>
+    * This implementations just sends back received message.
+    *
+    * @param message received message.
+    * @return returned value will be sent back to client. You can also declare this method to not return anything. In
+    * that case, you would need to obtain {@link jakarta.websocket.Session} object and call
+    * {@link jakarta.websocket.Session#getBasicRemote()#sendText();} in order to send message.
+    */
+    @OnMessage
+    public String echo(String message) {
+        return message;
+    }
+}</programlisting>
+            </para>
+            <para>
+                Another piece of code that has been generated in this skeleton project is a <literal>EchoTest</literal>
+                unit test class that is located in the same <literal>com.example</literal> package as the
+                <literal>EchoEndpoint</literal> class, however, this unit test class is placed into the maven project test source
+                directory <literal>src/test/java</literal>
+                (similar to <link linkend="websocket-client-endpoint">"Client Endpoint"</link>):
+                <programlisting language="java" linenumbering="numbered">public class EchoTest extends TestContainer {
+
+    public static final String MESSAGE = "Do or do not, there is no try.";
+
+    @Test
+    public void testEcho() throws DeploymentException, InterruptedException, IOException {
+        final Server server = startServer(EchoEndpoint.class);
+
+        final CountDownLatch messageLatch = new CountDownLatch(1);
+
+        try {
+            final ClientManager client = ClientManager.createClient();
+            client.connectToServer(new Endpoint() {
+                @Override
+                public void onOpen(Session session, EndpointConfig EndpointConfig) {
+
+                    try {
+                        session.addMessageHandler(new MessageHandler.Whole&lt;String&gt;() {
+                            @Override
+                            public void onMessage(String message) {
+                                System.out.println("# Received: " + message);
+
+                                if (message.equals(MESSAGE)) {
+                                    messageLatch.countDown();
+                                }
+                            }
+                        });
+
+                        session.getBasicRemote().sendText(MESSAGE);
+                    } catch (IOException e) {
+                        // do nothing
+                    }
+                }
+            }, ClientEndpointConfig.Builder.create().build(), getURI(EchoEndpoint.class));
+
+            assertTrue(messageLatch.await(1, TimeUnit.SECONDS));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        } finally {
+            stopServer(server);
+        }
+    }
+}</programlisting>
+
+                In this unit test, a Grizzly container is first started and server application is deployed using the static call
+                <literal>TestContainer.startServer()</literal>.
+                Next, WebSocket client instance <literal>client</literal> is built and then a programmatic WebSocket
+                <literal>Endpoint</literal> is used to connect to the <literal>EchoEndpoint</literal> deployed on the Grizzly server
+                at <literal>ws://localhost:8025/e2e-test/echo</literal>. The value of port <literal>8025</literal> and context path
+                <literal>e2e-test</literal> are default values preset at the <literal>TestContainer</literal>.
+            </para>
+            <para>
+                The generated project structure also contains an <literal>index.html</literal> file, stored in
+                <literal>src/test/webapp</literal> folder. This web page contains a javascript WebSocket client that is
+                capable of sending WebSocket requests to the <literal>EchoEndpoint</literal>. This web page is deployed along
+                the war application in the WebSocket container such as Tyrus.
+            </para>
+        </section>
+        <section>
+            <title xml:id="building-project">Building the generated project</title>
+            <para>
+                Now that we have seen the content of the project, let's try to test-run it. To do this, we need to invoke following
+                command on the command line:
+
+                <programlisting language="bash" linenumbering="unnumbered">mvn clean package</programlisting>
+
+                This will compile the project and run the project unit tests. We should see a similar output that informs about a
+                successful build once the build is finished:
+
+                <screen linenumbering="unnumbered">Results :
+
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] Packaging webapp
+[INFO] Assembling webapp [echo-service] in [.../echo-service/target/echo-service]
+[INFO] Processing war project
+[INFO] Copying webapp resources [.../echo-service/src/main/webapp]
+[INFO] Building war: .../echo-service/target/echo-service.war
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  1.979 s
+[INFO] Finished at: 2022-01-28T14:23:45+01:00
+[INFO] Final Memory: 17M/490M
+[INFO] ------------------------------------------------------------------------</screen>
+                Now you are ready to take the packaged WAR (located under <literal>./target/echo-service.war</literal>)
+                and deploy it to a WebSocket container of your choice.
+                <important>
+                    <para>
+                        To deploy the application, you will need a WebSocket compliant container (such as Tyrus). Tyrus can be
+                        found for instance in Glassfish 7. It is also possible to create a packaged WAR with Tyrus jars included
+                        to deploy to a Servlet 5/Servlet 6 compliant container.
+                    </para>
+                </important>
+            </para>
+        </section>
+        <section>
+            <title xml:id="running-the-app">Running the deployed application</title>
+            <para>
+                Once the war is deployed, it can be run on the deployment URI such as
+                <literal>localhost:8080/echo-service/</literal>(the included <literal>index.html</literal> web page can be
+                opened in a web browser). The web page has a title <literal>Web Socket Echo Client</literal> and contains a
+                button with a label <literal>Press me</literal> and a text field prefilled with <literal>Hello Web Sockets !</literal>
+                When the button is pressed, the WebSocket echo service queried and the web page contains a communication:
+                <screen linenumbering="unnumbered">CONNECTED
+
+SENT: Hello Web Sockets !
+
+RECEIVED: Hello Web Sockets !</screen>
             </para>
         </section>
     </section>
