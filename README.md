@@ -30,7 +30,9 @@ is the Jakarta EE 8 release of the Eclipse Tyrus project.
 # <a name="Links"></a>Links
 
 - [Tyrus 2.x documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest/index/)
-- [Tyrus 1.18 documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/1.18/index/)
+- [Tyrus 2.x api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest/)
+- [Tyrus 1.18 documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest1x/index/)
+- [Tyrus 1.18 api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest1x/)
 - [Tyrus project page](https://projects.eclipse.org/projects/ee4j.tyrus)
 - [JSR-356 page on JCP site](https://jcp.org/en/jsr/detail?id=356)
 
