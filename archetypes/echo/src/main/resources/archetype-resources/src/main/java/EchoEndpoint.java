@@ -18,7 +18,7 @@ public class EchoEndpoint {
      * @param message received message.
      * @return returned value will be sent back to client. You can also declare this method to not return anything. In
      * that case, you would need to obtain {@link jakarta.websocket.Session} object and call
-     * {@link jakarta.websocket.Session#getBasicRemote()#sendText();} i order to send message.
+     * {@link jakarta.websocket.Session#getBasicRemote()#sendText();} in order to send message.
      */
     @OnMessage
     public String echo(String message) {
