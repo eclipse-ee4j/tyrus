@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLException;
@@ -115,6 +116,22 @@ class SslFilter extends Filter {
 
         applicationInputBuffer = ByteBuffer.allocate(sslEngine.getSession().getApplicationBufferSize());
         networkOutputBuffer = ByteBuffer.allocate(sslEngine.getSession().getPacketBufferSize());
+    }
+
+    /**
+     * SSL Filter constructor, takes upstream filter as a parameter.
+     *
+     * @param downstreamFilter      a filter that is positioned under the SSL filter.
+     * @param sslContext            an SSLContent, usually from @code{ClientEndpointConfig#getSSLContext}
+     * @param serverHost            server host (hostname or IP address), which will be used to verify authenticity of
+     *                              the server (the provided host will be compared against the host in the certificate
+     *                              provided by the server). IP address and hostname cannot be used interchangeably -
+     *                              if a certificate contains hostname and an IP address of the server is provided
+     *                              here,
+     *                              the verification will fail.
+     */
+    SslFilter(Filter downstreamFilter, SSLContext sslContext, String serverHost) {
+        this(downstreamFilter, new SslEngineConfigurator(sslContext), serverHost);
     }
 
     /**

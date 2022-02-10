@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -37,6 +37,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import jakarta.websocket.ClientEndpointConfig;
 import jakarta.websocket.DeploymentException;
 
 import javax.net.ssl.HostnameVerifier;
@@ -159,19 +160,23 @@ public class GrizzlyClientSocket {
     private static volatile TCPNIOTransport transport;
     private static final Object TRANSPORT_LOCK = new Object();
     private final Callable<Void> grizzlyConnector;
+    private final ClientEndpointConfig clientEndpointConfig;
 
     private volatile TCPNIOTransport privateTransport;
 
     /**
      * Create new instance.
      *
+     * @param clientEndpointConfig the provided clientEndpointConfig.
      * @param timeoutMs    TODO
      * @param clientEngine engine used for this websocket communication
      * @param properties   properties map. Cannot be {@code null}.
      */
-    GrizzlyClientSocket(long timeoutMs,
+    GrizzlyClientSocket(ClientEndpointConfig clientEndpointConfig,
+                        long timeoutMs,
                         ClientEngine clientEngine,
                         Map<String, Object> properties) throws DeploymentException {
+        this.clientEndpointConfig = clientEndpointConfig;
         this.timeoutMs = timeoutMs;
         this.properties = properties;
         this.proxyHeaders = getProxyHeaders(properties);
@@ -348,8 +353,9 @@ public class GrizzlyClientSocket {
 
             // this will block until the SSL engine handshake is complete, so SSL handshake error can be handled here
             TyrusFuture sslHandshakeFuture = null;
+            SSLContext sslContext = clientEndpointConfig != null ? clientEndpointConfig.getSSLContext() : null;
             ExtendedSSLEngineConfigurator clientSSLEngineConfigurator =
-                    getSSLEngineConfigurator(requestURI, properties);
+                    getSSLEngineConfigurator(sslContext, requestURI, properties);
             if (clientSSLEngineConfigurator != null) {
                 sslHandshakeFuture = new TyrusFuture();
             }
@@ -736,16 +742,20 @@ public class GrizzlyClientSocket {
         }
     }
 
-    private ExtendedSSLEngineConfigurator getSSLEngineConfigurator(URI uri, Map<String, Object> properties) {
+    private ExtendedSSLEngineConfigurator getSSLEngineConfigurator(
+            SSLContext sslContext, URI uri, Map<String, Object> properties) {
         Object configuratorObject = properties.get(ClientProperties.SSL_ENGINE_CONFIGURATOR);
 
         if (configuratorObject == null) {
             // if we are trying to access "wss" scheme and we don't have sslEngineConfigurator instance
             // we should try to create ssl connection using JVM properties.
             if ("wss".equalsIgnoreCase(uri.getScheme())) {
-                final SSLContextConfigurator defaultConfig = new SSLContextConfigurator();
-                defaultConfig.retrieve(System.getProperties());
-                return new ExtendedSSLEngineConfigurator(defaultConfig.createSSLContext(), uri.getHost());
+                if (sslContext == null) {
+                    final SSLContextConfigurator defaultConfig = new SSLContextConfigurator();
+                    defaultConfig.retrieve(System.getProperties());
+                    sslContext = defaultConfig.createSSLContext(false);
+                }
+                return new ExtendedSSLEngineConfigurator(sslContext, uri.getHost());
             } else {
                 return null;
             }
@@ -753,10 +763,6 @@ public class GrizzlyClientSocket {
 
         if (configuratorObject instanceof SSLEngineConfigurator) {
             return new ExtendedSSLEngineConfigurator((SSLEngineConfigurator) configuratorObject, uri.getHost());
-        }
-
-        if (configuratorObject instanceof SslEngineConfigurator) {
-            return new ExtendedSSLEngineConfigurator((SslEngineConfigurator) configuratorObject, uri.getHost());
         }
 
         // if we have reached here the ssl engine configuration property is set, but is of incompatible type

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -219,6 +219,8 @@ public class JdkClientContainer implements ClientContainer {
                 sslFilter = new SslFilter(transportFilter,
                                           (org.glassfish.tyrus.container.jdk.client.SslEngineConfigurator)
                                                   sslEngineConfiguratorObject);
+            } else if (cec.getSSLContext() != null) {
+                sslFilter = new SslFilter(transportFilter, cec.getSSLContext(), uri.getHost());
             } else {
                 LOGGER.log(Level.WARNING, "Invalid '" + ClientProperties.SSL_ENGINE_CONFIGURATOR + "' property value: "
                         + sslEngineConfiguratorObject + ". Using system defaults.");

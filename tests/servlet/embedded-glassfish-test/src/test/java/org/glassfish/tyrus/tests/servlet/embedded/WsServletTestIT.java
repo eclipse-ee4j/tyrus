@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -31,6 +31,12 @@ import java.io.IOException;
 @ExtendWith(ArquillianExtension.class)
 public class WsServletTestIT extends ServletTestBase {
 
+    private static final String CONTEXT_PATH = "servlet-test";
+
+    public WsServletTestIT() {
+        setContextPath(CONTEXT_PATH);
+    }
+
     @Override
     protected String getScheme() {
         return "ws";
@@ -38,7 +44,17 @@ public class WsServletTestIT extends ServletTestBase {
 
     @Deployment(testable = false)
     public static WebArchive createDeployment() throws IOException {
-        return ServletTestBase.createDeployment();
+        return ServletTestBase.createDeployment(
+                "glassfish-web.xml",
+                CONTEXT_PATH,
+                OnOpenCloseEndpoint.class, PlainEchoEndpoint.class,
+                DispatchingServletFilter.class,
+                DispatchingServletFilter.OP.class,
+                DispatchingServletFilter.ProgramaticEndpoint.class,
+                DispatchingServletFilter.ProgramaticEndpoint.ProgramaticEndpointMessageHandler.class,
+                DispatchingServletProgrammaticEndpointConfig.class,
+                DispatchingServletProgrammaticEndpointConfig.ProgrammaticEndpointConfigurator.class
+                );
     }
 
     @Test

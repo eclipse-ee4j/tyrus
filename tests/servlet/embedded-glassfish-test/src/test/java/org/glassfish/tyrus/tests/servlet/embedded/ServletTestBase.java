@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -48,14 +48,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public abstract class ServletTestBase {
 
-    private static final String CONTEXT_PATH = "/servlet-test";
     private static final String defaultHost = "localhost";
     private static final int defaultPort = 8025;
     private String contextPath;
-
-    public ServletTestBase() {
-        setContextPath(CONTEXT_PATH);
-    }
 
     protected abstract String getScheme();
 
@@ -81,7 +76,7 @@ public abstract class ServletTestBase {
                                            // do nothing
                                        }
                                    }
-                               }, ClientEndpointConfig.Builder.create().build(),
+                               }, createClientEndpointConfig(),
                                getURI(PlainEchoEndpoint.class.getAnnotation(ServerEndpoint.class).value(),
                                       getScheme()));
 
@@ -111,7 +106,7 @@ public abstract class ServletTestBase {
                                            // do nothing
                                        }
                                    }
-                               }, ClientEndpointConfig.Builder.create().build(),
+                               }, createClientEndpointConfig(),
                 getURI("/test?" + DispatchingServletFilter.OP.UpgradeHttpToWebSocket, getScheme()));
 
         messageLatch.await(5, TimeUnit.SECONDS);
@@ -120,7 +115,7 @@ public abstract class ServletTestBase {
     }
 
     public void testAddEndpoint() throws DeploymentException, InterruptedException, IOException {
-        final CountDownLatch messageLatch = new CountDownLatch(1);
+        final CountDownLatch messageLatch = new CountDownLatch(2);
         final StringBuilder messageBuilder = new StringBuilder();
 
         try {
@@ -159,7 +154,7 @@ public abstract class ServletTestBase {
                                            // do nothing
                                        }
                                    }
-                               }, ClientEndpointConfig.Builder.create().build(),
+                               }, createClientEndpointConfig(),
                 getURI("/test/Tyrus/Rocks", getScheme()));
 
         messageLatch.await(5, TimeUnit.SECONDS);
@@ -167,23 +162,22 @@ public abstract class ServletTestBase {
         assertEquals("TyrusRocks", messageBuilder.toString());
     }
 
-    public static WebArchive createDeployment() throws IOException {
+    protected ClientEndpointConfig createClientEndpointConfig() throws DeploymentException {
+        return ClientEndpointConfig.Builder.create().build();
+    }
 
-        InputStream inputStream = ServletTestBase.class.getClassLoader().getResourceAsStream("WEB-INF/glassfish-web.xml");
+    public static WebArchive createDeployment(String webXml, String archiveName, Class<?>...classes) throws IOException {
+
+        InputStream inputStream = ServletTestBase.class.getClassLoader().getResourceAsStream("WEB-INF/" + webXml);
         // Replace the servlet_adaptor in web.xml.template with the System variable set as servlet adaptor
-        String webXml = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);;
+        String newWebXml = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
-        WebArchive archive = ShrinkWrap.create(WebArchive.class, "servlet-test.war");
-        archive.addClasses(OnOpenCloseEndpoint.class, PlainEchoEndpoint.class,
-                DispatchingServletFilter.class,
-                DispatchingServletFilter.OP.class,
-                DispatchingServletFilter.ProgramaticEndpoint.class,
-                DispatchingServletFilter.ProgramaticEndpoint.ProgramaticEndpointMessageHandler.class,
-                DispatchingServletProgrammaticEndpointConfig.class,
-                DispatchingServletProgrammaticEndpointConfig.ProgrammaticEndpointConfigurator.class
-        );
-        archive.addAsWebInfResource(new StringAsset(webXml), "glassfish-web.xml");
-        System.out.println(archive.toString(true));
+        String newWebXmlName = newWebXml.contains("glassfish-web-app") ? "glassfish-web.xml" : "web.xml";
+
+        WebArchive archive = ShrinkWrap.create(WebArchive.class, archiveName + ".war");
+        archive.addClasses(classes);
+        archive.addAsWebInfResource(new StringAsset(newWebXml), newWebXmlName);
+//        System.out.println(archive.toString(true));
 
         return archive;
 
@@ -219,7 +213,6 @@ public abstract class ServletTestBase {
                     || (port == 443 && "wss".equalsIgnoreCase(currentScheme))) {
                 port = -1;
             }
-
             return new URI(currentScheme, null, getHost(), port, contextPath + endpointPath, null, null);
         } catch (URISyntaxException e) {
             e.printStackTrace();
@@ -253,6 +246,6 @@ public abstract class ServletTestBase {
     }
 
     protected void setContextPath(String contextPath) {
-        this.contextPath = contextPath;
+        this.contextPath = "/" + contextPath;
     }
 }

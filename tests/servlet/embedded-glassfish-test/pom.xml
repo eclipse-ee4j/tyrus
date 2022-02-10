@@ -143,6 +143,9 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
+                            <includes>
+                                <include>**/*TestIT</include>
+                            </includes>
                             <dependenciesToScan>org.glassfish.tyrus.tests.servlet:tyrus-tests-servlet-embedded-gf</dependenciesToScan>
                             <systemPropertyVariables>
                                 <tyrus.test.port>8080</tyrus.test.port>
