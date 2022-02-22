@@ -61,10 +61,12 @@
 <!--                            jakarta.websocket;version=${apijar.bundle.version},-->
 <!--                            jakarta.websocket.server;version=${apijar.bundle.version},-->
                             jakarta.xml.bind.*;version="[3.0,5)",
+                            org.osgi.framework.*;version="!",
                             javax.naming,*
                         </Import-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
+                    <excludeDependencies>org.osgi.core</excludeDependencies>
                 </configuration>
             </plugin>
             <plugin>

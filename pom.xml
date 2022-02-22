@@ -156,9 +156,26 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>legal.source.folder</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -168,6 +185,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <inherited>true</inherited>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -252,7 +274,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.8</version>
+                    <version>3.0.0</version>
                     <executions>
                         <execution>
                             <phase>generate-sources</phase>
@@ -307,6 +329,7 @@
                         <instructions>
                             <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                             <_nodefaultversion>false</_nodefaultversion>
+                            <Include-Resource>{maven-resources},${project.build.directory}/legal</Include-Resource>
                         </instructions>
                     </configuration>
                 </plugin>
@@ -368,6 +391,92 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>copy-legal-docs</id>
+            <activation>
+                <file>
+                    <missing>${basedir}/src/test/java/org/glassfish/tyrus/test</missing>
+                </file>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-resources-plugin</artifactId>
+                            <version>2.6</version>
+                            <extensions>true</extensions>
+                            <!-- Add legal information, NOTICE.md and LINCENSE.md to jars -->
+                            <executions>
+                                <execution>
+                                    <!-- copy the files to classes folder for maven-jar/war-plugin to grab it -->
+                                    <id>copy-legaldocs</id>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <phase>process-sources</phase>
+                                    <configuration>
+                                        <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                                        <resources>
+                                            <resource>
+                                                <directory>${legal.source.folder}</directory>
+                                                <targetPath>META-INF/</targetPath>
+                                                <includes>
+                                                    <include>NOTICE.md</include>
+                                                    <include>LICENSE.md</include>
+                                                </includes>
+                                            </resource>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <!-- copy the files to source folder for maven-source-plugin to grab it -->
+                                    <id>copy-legaldocs-to-sources</id>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <phase>process-sources</phase>
+                                    <configuration>
+                                        <outputDirectory>${project.build.directory}/generated-sources/rsrc-gen</outputDirectory>
+                                        <resources>
+                                            <resource>
+                                                <directory>${legal.source.folder}</directory>
+                                                <targetPath>META-INF/</targetPath>
+                                                <includes>
+                                                    <include>NOTICE.md</include>
+                                                    <include>LICENSE.md</include>
+                                                </includes>
+                                            </resource>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <!-- copy the files to legal folder for felix plugin to grab it -->
+                                    <id>copy-legaldocs-to-osgi-bundles</id>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <phase>process-sources</phase>
+                                    <configuration>
+                                        <outputDirectory>${project.build.directory}/legal</outputDirectory>
+                                        <resources>
+                                            <resource>
+                                                <directory>${legal.source.folder}</directory>
+                                                <targetPath>META-INF/</targetPath>
+                                                <includes>
+                                                    <include>NOTICE.md</include>
+                                                    <include>LICENSE.md</include>
+                                                </includes>
+                                            </resource>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
         <profile>
             <id>release</id>
             <build>
