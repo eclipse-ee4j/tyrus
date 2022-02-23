@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,6 +17,8 @@
 package org.glassfish.tyrus.core;
 
 import javax.websocket.CloseReason;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 /**
  * Enum containing standard CloseReasons defined in RFC 6455, see chapter
@@ -148,5 +150,31 @@ public enum CloseReasons {
      */
     public CloseReason getCloseReason() {
         return closeReason;
+    }
+
+    /* Utility CloseReason methods */
+
+    public static CloseReason create(CloseReason.CloseCode closeCode, String reasonPhrase) {
+        return new CloseReason(closeCode, trimTo123Bytes(reasonPhrase));
+    }
+
+    private static String trimTo123Bytes(String reasonPhrase) {
+        try {
+            final byte[] bytes;
+            return reasonPhrase == null
+                    ? reasonPhrase
+                    : ((bytes = reasonPhrase.getBytes("UTF-8")).length <= 123)
+                        ? reasonPhrase
+                        : new String(trimTo123Bytes(bytes), "UTF-8");
+        } catch (UnsupportedEncodingException uee) {
+            throw new IllegalArgumentException(uee);
+        }
+    }
+
+    private static byte[] trimTo123Bytes(byte[] bytes) {
+        byte[] newBytes = new byte[123];
+        System.arraycopy(bytes, 0, newBytes, 0, 120);
+        newBytes[120] = newBytes[121] = newBytes[122] = (byte) '.';
+        return newBytes;
     }
 }
