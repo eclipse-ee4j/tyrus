@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -43,6 +43,7 @@ import org.glassfish.tyrus.client.auth.AuthConfig;
 import org.glassfish.tyrus.client.auth.AuthenticationException;
 import org.glassfish.tyrus.client.auth.Authenticator;
 import org.glassfish.tyrus.client.auth.Credentials;
+import org.glassfish.tyrus.core.CloseReasons;
 import org.glassfish.tyrus.core.DebugContext;
 import org.glassfish.tyrus.core.Handshake;
 import org.glassfish.tyrus.core.HandshakeException;
@@ -730,7 +731,7 @@ public class TyrusClientEngine implements ClientEngine {
                 socket.onClose(new CloseFrame(e.getCloseReason()));
             } catch (Exception e) {
                 LOGGER.log(Level.FINE, e.getMessage(), e);
-                socket.onClose(new CloseFrame(new CloseReason(CloseReason.CloseCodes.UNEXPECTED_CONDITION, e
+                socket.onClose(new CloseFrame(CloseReasons.create(CloseReason.CloseCodes.UNEXPECTED_CONDITION, e
                         .getMessage())));
             }
         }
