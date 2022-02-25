@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -549,12 +549,7 @@ public class TyrusWebSocketEngine implements WebSocketEngine {
                 debugContext.appendLogMessageWithThrowable(LOGGER, Level.FINE, DebugContext.Type.MESSAGE_IN, e,
                                                            e.getMessage());
                 if (endpointWrapper.onError(socket, e)) {
-                    if (message != null && message.length() > 123) {
-                        // reason phrase length is limited.
-                        message = message.substring(0, 123);
-                    }
-                    socket.onClose(
-                            new CloseFrame(new CloseReason(CloseReason.CloseCodes.UNEXPECTED_CONDITION, message)));
+                    socket.onClose(new CloseFrame(CloseReasons.create(CloseReason.CloseCodes.UNEXPECTED_CONDITION, message)));
                 }
             }
         }
