@@ -32,13 +32,31 @@ public final class ServerProperties {
     /**
      * When calling
      * {@link ServerEndpointConfig.Configurator#modifyHandshake(ServerEndpointConfig, HandshakeRequest, HandshakeResponse)}, the
-     * {@link ServerEndpointConfig} passed in as an argument is wrapped so that invocation of
+     * {@link ServerEndpointConfig} passed in as an argument is a Javassist proxy (when on path) so that invocation of
      * {@link ServerEndpointConfig#getUserProperties()} returns a copy of a properties.
      * <p>
-     * A default value is false.
+     * A default value is {@code false}. When set to {@code true}, {@link #WRAP_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE} is
+     * ignored.
      * </p>
      * <p>
      * The name of the configuration property is <tt>{@value}</tt>.
+     * </p>
+     * @since 2.1.0
+     */
+    public static String PROXY_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE
+            = "tyrus.config.server.proxy.serverenpointconfig.handshake";
+
+    /**
+     * When calling
+     * {@link ServerEndpointConfig.Configurator#modifyHandshake(ServerEndpointConfig, HandshakeRequest, HandshakeResponse)}, the
+     * {@link ServerEndpointConfig} passed in as an argument is wrapped in {@link ServerEndpointConfigWrapper} so that
+     * invocation of {@link ServerEndpointConfig#getUserProperties()} returns a copy of a properties.
+     * <p>
+     *  A default value is {@code true}. This value is ignored when {@link #PROXY_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE} is
+     *  set to {@code true}.
+     * </p>
+     * <p>
+     *  The name of the configuration property is <tt>{@value}</tt>.
      * </p>
      * @since 2.1.0
      */

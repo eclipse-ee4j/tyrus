@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class UserPropertiesServerEndpointConfig implements ServerEndpointConfig {
 
@@ -33,11 +34,14 @@ public class UserPropertiesServerEndpointConfig implements ServerEndpointConfig 
 
     private static final Map<String, Object> SEC_USER_PROPERTIES = new HashMap<>();
 
+    public static AtomicInteger AI = new AtomicInteger(0);
+
     static {
         beforeHandShake();
     }
 
     public static void beforeHandShake() {
+        AI.incrementAndGet();
         SEC_USER_PROPERTIES.clear();
         SEC_USER_PROPERTIES.put(KEY_1, new Object());
         SEC_USER_PROPERTIES.put(KEY_2, new Object());

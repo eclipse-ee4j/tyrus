@@ -39,8 +39,12 @@ public class UserPropertiesConfigurator extends Configurator {
             MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(RequestContext.class, MethodHandles.lookup());
             MethodHandle handle = lookup.findGetter(RequestContext.class, "tyrusConfiguration", TyrusConfiguration.class);
             TyrusConfiguration configuration = (TyrusConfiguration) handle.invoke(request);
-            if (!ServerProperties.getProperty(configuration.tyrusProperties(),
-                    ServerProperties.WRAP_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE, Boolean.class, Boolean.FALSE)) {
+            boolean proxy = ServerProperties.getProperty(configuration.tyrusProperties(),
+                    ServerProperties.PROXY_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE, Boolean.class, Boolean.FALSE);
+            boolean wrap = ServerProperties.getProperty(configuration.tyrusProperties(),
+                    ServerProperties.WRAP_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE, Boolean.class, Boolean.TRUE);
+
+            if (!proxy && !wrap) {
                 if (UserPropertiesServerEndpointConfig.class.isInstance(sec)) {
                     ((UserPropertiesServerEndpointConfig) sec).beforeHandShake();
                 }

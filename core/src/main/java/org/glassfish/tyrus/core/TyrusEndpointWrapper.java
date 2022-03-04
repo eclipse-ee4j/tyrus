@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.security.AccessController;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1630,25 +1632,61 @@ public class TyrusEndpointWrapper {
             // http://java.net/jira/browse/TYRUS-62
             final ServerEndpointConfig serverEndpointConfig = (ServerEndpointConfig) configuration;
             final TyrusConfiguration tyrusConfiguration = ((RequestContext) request).getTyrusConfiguration();
-            final Boolean wrapEndpoint = ServerProperties.getProperty(
+
+            Boolean wrapEndpoint = ServerProperties.getProperty(
                     tyrusConfiguration.tyrusProperties(),
                     ServerProperties.WRAP_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE,
+                    Boolean.class, Boolean.TRUE);
+
+            Boolean proxyEndpoint = ServerProperties.getProperty(
+                    tyrusConfiguration.tyrusProperties(),
+                    ServerProperties.PROXY_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE,
                     Boolean.class, Boolean.FALSE);
 
-            final ServerEndpointConfig wrappedEndpointConfig = wrapEndpoint
-                    ? new ServerEndpointConfigWrapper(serverEndpointConfig) {
-                {
-                    tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
-                }
+            boolean shouldUseJavassist = proxyEndpoint && IS_JAVASSIST;
+            boolean propertiesCopied = false;
 
-                @Override
-                public Map<String, Object> getUserProperties() {
-                    return tyrusConfiguration.userProperties();
+            if (proxyEndpoint && !IS_JAVASSIST && IS_JAVASSIST_WARNING.compareAndSet(false, true)) {
+                LOGGER.warning(LocalizationMessages.JAVASSIST_NOT_FOUND());
+            }
+
+            ServerEndpointConfig proxiedEndpointConfig = serverEndpointConfig;
+            if (shouldUseJavassist && wrapEndpoint) {
+                try {
+                    if (Javassistant.isEligibleForAssistance(serverEndpointConfig)) {
+                        tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
+                        propertiesCopied = true;
+                        proxiedEndpointConfig = Javassistant.assistGetUserProperties(
+                                serverEndpointConfig, () -> tyrusConfiguration.userProperties());
+                    } else {
+                        shouldUseJavassist = false;
+                        LOGGER.warning(LocalizationMessages.CLASS_NOT_ELIGIBLE(serverEndpointConfig));
+                    }
+                } catch (Throwable throwable) {
+                    shouldUseJavassist = false;
+                    LOGGER.log(Level.WARNING, throwable,
+                            () -> LocalizationMessages.CLASS_NOT_PROXIABLE(serverEndpointConfig, throwable.getMessage()));
                 }
-            } : serverEndpointConfig;
+            }
+
+            if (!shouldUseJavassist && wrapEndpoint) {
+                final boolean copied = propertiesCopied;
+                proxiedEndpointConfig = new ServerEndpointConfigWrapper(serverEndpointConfig) {
+                    {
+                        if (!copied) {
+                            tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
+                        }
+                    }
+
+                    @Override
+                    public Map<String, Object> getUserProperties() {
+                        return tyrusConfiguration.userProperties();
+                    }
+                };
+            }
 
             serverEndpointConfig.getConfigurator()
-                    .modifyHandshake(wrappedEndpointConfig, createHandshakeRequest(request), response);
+                    .modifyHandshake(proxiedEndpointConfig, createHandshakeRequest(request), response);
 
             if (!wrapEndpoint) {
                 tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
@@ -1903,7 +1941,19 @@ public class TyrusEndpointWrapper {
     };
 
     private static interface SessionCallable {
-
         Future<?> call(TyrusWebSocket tyrusWebSocket, TyrusSession session);
+    }
+
+    private static final boolean IS_JAVASSIST;
+    private static final AtomicBoolean IS_JAVASSIST_WARNING = new AtomicBoolean(false);
+    static {
+        boolean isJavassist;
+        try {
+            isJavassist = AccessController.doPrivileged(
+                    ReflectionHelper.classForNameWithExceptionPEA("javassist.util.proxy.ProxyFactory")) != null;
+        } catch (Exception e) {
+            isJavassist = false;
+        }
+        IS_JAVASSIST = isJavassist;
     }
 }

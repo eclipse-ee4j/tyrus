@@ -39,7 +39,9 @@ public class UserPropertiesTest extends TestContainer {
     @Test
     public void testUserProperties() throws DeploymentException {
         UserPropertiesServerEndpointConfig.beforeHandShake(); //reset
+        UserPropertiesServerEndpointConfig.AI.set(0);
         setServerProperties(new HashMap<>());
+
         Server server = startServer(UserPropertiesApplication.class);
         try {
             testOnce(1);
@@ -50,14 +52,19 @@ public class UserPropertiesTest extends TestContainer {
         } finally {
             stopServer(server);
         }
+
+        Assert.assertEquals(0, UserPropertiesServerEndpointConfig.AI.get());
     }
 
     @Test
     public void testWrapServerEndpointConfigAtModifyHandshakeTest() throws DeploymentException {
         UserPropertiesServerEndpointConfig.beforeHandShake(); //reset
+        UserPropertiesServerEndpointConfig.AI.set(0);
+
         Map<String, Object> properties = new HashMap<>();
         properties.put(ServerProperties.WRAP_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE, Boolean.TRUE);
         setServerProperties(properties);
+
         Server server = startServer(UserPropertiesApplication.class);
         try {
             testOnce(3);
@@ -68,6 +75,31 @@ public class UserPropertiesTest extends TestContainer {
         } finally {
             stopServer(server);
         }
+
+        Assert.assertEquals(0, UserPropertiesServerEndpointConfig.AI.get());
+    }
+
+    @Test
+    public void testOriginalEndpointConfigAtModifyHandshakeTest() throws DeploymentException {
+        UserPropertiesServerEndpointConfig.beforeHandShake(); //reset
+        UserPropertiesServerEndpointConfig.AI.set(0);
+
+        Map<String, Object> properties = new HashMap<>();
+        properties.put(ServerProperties.WRAP_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE, Boolean.FALSE);
+        setServerProperties(properties);
+
+        Server server = startServer(UserPropertiesApplication.class);
+        try {
+            testOnce(5);
+            testOnce(6);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage(), e);
+        } finally {
+            stopServer(server);
+        }
+
+        Assert.assertEquals(2, UserPropertiesServerEndpointConfig.AI.get());
     }
 
     private void testOnce(int cnt) throws DeploymentException, IOException, InterruptedException {
