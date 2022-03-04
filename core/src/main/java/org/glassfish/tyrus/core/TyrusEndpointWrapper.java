@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -633,8 +633,8 @@ public class TyrusEndpointWrapper {
         final TyrusSession session = new TyrusSession(container, socket, this, subprotocol, extensions, false,
                                                       getURI(contextPath, null), null,
                                                       Collections.<String, String>emptyMap(), null,
-                                                      Collections.<String, List<String>>emptyMap(), null, null, null,
-                                                      debugContext);
+                                                      Collections.<String, List<String>>emptyMap(), null, null, null, null, 0,
+                                                      TyrusConfiguration.EMPTY_CONFIGURATION, debugContext);
         webSocketToSession.put(socket, session);
         return session;
     }
@@ -670,7 +670,11 @@ public class TyrusEndpointWrapper {
                                        upgradeRequest.getQueryString(), templateValues,
                                        upgradeRequest.getUserPrincipal(),
                                        upgradeRequest.getParameterMap(), clusterContext, connectionId,
-                                       ((RequestContext) upgradeRequest).getRemoteAddr(), debugContext);
+                                       ((RequestContext) upgradeRequest).getRemoteAddr(),
+                                       ((RequestContext) upgradeRequest).getServerAddr(),
+                                       ((RequestContext) upgradeRequest).getServerPort(),
+                                       ((RequestContext) upgradeRequest).getTyrusConfiguration(),
+                                       debugContext);
             webSocketToSession.put(socket, session);
 
             // max open session per endpoint exceeded?
@@ -1625,9 +1629,30 @@ public class TyrusEndpointWrapper {
 
             // http://java.net/jira/browse/TYRUS-62
             final ServerEndpointConfig serverEndpointConfig = (ServerEndpointConfig) configuration;
+            final TyrusConfiguration tyrusConfiguration = ((RequestContext) request).getTyrusConfiguration();
+            final Boolean wrapEndpoint = ServerProperties.getProperty(
+                    tyrusConfiguration.tyrusProperties(),
+                    ServerProperties.WRAP_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE,
+                    Boolean.class, Boolean.FALSE);
+
+            final ServerEndpointConfig wrappedEndpointConfig = wrapEndpoint
+                    ? new ServerEndpointConfigWrapper(serverEndpointConfig) {
+                {
+                    tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
+                }
+
+                @Override
+                public Map<String, Object> getUserProperties() {
+                    return tyrusConfiguration.userProperties();
+                }
+            } : serverEndpointConfig;
+
             serverEndpointConfig.getConfigurator()
-                                .modifyHandshake(serverEndpointConfig, createHandshakeRequest(request),
-                                                 response);
+                    .modifyHandshake(wrappedEndpointConfig, createHandshakeRequest(request), response);
+
+            if (!wrapEndpoint) {
+                tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
+            }
         }
     }
 

@@ -44,6 +44,7 @@ module org.glassfish.tyrus.tests.e2e.stdconfig {
     exports org.glassfish.tyrus.test.standard_config.bean.stin;
     exports org.glassfish.tyrus.test.standard_config.message;
     exports org.glassfish.tyrus.test.standard_config.decoder;
+    exports org.glassfish.tyrus.test.standard_config.userproperties;
 
     opens org.glassfish.tyrus.test.standard_config.bean to jakarta.xml.bind;
 }

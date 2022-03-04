@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -14,29 +14,24 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
-package org.glassfish.tyrus.core;
+package org.glassfish.tyrus.test.standard_config.userproperties;
 
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.server.ServerApplicationConfig;
 import jakarta.websocket.server.ServerEndpointConfig;
 
-/**
- * Default tyrus-specific implementation of {@code TyrusServerEndpointConfig}.
- *
- * @author Ondrej Kosatka
- */
-final class DefaultTyrusServerEndpointConfig extends ServerEndpointConfigWrapper implements TyrusServerEndpointConfig {
+import java.util.Collections;
+import java.util.Set;
 
-    /* maximal number of open sessions */
-    private int maxSessions;
+public class UserPropertiesApplication implements ServerApplicationConfig {
 
-
-    // The builder ensures nothing except configurator can be {@code null}.
-    DefaultTyrusServerEndpointConfig(ServerEndpointConfig config, int maxSessions) {
-        super(config);
-        this.maxSessions = maxSessions;
+    @Override
+    public Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> endpointClasses) {
+        return Collections.singleton(new UserPropertiesServerEndpointConfig());
     }
 
     @Override
-    public int getMaxSessions() {
-        return maxSessions;
+    public Set<Class<?>> getAnnotatedEndpointClasses(Set<Class<?>> scanned) {
+        return Collections.emptySet();
     }
 }

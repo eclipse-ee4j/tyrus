@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -295,7 +295,7 @@ public class TyrusRemoteEndpointTest {
     private TyrusSession createTestSession(TyrusWebSocket webSocket, TyrusEndpointWrapper endpointWrapper) {
         return new TyrusSession(null, webSocket, endpointWrapper, null, null, true, null, null,
                 Collections.<String, String>emptyMap(), null, new HashMap<String, List<String>>(), null,
-                null, null, new DebugContext());
+                null, null, null, 0, TyrusConfiguration.EMPTY_CONFIGURATION, new DebugContext());
     }
 
     private class TestRemoteEndpoint extends TyrusWebSocket {
