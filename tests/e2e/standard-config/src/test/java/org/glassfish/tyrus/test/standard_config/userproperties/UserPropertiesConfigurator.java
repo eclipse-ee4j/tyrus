@@ -20,12 +20,6 @@ import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerEndpointConfig;
 import jakarta.websocket.server.ServerEndpointConfig.Configurator;
-import org.glassfish.tyrus.core.RequestContext;
-import org.glassfish.tyrus.core.ServerProperties;
-import org.glassfish.tyrus.core.TyrusConfiguration;
-
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
 public class UserPropertiesConfigurator extends Configurator {
@@ -35,24 +29,6 @@ public class UserPropertiesConfigurator extends Configurator {
 
     @Override
     public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
-        try {
-            MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(RequestContext.class, MethodHandles.lookup());
-            MethodHandle handle = lookup.findGetter(RequestContext.class, "tyrusConfiguration", TyrusConfiguration.class);
-            TyrusConfiguration configuration = (TyrusConfiguration) handle.invoke(request);
-            boolean proxy = ServerProperties.getProperty(configuration.tyrusProperties(),
-                    ServerProperties.PROXY_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE, Boolean.class, Boolean.FALSE);
-            boolean wrap = ServerProperties.getProperty(configuration.tyrusProperties(),
-                    ServerProperties.WRAP_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE, Boolean.class, Boolean.TRUE);
-
-            if (!proxy && !wrap) {
-                if (UserPropertiesServerEndpointConfig.class.isInstance(sec)) {
-                    ((UserPropertiesServerEndpointConfig) sec).beforeHandShake();
-                }
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-
         Map<String, Object> userProperties = sec.getUserProperties();
 
         // First check that the expected properties are present

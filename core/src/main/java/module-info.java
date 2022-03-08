@@ -24,7 +24,6 @@ module org.glassfish.tyrus.core {
     requires transitive jakarta.websocket;
     requires transitive jakarta.websocket.client;
 
-    requires static javassist;
     requires static org.osgi.core;
 
     requires org.glassfish.tyrus.spi;

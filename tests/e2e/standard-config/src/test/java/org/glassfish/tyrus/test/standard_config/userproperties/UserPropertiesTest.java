@@ -22,7 +22,6 @@ import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.MessageHandler;
 import jakarta.websocket.Session;
 import org.glassfish.tyrus.client.ClientManager;
-import org.glassfish.tyrus.core.ServerProperties;
 import org.glassfish.tyrus.server.Server;
 import org.glassfish.tyrus.test.tools.TestContainer;
 import org.junit.Assert;
@@ -30,7 +29,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -54,52 +52,6 @@ public class UserPropertiesTest extends TestContainer {
         }
 
         Assert.assertEquals(0, UserPropertiesServerEndpointConfig.AI.get());
-    }
-
-    @Test
-    public void testWrapServerEndpointConfigAtModifyHandshakeTest() throws DeploymentException {
-        UserPropertiesServerEndpointConfig.beforeHandShake(); //reset
-        UserPropertiesServerEndpointConfig.AI.set(0);
-
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(ServerProperties.WRAP_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE, Boolean.TRUE);
-        setServerProperties(properties);
-
-        Server server = startServer(UserPropertiesApplication.class);
-        try {
-            testOnce(3);
-            testOnce(4);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage(), e);
-        } finally {
-            stopServer(server);
-        }
-
-        Assert.assertEquals(0, UserPropertiesServerEndpointConfig.AI.get());
-    }
-
-    @Test
-    public void testOriginalEndpointConfigAtModifyHandshakeTest() throws DeploymentException {
-        UserPropertiesServerEndpointConfig.beforeHandShake(); //reset
-        UserPropertiesServerEndpointConfig.AI.set(0);
-
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(ServerProperties.WRAP_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE, Boolean.FALSE);
-        setServerProperties(properties);
-
-        Server server = startServer(UserPropertiesApplication.class);
-        try {
-            testOnce(5);
-            testOnce(6);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e.getMessage(), e);
-        } finally {
-            stopServer(server);
-        }
-
-        Assert.assertEquals(2, UserPropertiesServerEndpointConfig.AI.get());
     }
 
     private void testOnce(int cnt) throws DeploymentException, IOException, InterruptedException {

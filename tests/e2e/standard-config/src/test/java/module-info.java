@@ -47,5 +47,4 @@ module org.glassfish.tyrus.tests.e2e.stdconfig {
     exports org.glassfish.tyrus.test.standard_config.userproperties;
 
     opens org.glassfish.tyrus.test.standard_config.bean to jakarta.xml.bind;
-    opens org.glassfish.tyrus.test.standard_config.userproperties to javassist;
 }

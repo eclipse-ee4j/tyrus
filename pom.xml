@@ -114,7 +114,6 @@
         <jaxb.ri.version>4.0.0-M2</jaxb.ri.version>
         <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version>
         <servlet.api.version>6.0.0</servlet.api.version>
-        <javassist.version>3.25.0-GA</javassist.version>
 
         <api_package>jakarta.websocket</api_package>
         <impl_namespace>org.glassfish</impl_namespace>
@@ -742,11 +741,6 @@
                 <groupId>jakarta.annotation</groupId>
                 <artifactId>jakarta.annotation-api</artifactId>
                 <version>${annotation-api.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.javassist</groupId>
-                <artifactId>javassist</artifactId>
-                <version>${javassist.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

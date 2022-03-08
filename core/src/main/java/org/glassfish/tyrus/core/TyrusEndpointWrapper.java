@@ -1633,64 +1633,19 @@ public class TyrusEndpointWrapper {
             final ServerEndpointConfig serverEndpointConfig = (ServerEndpointConfig) configuration;
             final TyrusConfiguration tyrusConfiguration = ((RequestContext) request).getTyrusConfiguration();
 
-            Boolean wrapEndpoint = ServerProperties.getProperty(
-                    tyrusConfiguration.tyrusProperties(),
-                    ServerProperties.WRAP_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE,
-                    Boolean.class, Boolean.TRUE);
-
-            Boolean proxyEndpoint = ServerProperties.getProperty(
-                    tyrusConfiguration.tyrusProperties(),
-                    ServerProperties.PROXY_SERVER_ENDPOINT_CONFIG_AT_MODIFY_HANDSHAKE,
-                    Boolean.class, Boolean.FALSE);
-
-            boolean shouldUseJavassist = proxyEndpoint && IS_JAVASSIST;
-            boolean propertiesCopied = false;
-
-            if (proxyEndpoint && !IS_JAVASSIST && IS_JAVASSIST_WARNING.compareAndSet(false, true)) {
-                LOGGER.warning(LocalizationMessages.JAVASSIST_NOT_FOUND());
-            }
-
-            ServerEndpointConfig proxiedEndpointConfig = serverEndpointConfig;
-            if (shouldUseJavassist && wrapEndpoint) {
-                try {
-                    if (Javassistant.isEligibleForAssistance(serverEndpointConfig)) {
-                        tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
-                        propertiesCopied = true;
-                        proxiedEndpointConfig = Javassistant.assistGetUserProperties(
-                                serverEndpointConfig, () -> tyrusConfiguration.userProperties());
-                    } else {
-                        shouldUseJavassist = false;
-                        LOGGER.warning(LocalizationMessages.CLASS_NOT_ELIGIBLE(serverEndpointConfig));
-                    }
-                } catch (Throwable throwable) {
-                    shouldUseJavassist = false;
-                    LOGGER.log(Level.WARNING, throwable,
-                            () -> LocalizationMessages.CLASS_NOT_PROXIABLE(serverEndpointConfig, throwable.getMessage()));
-                }
-            }
-
-            if (!shouldUseJavassist && wrapEndpoint) {
-                final boolean copied = propertiesCopied;
-                proxiedEndpointConfig = new ServerEndpointConfigWrapper(serverEndpointConfig) {
+            final ServerEndpointConfig proxiedEndpointConfig = new ServerEndpointConfigWrapper(serverEndpointConfig) {
                     {
-                        if (!copied) {
-                            tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
-                        }
+                        tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
                     }
 
                     @Override
                     public Map<String, Object> getUserProperties() {
                         return tyrusConfiguration.userProperties();
                     }
-                };
-            }
+            };
 
             serverEndpointConfig.getConfigurator()
                     .modifyHandshake(proxiedEndpointConfig, createHandshakeRequest(request), response);
-
-            if (!wrapEndpoint) {
-                tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
-            }
         }
     }
 
