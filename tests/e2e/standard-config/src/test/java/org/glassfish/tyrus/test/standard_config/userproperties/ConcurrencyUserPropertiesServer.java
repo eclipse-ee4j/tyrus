@@ -38,7 +38,7 @@ public class ConcurrencyUserPropertiesServer extends Endpoint implements Message
 
     @Override
     public void onMessage(String message) {
-        String [] query = session.getQueryString().split("=");
+        String[] query = session.getQueryString().split("=");
         String queryId = query[1];
 
         String propertyId = (String) session.getUserProperties().get(KEY);
