@@ -16,6 +16,7 @@
 
 package org.glassfish.tyrus.test.standard_config.userproperties;
 
+import jakarta.websocket.ClientEndpointConfig;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.Endpoint;
 import jakarta.websocket.EndpointConfig;
@@ -28,7 +29,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -54,6 +58,33 @@ public class UserPropertiesTest extends TestContainer {
         Assert.assertEquals(0, UserPropertiesServerEndpointConfig.AI.get());
     }
 
+    @Test
+    public void testConcurrencyProperties() throws DeploymentException {
+        Server server = startServer(UserPropertiesApplication.class);
+        Thread[] threads = new Thread[2];
+        try {
+            for (int i = 0; i != 2; i++) {
+                final int cnt = i + 1;
+                threads[i] = new Thread(() -> {
+                    try {
+                        testOnceAsync(cnt);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+                threads[i].start();
+            }
+            for (int i = 0; i != 2; i++) {
+                threads[i].join();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage(), e);
+        } finally {
+            stopServer(server);
+        }
+    }
+
     private void testOnce(int cnt) throws DeploymentException, IOException, InterruptedException {
         AtomicReference<String> receivedTestMessage = new AtomicReference<>();
         CountDownLatch messageLatch = new CountDownLatch(1);
@@ -74,6 +105,35 @@ public class UserPropertiesTest extends TestContainer {
         }, getURI(new UserPropertiesServerEndpointConfig().getPath() + "?cnt=" + cnt));
         messageLatch.await(5, TimeUnit.SECONDS);
         Assert.assertEquals("PASS", receivedTestMessage.get());
+    }
+
+    private void testOnceAsync(int cnt) throws DeploymentException, IOException, InterruptedException {
+        AtomicReference<String> receivedTestMessage = new AtomicReference<>();
+        CountDownLatch messageLatch = new CountDownLatch(1);
+
+        ClientManager client = createClient();
+        client.connectToServer(new Endpoint() {
+            @Override
+            public void onOpen(Session session, EndpointConfig config) {
+                session.addMessageHandler(new MessageHandler.Whole<String>() {
+                    @Override
+                    public void onMessage(String message) {
+                        receivedTestMessage.set(message);
+                        messageLatch.countDown();
+                    }
+                });
+                sendAnything(session, cnt);
+            }
+        }, ClientEndpointConfig.Builder.create().configurator(new ClientEndpointConfig.Configurator() {
+                    @Override
+                    public void beforeRequest(Map<String, List<String>> headers) {
+                        headers.put(ConcurrencyUserPropertiesServer.KEY, Collections.singletonList(String.valueOf(cnt)));
+                    }
+           }).build(),
+           getURI(new ConcurrencyUserPropertiesConfig().getPath() + "?cnt=" + cnt)
+        );
+        messageLatch.await(5, TimeUnit.SECONDS);
+        Assert.assertEquals("OK", receivedTestMessage.get());
     }
 
     private static void sendAnything(Session session, int cnt) {
