@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.security.AccessController;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -633,8 +635,8 @@ public class TyrusEndpointWrapper {
         final TyrusSession session = new TyrusSession(container, socket, this, subprotocol, extensions, false,
                                                       getURI(contextPath, null), null,
                                                       Collections.<String, String>emptyMap(), null,
-                                                      Collections.<String, List<String>>emptyMap(), null, null, null,
-                                                      debugContext);
+                                                      Collections.<String, List<String>>emptyMap(), null, null, null, null, 0,
+                                                      TyrusConfiguration.EMPTY_CONFIGURATION, debugContext);
         webSocketToSession.put(socket, session);
         return session;
     }
@@ -670,7 +672,11 @@ public class TyrusEndpointWrapper {
                                        upgradeRequest.getQueryString(), templateValues,
                                        upgradeRequest.getUserPrincipal(),
                                        upgradeRequest.getParameterMap(), clusterContext, connectionId,
-                                       ((RequestContext) upgradeRequest).getRemoteAddr(), debugContext);
+                                       ((RequestContext) upgradeRequest).getRemoteAddr(),
+                                       ((RequestContext) upgradeRequest).getServerAddr(),
+                                       ((RequestContext) upgradeRequest).getServerPort(),
+                                       ((RequestContext) upgradeRequest).getTyrusConfiguration(),
+                                       debugContext);
             webSocketToSession.put(socket, session);
 
             // max open session per endpoint exceeded?
@@ -1625,9 +1631,21 @@ public class TyrusEndpointWrapper {
 
             // http://java.net/jira/browse/TYRUS-62
             final ServerEndpointConfig serverEndpointConfig = (ServerEndpointConfig) configuration;
+            final TyrusConfiguration tyrusConfiguration = ((RequestContext) request).getTyrusConfiguration();
+
+            final ServerEndpointConfig proxiedEndpointConfig = new ServerEndpointConfigWrapper(serverEndpointConfig) {
+                    {
+                        tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
+                    }
+
+                    @Override
+                    public Map<String, Object> getUserProperties() {
+                        return tyrusConfiguration.userProperties();
+                    }
+            };
+
             serverEndpointConfig.getConfigurator()
-                                .modifyHandshake(serverEndpointConfig, createHandshakeRequest(request),
-                                                 response);
+                    .modifyHandshake(proxiedEndpointConfig, createHandshakeRequest(request), response);
         }
     }
 
@@ -1878,7 +1896,19 @@ public class TyrusEndpointWrapper {
     };
 
     private static interface SessionCallable {
-
         Future<?> call(TyrusWebSocket tyrusWebSocket, TyrusSession session);
+    }
+
+    private static final boolean IS_JAVASSIST;
+    private static final AtomicBoolean IS_JAVASSIST_WARNING = new AtomicBoolean(false);
+    static {
+        boolean isJavassist;
+        try {
+            isJavassist = AccessController.doPrivileged(
+                    ReflectionHelper.classForNameWithExceptionPEA("javassist.util.proxy.ProxyFactory")) != null;
+        } catch (Exception e) {
+            isJavassist = false;
+        }
+        IS_JAVASSIST = isJavassist;
     }
 }

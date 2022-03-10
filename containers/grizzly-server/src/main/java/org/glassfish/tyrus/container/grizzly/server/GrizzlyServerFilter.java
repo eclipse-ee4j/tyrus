@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,6 +19,7 @@ package org.glassfish.tyrus.container.grizzly.server;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -221,7 +222,11 @@ class GrizzlyServerFilter extends BaseFilter {
      * @return {@link NextAction} instruction for {@link FilterChain}, how it should continue the execution
      */
     private NextAction handleHandshake(final FilterChainContext ctx, HttpContent content) {
-        final UpgradeRequest upgradeRequest = createWebSocketRequest(content);
+        final UpgradeRequest upgradeRequest = createWebSocketRequest(content,
+                GrizzlyServerContainer.TyrusGrizzlyServerContainer.class.isInstance(serverContainer)
+                    ? ((GrizzlyServerContainer.TyrusGrizzlyServerContainer) serverContainer).getProperties()
+                    : Collections.EMPTY_MAP
+        );
 
         if (!upgradeRequest.getRequestURI().getPath().startsWith(contextPath)) {
             // the request is not for the deployed application
@@ -302,7 +307,7 @@ class GrizzlyServerFilter extends BaseFilter {
         }
     }
 
-    private static UpgradeRequest createWebSocketRequest(final HttpContent requestContent) {
+    private static UpgradeRequest createWebSocketRequest(final HttpContent requestContent, Map<String, Object> properties) {
 
         final HttpRequestPacket requestPacket = (HttpRequestPacket) requestContent.getHttpHeader();
 
@@ -317,14 +322,17 @@ class GrizzlyServerFilter extends BaseFilter {
             parameterMap.put(paramName, parameters.getParameterValues(paramName));
         }
 
-        final RequestContext requestContext = RequestContext.Builder.create()
-                                                                    .requestURI(
-                                                                            URI.create(requestPacket.getRequestURI()))
-                                                                    .queryString(requestPacket.getQueryString())
-                                                                    .parameterMap(parameterMap)
-                                                                    .secure(requestPacket.isSecure())
-                                                                    .remoteAddr(requestPacket.getRemoteAddress())
-                                                                    .build();
+        final RequestContext requestContext =
+                RequestContext.Builder.create()
+                        .requestURI(URI.create(requestPacket.getRequestURI()))
+                        .queryString(requestPacket.getQueryString())
+                        .parameterMap(parameterMap)
+                        .secure(requestPacket.isSecure())
+                        .remoteAddr(requestPacket.getRemoteAddress())
+                .serverAddr(requestPacket.getLocalHost() == null ? requestPacket.getLocalAddress() : requestPacket.getLocalHost())
+                        .serverPort(requestPacket.getLocalPort())
+                        .tyrusProperties(properties)
+                        .build();
 
         for (String name : requestPacket.getHeaders().names()) {
             for (String headerValue : requestPacket.getHeaders().values(name)) {

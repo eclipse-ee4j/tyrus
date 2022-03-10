@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -41,13 +41,18 @@ public final class RequestContext extends UpgradeRequest {
     private final Principal userPrincipal;
     private final Builder.IsUserInRoleDelegate isUserInRoleDelegate;
     private final String remoteAddr;
+    private final String serverAddr;
+    private final int serverPort;
+
+    private final TyrusConfiguration tyrusConfiguration;
 
     private Map<String, List<String>> headers;
     private Map<String, List<String>> parameterMap;
 
     private RequestContext(URI requestURI, String queryString, Object httpSession, boolean secure, Principal
-            userPrincipal, Builder.IsUserInRoleDelegate IsUserInRoleDelegate, String remoteAddr, Map<String,
-            List<String>> parameterMap, Map<String, List<String>> headers) {
+            userPrincipal, Builder.IsUserInRoleDelegate IsUserInRoleDelegate, String remoteAddr, String serverAddr,
+            int serverPort, Map<String, List<String>> parameterMap, Map<String, List<String>> headers,
+            Map<String, Object> tyrusProperties) {
         this.requestURI = requestURI;
         this.queryString = queryString;
         this.httpSession = httpSession;
@@ -55,8 +60,11 @@ public final class RequestContext extends UpgradeRequest {
         this.userPrincipal = userPrincipal;
         this.isUserInRoleDelegate = IsUserInRoleDelegate;
         this.remoteAddr = remoteAddr;
+        this.serverAddr = serverAddr;
+        this.serverPort = serverPort;
         this.parameterMap = parameterMap;
         this.headers = new TreeMap<String, List<String>>(String.CASE_INSENSITIVE_ORDER);
+        this.tyrusConfiguration = new TyrusConfiguration.Builder().tyrusProperties(tyrusProperties).build();
 
         if (headers != null) {
             this.headers.putAll(headers);
@@ -163,6 +171,30 @@ public final class RequestContext extends UpgradeRequest {
     }
 
     /**
+     * Returns the host name of the server to which the request was sent.
+     *
+     * @return a {@link String} Returns the host name of the server to which the request was sent or {@code null} when
+     * method is called on client-side.
+     */
+    public String getServerAddr() {
+        return serverAddr;
+    }
+
+    /**
+     * Get the port of the last client or proxy that sent the request.
+     *
+     * @return a port of the client that sent the request.
+     */
+    public int getServerPort() {
+        return serverPort;
+    }
+
+    /* package */ TyrusConfiguration getTyrusConfiguration() {
+        return tyrusConfiguration;
+    }
+
+
+    /**
      * {@link RequestContext} builder.
      */
     public static final class Builder {
@@ -175,7 +207,10 @@ public final class RequestContext extends UpgradeRequest {
         private Builder.IsUserInRoleDelegate isUserInRoleDelegate;
         private Map<String, List<String>> parameterMap;
         private String remoteAddr;
+        private String serverAddr;
+        private int serverPort;
         private Map<String, List<String>> headers;
+        private Map<String, Object> tyrusProperties;
 
         /**
          * Create empty builder.
@@ -203,7 +238,10 @@ public final class RequestContext extends UpgradeRequest {
             builder.isUserInRoleDelegate = requestContext.isUserInRoleDelegate;
             builder.parameterMap = requestContext.parameterMap;
             builder.remoteAddr = requestContext.remoteAddr;
+            builder.serverAddr = requestContext.serverAddr;
+            builder.serverPort = requestContext.serverPort;
             builder.headers = requestContext.headers;
+            builder.tyrusProperties = requestContext.tyrusConfiguration.tyrusProperties();
 
             return builder;
         }
@@ -305,15 +343,46 @@ public final class RequestContext extends UpgradeRequest {
         }
 
         /**
+         * Set server address or hostname.
+         *
+         * @param serverAddr server address to be set.
+         * @return updated {@link RequestContext.Builder} instance.
+         */
+        public Builder serverAddr(String serverAddr) {
+            this.serverAddr = serverAddr;
+            return this;
+        }
+
+        /**
+         * Set server port.
+         *
+         * @param serverPort server port to be set.
+         * @return updated {@link RequestContext.Builder} instance.
+         */
+        public Builder serverPort(int serverPort) {
+            this.serverPort = serverPort;
+            return this;
+        }
+
+        /**
+         * Set properties for Tyrus framework.
+         * @param tyrusProperties
+         */
+        public Builder tyrusProperties(Map<String, Object> tyrusProperties) {
+            this.tyrusProperties = tyrusProperties;
+            return this;
+        }
+
+        /**
          * Build {@link RequestContext} from given properties.
          *
          * @return created {@link RequestContext}.
          */
         public RequestContext build() {
             return new RequestContext(requestURI, queryString, httpSession, secure, userPrincipal,
-                                      isUserInRoleDelegate, remoteAddr,
-                                      parameterMap != null ? parameterMap : new HashMap<String,
-                                              List<String>>(), headers);
+                                      isUserInRoleDelegate, remoteAddr, serverAddr, serverPort,
+                                      parameterMap != null ? parameterMap : new HashMap<String, List<String>>(),
+                                      headers, tyrusProperties);
         }
 
         /**

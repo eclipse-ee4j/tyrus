@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,12 +16,6 @@
 
 package org.glassfish.tyrus.core;
 
-import java.util.List;
-import java.util.Map;
-
-import jakarta.websocket.Decoder;
-import jakarta.websocket.Encoder;
-import jakarta.websocket.Extension;
 import jakarta.websocket.server.ServerEndpointConfig;
 
 /**
@@ -29,17 +23,15 @@ import jakarta.websocket.server.ServerEndpointConfig;
  *
  * @author Ondrej Kosatka
  */
-final class DefaultTyrusServerEndpointConfig implements TyrusServerEndpointConfig {
+final class DefaultTyrusServerEndpointConfig extends ServerEndpointConfigWrapper implements TyrusServerEndpointConfig {
 
-    /* wrapped origin config */
-    private ServerEndpointConfig config;
     /* maximal number of open sessions */
     private int maxSessions;
 
 
     // The builder ensures nothing except configurator can be {@code null}.
     DefaultTyrusServerEndpointConfig(ServerEndpointConfig config, int maxSessions) {
-        this.config = config;
+        super(config);
         this.maxSessions = maxSessions;
     }
 
@@ -47,45 +39,4 @@ final class DefaultTyrusServerEndpointConfig implements TyrusServerEndpointConfi
     public int getMaxSessions() {
         return maxSessions;
     }
-
-    @Override
-    public Class<?> getEndpointClass() {
-        return config.getEndpointClass();
-    }
-
-    @Override
-    public List<Class<? extends Encoder>> getEncoders() {
-        return config.getEncoders();
-    }
-
-    @Override
-    public List<Class<? extends Decoder>> getDecoders() {
-        return config.getDecoders();
-    }
-
-    @Override
-    public String getPath() {
-        return config.getPath();
-    }
-
-    @Override
-    public ServerEndpointConfig.Configurator getConfigurator() {
-        return config.getConfigurator();
-    }
-
-    @Override
-    public final Map<String, Object> getUserProperties() {
-        return config.getUserProperties();
-    }
-
-    @Override
-    public final List<String> getSubprotocols() {
-        return config.getSubprotocols();
-    }
-
-    @Override
-    public final List<Extension> getExtensions() {
-        return config.getExtensions();
-    }
-
 }

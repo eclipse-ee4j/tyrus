@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,6 +19,7 @@ package org.glassfish.tyrus.core;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.security.Principal;
@@ -87,6 +88,8 @@ public class TyrusSession implements DistributedSession {
     private final List<Extension> negotiatedExtensions;
     private final String negotiatedSubprotocol;
     private final String remoteAddr;
+    private final String serverAddr;
+    private final int serverPort;
     private final DebugContext debugContext;
 
     private final Map<RemoteSession.DistributedMapKey, Object> distributedPropertyMap;
@@ -106,7 +109,8 @@ public class TyrusSession implements DistributedSession {
                  String subprotocol, List<Extension> extensions, boolean isSecure,
                  URI requestURI, String queryString, Map<String, String> pathParameters, Principal principal,
                  Map<String, List<String>> requestParameterMap, final ClusterContext clusterContext,
-                 String connectionId, final String remoteAddr, DebugContext debugContext) {
+                 String connectionId, final String remoteAddr, String serverAddr, final int serverPort,
+                 TyrusConfiguration tyrusConfiguration, DebugContext debugContext) {
         this.container = container;
         this.endpointWrapper = endpointWrapper;
         this.negotiatedExtensions =
@@ -125,6 +129,8 @@ public class TyrusSession implements DistributedSession {
                 : Collections.unmodifiableMap(new HashMap<String, List<String>>(requestParameterMap));
         this.connectionId = connectionId;
         this.remoteAddr = remoteAddr;
+        this.serverAddr = serverAddr;
+        this.serverPort = serverPort;
         this.debugContext = debugContext;
 
         if (container != null) {
@@ -167,6 +173,17 @@ public class TyrusSession implements DistributedSession {
 
         debugContext.setSessionId(id);
         userProperties = new HashMap<String, Object>();
+
+        copyProperties(tyrusConfiguration.userProperties(), userProperties);
+        if (clusterContext != null) {
+            copyProperties(tyrusConfiguration.userProperties(), distributedUserProperties);
+        }
+    }
+
+    private static void copyProperties(Map<String, Object> source, Map<String, Object> dest) {
+        if (source != null) {
+            source.forEach((k, v) -> dest.put(k, v));
+        }
     }
 
     @Override
@@ -386,6 +403,20 @@ public class TyrusSession implements DistributedSession {
 
     @Override
     public URI getRequestURI() {
+        if (requestURI.getScheme() == null && requestURI.getHost() == null) {
+            try {
+                return new URI(isSecure ? "wss" : "ws",
+                        requestURI.getUserInfo(),
+                        "127.0.0.1".equals(serverAddr) ? "localhost" : serverAddr,
+                        serverPort,
+                        requestURI.getPath(),
+                        requestURI.getQuery(),
+                        requestURI.getFragment()
+                );
+            } catch (URISyntaxException exception) {
+                // return requestURI
+            }
+        }
         return requestURI;
     }
 

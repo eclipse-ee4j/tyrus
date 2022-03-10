@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -88,136 +88,149 @@ public class GrizzlyServerContainer extends ServerContainerFactory {
             localProperties = new HashMap<String, Object>(properties);
         }
 
-        final Integer incomingBufferSize =
-                Utils.getProperty(localProperties, TyrusWebSocketEngine.INCOMING_BUFFER_SIZE, Integer.class);
-        final ClusterContext clusterContext =
-                Utils.getProperty(localProperties, ClusterContext.CLUSTER_CONTEXT, ClusterContext.class);
-        final ApplicationEventListener applicationEventListener =
-                Utils.getProperty(localProperties, ApplicationEventListener.APPLICATION_EVENT_LISTENER,
-                                  ApplicationEventListener.class);
-        final Integer maxSessionsPerApp =
-                Utils.getProperty(localProperties, TyrusWebSocketEngine.MAX_SESSIONS_PER_APP, Integer.class);
-        final Integer maxSessionsPerRemoteAddr =
-                Utils.getProperty(localProperties, TyrusWebSocketEngine.MAX_SESSIONS_PER_REMOTE_ADDR, Integer.class);
-        final Boolean parallelBroadcastEnabled =
-                Utils.getProperty(localProperties, TyrusWebSocketEngine.PARALLEL_BROADCAST_ENABLED, Boolean.class);
-        final DebugContext.TracingType tracingType =
-                Utils.getProperty(localProperties, TyrusWebSocketEngine.TRACING_TYPE, DebugContext.TracingType.class,
-                                  DebugContext.TracingType.OFF);
-        final DebugContext.TracingThreshold tracingThreshold =
-                Utils.getProperty(localProperties, TyrusWebSocketEngine.TRACING_THRESHOLD,
-                                  DebugContext.TracingThreshold.class, DebugContext.TracingThreshold.TRACE);
+        return new TyrusGrizzlyServerContainer(localProperties);
+    }
 
-        return new TyrusServerContainer((Set<Class<?>>) null) {
+    /* package */ static class TyrusGrizzlyServerContainer extends TyrusServerContainer {
+        private final Map<String, Object> localProperties;
+        private final WebSocketEngine engine;
+        private final ApplicationEventListener applicationEventListener;
 
-            private final WebSocketEngine engine =
-                    TyrusWebSocketEngine.builder(this)
-                                        .incomingBufferSize(incomingBufferSize)
-                                        .clusterContext(clusterContext)
-                                        .applicationEventListener(applicationEventListener)
-                                        .maxSessionsPerApp(maxSessionsPerApp)
-                                        .maxSessionsPerRemoteAddr(maxSessionsPerRemoteAddr)
-                                        .parallelBroadcastEnabled(parallelBroadcastEnabled)
-                                        .tracingType(tracingType)
-                                        .tracingThreshold(tracingThreshold)
-                                        .build();
+        TyrusGrizzlyServerContainer(Map<String, Object> properties) {
+            super((Set<Class<?>>) null);
+            this.localProperties = properties;
 
-            private HttpServer server;
-            private String contextPath;
-            private volatile NetworkListener listener = null;
+            final Integer incomingBufferSize =
+                    Utils.getProperty(localProperties, TyrusWebSocketEngine.INCOMING_BUFFER_SIZE, Integer.class);
+            final ClusterContext clusterContext =
+                    Utils.getProperty(localProperties, ClusterContext.CLUSTER_CONTEXT, ClusterContext.class);
+            final Integer maxSessionsPerApp =
+                    Utils.getProperty(localProperties, TyrusWebSocketEngine.MAX_SESSIONS_PER_APP, Integer.class);
+            final Integer maxSessionsPerRemoteAddr =
+                    Utils.getProperty(localProperties, TyrusWebSocketEngine.MAX_SESSIONS_PER_REMOTE_ADDR, Integer.class);
+            final Boolean parallelBroadcastEnabled =
+                    Utils.getProperty(localProperties, TyrusWebSocketEngine.PARALLEL_BROADCAST_ENABLED, Boolean.class);
+            final DebugContext.TracingType tracingType =
+                    Utils.getProperty(localProperties, TyrusWebSocketEngine.TRACING_TYPE, DebugContext.TracingType.class,
+                            DebugContext.TracingType.OFF);
+            final DebugContext.TracingThreshold tracingThreshold =
+                    Utils.getProperty(localProperties, TyrusWebSocketEngine.TRACING_THRESHOLD,
+                            DebugContext.TracingThreshold.class, DebugContext.TracingThreshold.TRACE);
 
-            @Override
-            public void register(Class<?> endpointClass) throws DeploymentException {
-                engine.register(endpointClass, contextPath);
+            applicationEventListener = Utils.getProperty(localProperties, ApplicationEventListener.APPLICATION_EVENT_LISTENER,
+                            ApplicationEventListener.class);
+
+            engine = TyrusWebSocketEngine.builder(this)
+                            .incomingBufferSize(incomingBufferSize)
+                            .clusterContext(clusterContext)
+                            .applicationEventListener(applicationEventListener)
+                            .maxSessionsPerApp(maxSessionsPerApp)
+                            .maxSessionsPerRemoteAddr(maxSessionsPerRemoteAddr)
+                            .parallelBroadcastEnabled(parallelBroadcastEnabled)
+                            .tracingType(tracingType)
+                            .tracingThreshold(tracingThreshold)
+                            .build();
+        }
+
+        private HttpServer server;
+        private String contextPath;
+        private volatile NetworkListener listener = null;
+
+        @Override
+        public void register(Class<?> endpointClass) throws DeploymentException {
+            engine.register(endpointClass, contextPath);
+        }
+
+        @Override
+        public void register(ServerEndpointConfig serverEndpointConfig) throws DeploymentException {
+            engine.register(serverEndpointConfig, contextPath);
+        }
+
+        @Override
+        public WebSocketEngine getWebSocketEngine() {
+            return engine;
+        }
+
+        @Override
+        public void start(final String rootPath, int port) throws IOException, DeploymentException {
+            contextPath = rootPath;
+            server = new HttpServer();
+            final ServerConfiguration config = server.getServerConfiguration();
+
+            listener = new NetworkListener("grizzly", "0.0.0.0", port);
+            server.addListener(listener);
+
+            // server = HttpServer.createSimpleServer(rootPath, port);
+            ThreadPoolConfig workerThreadPoolConfig =
+                    Utils.getProperty(localProperties, WORKER_THREAD_POOL_CONFIG, ThreadPoolConfig.class);
+            ThreadPoolConfig selectorThreadPoolConfig =
+                    Utils.getProperty(localProperties, SELECTOR_THREAD_POOL_CONFIG, ThreadPoolConfig.class);
+
+            // TYRUS-287: configurable server thread pools
+            if (workerThreadPoolConfig != null || selectorThreadPoolConfig != null) {
+                TCPNIOTransportBuilder transportBuilder = TCPNIOTransportBuilder.newInstance();
+                if (workerThreadPoolConfig != null) {
+                    transportBuilder.setWorkerThreadPoolConfig(workerThreadPoolConfig);
+                }
+                if (selectorThreadPoolConfig != null) {
+                    transportBuilder.setSelectorThreadPoolConfig(selectorThreadPoolConfig);
+                }
+                transportBuilder.setIOStrategy(WorkerThreadIOStrategy.getInstance());
+                server.getListener("grizzly").setTransport(transportBuilder.build());
+            } else {
+                // if no configuration is set, just update IO Strategy to worker thread strat.
+                server.getListener("grizzly").getTransport().setIOStrategy(WorkerThreadIOStrategy.getInstance());
             }
 
-            @Override
-            public void register(ServerEndpointConfig serverEndpointConfig) throws DeploymentException {
-                engine.register(serverEndpointConfig, contextPath);
+            // idle timeout set to indefinite.
+            server.getListener("grizzly").getKeepAlive().setIdleTimeoutInSeconds(-1);
+            server.getListener("grizzly").registerAddOn(new WebSocketAddOn(this, contextPath));
+
+            final WebSocketEngine webSocketEngine = getWebSocketEngine();
+
+            final Object staticContentPath = localProperties.get(Server.STATIC_CONTENT_ROOT);
+            HttpHandler staticHandler = null;
+            if (staticContentPath != null && !staticContentPath.toString().isEmpty()) {
+                staticHandler = new StaticHttpHandler(staticContentPath.toString());
             }
 
-            @Override
-            public WebSocketEngine getWebSocketEngine() {
-                return engine;
+            final Object wsadl = localProperties.get(TyrusWebSocketEngine.WSADL_SUPPORT);
+
+            if (wsadl != null && wsadl.toString().equalsIgnoreCase("true")) { // wsadl enabled
+                config.addHttpHandler(new WsadlHttpHandler((TyrusWebSocketEngine) webSocketEngine, staticHandler));
+            } else if (staticHandler != null) { // wsadl disabled
+                config.addHttpHandler(staticHandler);
             }
 
-            @Override
-            public void start(final String rootPath, int port) throws IOException, DeploymentException {
-                contextPath = rootPath;
-                server = new HttpServer();
-                final ServerConfiguration config = server.getServerConfiguration();
-
-                listener = new NetworkListener("grizzly", "0.0.0.0", port);
-                server.addListener(listener);
-
-                // server = HttpServer.createSimpleServer(rootPath, port);
-                ThreadPoolConfig workerThreadPoolConfig =
-                        Utils.getProperty(localProperties, WORKER_THREAD_POOL_CONFIG, ThreadPoolConfig.class);
-                ThreadPoolConfig selectorThreadPoolConfig =
-                        Utils.getProperty(localProperties, SELECTOR_THREAD_POOL_CONFIG, ThreadPoolConfig.class);
-
-                // TYRUS-287: configurable server thread pools
-                if (workerThreadPoolConfig != null || selectorThreadPoolConfig != null) {
-                    TCPNIOTransportBuilder transportBuilder = TCPNIOTransportBuilder.newInstance();
-                    if (workerThreadPoolConfig != null) {
-                        transportBuilder.setWorkerThreadPoolConfig(workerThreadPoolConfig);
-                    }
-                    if (selectorThreadPoolConfig != null) {
-                        transportBuilder.setSelectorThreadPoolConfig(selectorThreadPoolConfig);
-                    }
-                    transportBuilder.setIOStrategy(WorkerThreadIOStrategy.getInstance());
-                    server.getListener("grizzly").setTransport(transportBuilder.build());
-                } else {
-                    // if no configuration is set, just update IO Strategy to worker thread strat.
-                    server.getListener("grizzly").getTransport().setIOStrategy(WorkerThreadIOStrategy.getInstance());
-                }
-
-                // idle timeout set to indefinite.
-                server.getListener("grizzly").getKeepAlive().setIdleTimeoutInSeconds(-1);
-                server.getListener("grizzly").registerAddOn(new WebSocketAddOn(this, contextPath));
-
-                final WebSocketEngine webSocketEngine = getWebSocketEngine();
-
-                final Object staticContentPath = localProperties.get(Server.STATIC_CONTENT_ROOT);
-                HttpHandler staticHandler = null;
-                if (staticContentPath != null && !staticContentPath.toString().isEmpty()) {
-                    staticHandler = new StaticHttpHandler(staticContentPath.toString());
-                }
-
-                final Object wsadl = localProperties.get(TyrusWebSocketEngine.WSADL_SUPPORT);
-
-                if (wsadl != null && wsadl.toString().equalsIgnoreCase("true")) { // wsadl enabled
-                    config.addHttpHandler(new WsadlHttpHandler((TyrusWebSocketEngine) webSocketEngine, staticHandler));
-                } else if (staticHandler != null) { // wsadl disabled
-                    config.addHttpHandler(staticHandler);
-                }
-
-                if (applicationEventListener != null) {
-                    applicationEventListener.onApplicationInitialized(rootPath);
-                }
-
-                server.start();
-                super.start(rootPath, port);
+            if (applicationEventListener != null) {
+                applicationEventListener.onApplicationInitialized(rootPath);
             }
 
-            @Override
-            public int getPort() {
-                if (listener != null && listener.getPort() > 0) {
-                    return listener.getPort();
-                } else {
-                    return -1;
-                }
-            }
+            server.start();
+            super.start(rootPath, port);
+        }
 
-            @Override
-            public void stop() {
-                super.stop();
-                server.shutdownNow();
-                if (applicationEventListener != null) {
-                    applicationEventListener.onApplicationDestroyed();
-                }
+        @Override
+        public int getPort() {
+            if (listener != null && listener.getPort() > 0) {
+                return listener.getPort();
+            } else {
+                return -1;
             }
-        };
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            server.shutdownNow();
+            if (applicationEventListener != null) {
+                applicationEventListener.onApplicationDestroyed();
+            }
+        }
+
+        /* package */ Map<String, Object> getProperties() {
+            return localProperties;
+        }
     }
 
     private static class WsadlHttpHandler extends HttpHandler {

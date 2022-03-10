@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -38,6 +38,7 @@ import org.glassfish.tyrus.spi.Writer;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -167,7 +168,12 @@ class TyrusServletUpgrade {
                             return httpServletRequest
                                     .isUserInRole(role);
                         }
-                    }).parameterMap(paramMap).remoteAddr(httpServletRequest.getRemoteAddr())
+                    }).parameterMap(paramMap)
+                    .remoteAddr(httpServletRequest.getRemoteAddr())
+                    .serverAddr(httpServletRequest.getLocalName() == null
+                            ? httpServletRequest.getLocalAddr() : httpServletRequest.getLocalName())
+                    .serverPort(httpServletRequest.getLocalPort())
+                    .tyrusProperties(getInitParams(httpServletRequest.getServletContext()))
                     .build();
 
             Enumeration<String> headerNames = httpServletRequest.getHeaderNames();
@@ -269,6 +275,16 @@ class TyrusServletUpgrade {
             wsadlJaxbContext = JAXBContext.newInstance(Application.class.getPackage().getName());
         }
         return wsadlJaxbContext;
+    }
+
+    private Map<String, Object> getInitParams(ServletContext ctx) {
+        Map<String, Object> initParams = new HashMap<>();
+        Enumeration<String> enumeration = ctx.getInitParameterNames();
+        while (enumeration.hasMoreElements()) {
+            String initName = enumeration.nextElement();
+            initParams.put(initName, ctx.getInitParameter(initName));
+        }
+        return initParams;
     }
 
     public void destroy() {

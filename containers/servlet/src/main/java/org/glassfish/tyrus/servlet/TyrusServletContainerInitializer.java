@@ -30,7 +30,6 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.Endpoint;
-import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerApplicationConfig;
 import jakarta.websocket.server.ServerContainer;
 import jakarta.websocket.server.ServerEndpoint;
@@ -220,7 +219,7 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
         private final WebSocketEngine engine;
         private final TyrusServletUpgrade tyrusServletUpgrade;
 
-        public TyrusServerContainerImpl(Set<Class<?>> set, ApplicationEventListener applicationEventListener,
+        private TyrusServerContainerImpl(Set<Class<?>> set, ApplicationEventListener applicationEventListener,
                 Integer incomingBufferSize, Integer maxSessionsPerApp, Integer maxSessionsPerRemoteAddr,
                 Boolean parallelBroadcastEnabled, DebugContext.TracingType tracingType,
                 DebugContext.TracingThreshold tracingThreshold, String contextPath, boolean wsadlEnabled) {
