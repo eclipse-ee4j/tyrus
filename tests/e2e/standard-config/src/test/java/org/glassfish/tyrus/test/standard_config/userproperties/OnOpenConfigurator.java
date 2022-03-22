@@ -16,26 +16,26 @@
 
 package org.glassfish.tyrus.test.standard_config.userproperties;
 
-import jakarta.websocket.Endpoint;
-import jakarta.websocket.server.ServerApplicationConfig;
+import jakarta.websocket.HandshakeResponse;
+import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerEndpointConfig;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+public class OnOpenConfigurator extends ServerEndpointConfig.Configurator {
 
-public class UserPropertiesApplication implements ServerApplicationConfig {
+    private static ServerEndpointConfig config;
 
     @Override
-    public Set<ServerEndpointConfig> getEndpointConfigs(Set<Class<? extends Endpoint>> endpointClasses) {
-        Set<ServerEndpointConfig> set = new HashSet<>();
-        set.add(new UserPropertiesServerEndpointConfig());
-        set.add(new ConcurrencyUserPropertiesConfig());
-        return set;
+    public void modifyHandshake(ServerEndpointConfig sec,
+                                HandshakeRequest request, HandshakeResponse response) {
+        OnOpenConfigurator.setConfig(sec);
+        super.modifyHandshake(sec, request, response);
     }
 
-    @Override
-    public Set<Class<?>> getAnnotatedEndpointClasses(Set<Class<?>> scanned) {
-        return Collections.singleton(OnOpenServer.class);
+    static ServerEndpointConfig getConfig() {
+        return config;
+    }
+
+    private static void setConfig(ServerEndpointConfig config) {
+        OnOpenConfigurator.config = config;
     }
 }

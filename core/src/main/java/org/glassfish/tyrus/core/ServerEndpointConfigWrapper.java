@@ -30,9 +30,15 @@ import java.util.Map;
 public class ServerEndpointConfigWrapper implements ServerEndpointConfig {
 
     protected final ServerEndpointConfig wrapped;
+    private final Map<String, Object> properties;
 
     /* package */ ServerEndpointConfigWrapper(ServerEndpointConfig wrapped) {
+        this(wrapped, wrapped.getUserProperties());
+    }
+
+    /* package */ ServerEndpointConfigWrapper(ServerEndpointConfig wrapped, Map<String, Object> properties) {
         this.wrapped = wrapped;
+        this.properties = properties;
     }
 
     @Override
@@ -72,7 +78,7 @@ public class ServerEndpointConfigWrapper implements ServerEndpointConfig {
 
     @Override
     public Map<String, Object> getUserProperties() {
-        return wrapped.getUserProperties();
+        return properties;
     }
 
     /**
