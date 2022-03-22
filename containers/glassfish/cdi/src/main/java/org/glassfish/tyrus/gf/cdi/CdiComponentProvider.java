@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -25,6 +25,7 @@ import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.AnnotatedType;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.InjectionTarget;
+import jakarta.enterprise.inject.spi.InjectionTargetFactory;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -90,7 +91,8 @@ public class CdiComponentProvider extends ComponentProvider {
             synchronized (beanManager) {
                 T managedObject;
                 AnnotatedType annotatedType = beanManager.createAnnotatedType(c);
-                InjectionTarget it = beanManager.createInjectionTarget(annotatedType);
+                InjectionTargetFactory<T> injectionTargetFactory = beanManager.getInjectionTargetFactory(annotatedType);
+                InjectionTarget<T> it = injectionTargetFactory.createInjectionTarget(null);
                 CreationalContext cc = beanManager.createCreationalContext(null);
                 managedObject = (T) it.produce(cc);
                 it.inject(managedObject, cc);
