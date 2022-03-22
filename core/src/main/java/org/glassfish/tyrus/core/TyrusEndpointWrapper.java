@@ -1633,19 +1633,12 @@ public class TyrusEndpointWrapper {
             final ServerEndpointConfig serverEndpointConfig = (ServerEndpointConfig) configuration;
             final TyrusConfiguration tyrusConfiguration = ((RequestContext) request).getTyrusConfiguration();
 
-            final ServerEndpointConfig proxiedEndpointConfig = new ServerEndpointConfigWrapper(serverEndpointConfig) {
-                    {
-                        tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
-                    }
-
-                    @Override
-                    public Map<String, Object> getUserProperties() {
-                        return tyrusConfiguration.userProperties();
-                    }
-            };
+            tyrusConfiguration.userProperties().putAll(serverEndpointConfig.getUserProperties());
+            final ServerEndpointConfig wrappedEndpointConfig =
+                    new ServerEndpointConfigWrapper(serverEndpointConfig, tyrusConfiguration.userProperties());
 
             serverEndpointConfig.getConfigurator()
-                    .modifyHandshake(proxiedEndpointConfig, createHandshakeRequest(request), response);
+                    .modifyHandshake(wrappedEndpointConfig, createHandshakeRequest(request), response);
         }
     }
 
