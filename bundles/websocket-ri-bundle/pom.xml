@@ -246,6 +246,7 @@
                             jakarta.enterprise.context.spi;version="[3.0,5)",
                             jakarta.enterprise.inject.spi;version="[3.0,5)",
                             jakarta.xml.bind.*;version="[3.0,5)",
+                            org.glassfish.grizzly.*;version="[3.0,5)",
 <!--                            org.glassfish.grizzly.http.server.*;version=${grizzly.version}-->
 <!--                            org.glassfish.grizzly.*;version=${grizzly.version},-->
                             *
