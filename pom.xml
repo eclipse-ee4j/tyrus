@@ -130,7 +130,7 @@
         <packages.private>org.glassfish.*</packages.private>
 
         <!-- Non Final properties for impl jar -->
-        <apijar.bundle.version>2.0.0</apijar.bundle.version>
+        <apijar.bundle.version>2.1.0</apijar.bundle.version>
         <impljar.bundle.specversion>${spec_version}.99.b${build_number}</impljar.bundle.specversion>
         <impljar.maven.version>${new_impl_version}-b${build_number}</impljar.maven.version>
         <impljar.bundle.version>${spec_version}.99.b${build_number}</impljar.bundle.version>
