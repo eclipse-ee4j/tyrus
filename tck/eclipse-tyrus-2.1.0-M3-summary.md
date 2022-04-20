@@ -750,9 +750,9 @@
 [javatest.batch] PASSED........com/sun/ts/tests/websocket/spec/session/sessionid/WSClient.java#instanceTest_from_standalone
 [javatest.batch] PASSED........com/sun/ts/tests/websocket/spec/session/sessionid/WSClient.java#unique_from_standalone
 [javatest.batch] 
-[javatest.batch] Mar 24, 2022, 7:53:13 PM Finished executing all tests, wait for cleanup...
-[javatest.batch] Mar 24, 2022, 7:53:13 PM Harness done with cleanup from test run.
-[javatest.batch] Total time = 1,834s
+[javatest.batch] Apr 19, 2022, 5:33:45 PM Finished executing all tests, wait for cleanup...
+[javatest.batch] Apr 19, 2022, 5:33:45 PM Harness done with cleanup from test run.
+[javatest.batch] Total time = 1,822s
 [javatest.batch] Setup time = 0s
 [javatest.batch] Cleanup time = 0s
 [javatest.batch] Test results: passed: 737
