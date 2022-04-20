@@ -1,10 +1,10 @@
 ```
 ***********************************************************************************
 ***                        TCK bundle information                               ***
-*** Name:       eftl                                     ***
-*** Download URL:	https://download.eclipse.org/ee4j/jakartaee-tck/jakartaee10/staged/eftl/jakarta-websocket-tck-2.1.0.zip ***
-*** Date and size: date: 2022-03-20 19:59:19.000000000 +0000, size(b): 17420353        ***
-*** SHA256SUM: 13712800a2dd23b025ccc9cd61604b3292cae6e1035e401ea540e60b18ab3ab0 ***
+*** Name:                              eftl                                     ***
+*** Download URL:	https://download.eclipse.org/ee4j/jakartaee-tck/jakartaee10/promoted/eftl/jakarta-websocket-tck-2.1.0.zip ***
+*** Date and size: date: 2022-04-14 09:07:31.000000000 +0000, size(b): 17421301 ***
+*** SHA256SUM: 74c413b0e5de3a8f9ba9ed35064377e65480e0c03873ad8bf50135a5bdeb27c5 ***
 ***                                                                             ***
 ***********************************************************************************
 ***                        TCK results summary                                  ***

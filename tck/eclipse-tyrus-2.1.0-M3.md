@@ -24,8 +24,8 @@ the following is a summary of the TCK results for releases of Eclipse Jersey.
    * [Jakarta WebSocket API](https://jakarta.oss.sonatype.org/content/repositories/staging/jakarta/websocket/jakarta.websocket-api/2.1.0/jakarta.websocket-api-2.1.0.jar)
    * [Jakarta WebSocket Client API](https://jakarta.oss.sonatype.org/content/repositories/staging/jakarta/websocket/jakarta.websocket-client-api/2.1.0/jakarta.websocket-client-api-2.1.0.jar)
 - [x] TCK Version, digital SHA-256 fingerprint and download URL<br/>
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Jakarta Websocket TCK 2.1.0](https://download.eclipse.org/ee4j/jakartaee-tck/jakartaee10/staged/eftl/jakarta-websocket-tck-2.1.0.zip)<br/>
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SHA-256: 13712800a2dd23b025ccc9cd61604b3292cae6e1035e401ea540e60b18ab3ab0
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Jakarta Websocket TCK 2.1.0](https://download.eclipse.org/ee4j/jakartaee-tck/jakartaee10/promoted/eftl/jakarta-websocket-tck-2.1.0.zip)<br/>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SHA-256: 74c413b0e5de3a8f9ba9ed35064377e65480e0c03873ad8bf50135a5bdeb27c5
 - [x] Public URL of TCK Results Summary<br/>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [TCK results summary](https://eclipse-ee4j.github.io/tyrus/tck/eclipse-tyrus-2.1.0-M3-summary)
 - [x] Any Additional Specification Certification Requirements<br/>
