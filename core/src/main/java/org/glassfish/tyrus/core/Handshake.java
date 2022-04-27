@@ -185,7 +185,9 @@ public final class Handshake {
 
         Map<String, List<String>> requestHeaders = upgradeRequest.getHeaders();
         requestHeaders.put(UpgradeRequest.HOST, Collections.singletonList(host));
-        requestHeaders.put(UpgradeRequest.ORIGIN_HEADER, Collections.singletonList("http://" + host));
+
+        String originSchema = upgradeRequest.isSecure() ? "https" : "http";
+        requestHeaders.put(UpgradeRequest.ORIGIN_HEADER, Collections.singletonList(originSchema + "://" + host));
     }
 
     /**
