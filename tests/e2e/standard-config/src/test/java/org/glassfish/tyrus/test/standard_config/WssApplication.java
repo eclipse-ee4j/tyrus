@@ -16,17 +16,17 @@
 
 package org.glassfish.tyrus.test.standard_config;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
-
-/**
- * @author Roman Puchkovskiy
- */
-@SpringBootApplication
-@EnableWebSocketMessageBroker
-public class WssApplication {
-    public static void main(String[] args) {
-        SpringApplication.run(WssApplication.class, args);
-    }
-}
+//import org.springframework.boot.SpringApplication;
+//import org.springframework.boot.autoconfigure.SpringBootApplication;
+//import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
+//
+///**
+// * @author Roman Puchkovskiy
+// */
+//@SpringBootApplication
+//@EnableWebSocketMessageBroker
+//public class WssApplication {
+//    public static void main(String[] args) {
+//        SpringApplication.run(WssApplication.class, args);
+//    }
+//}
