@@ -16,19 +16,19 @@
 
 package org.glassfish.tyrus.test.standard_config.springboot;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
-import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
-
-/**
- * Spring Config for {@link org.glassfish.tyrus.test.standard_config.WssOriginTest}.
- *
- * @author Roman Puchkovskiy
- */
-@Configuration
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/hello");
-    }
-}
+//import org.springframework.context.annotation.Configuration;
+//import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
+//import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+//
+///**
+// * Spring Config for {@link org.glassfish.tyrus.test.standard_config.WssOriginTest}.
+// *
+// * @author Roman Puchkovskiy
+// */
+//@Configuration
+//public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+//    @Override
+//    public void registerStompEndpoints(StompEndpointRegistry registry) {
+//        registry.addEndpoint("/hello");
+//    }
+//}
