@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -86,10 +86,10 @@ import org.glassfish.tyrus.spi.UpgradeResponse;
  * <p>
  * There is one {@link TyrusEndpointWrapper} for each application class, which handles all the methods.
  *
- * @author Danny Coward (danny.coward at oracle.com)
- * @author Stepan Kopriva (stepan.kopriva at oracle.com)
- * @author Martin Matula (martin.matula at oracle.com)
- * @author Pavel Bucek (pavel.bucek at oracle.com)
+ * @author Danny Coward
+ * @author Stepan Kopriva
+ * @author Martin Matula
+ * @author Pavel Bucek
  */
 public class TyrusEndpointWrapper {
 
@@ -213,6 +213,14 @@ public class TyrusEndpointWrapper {
                     ? contextPath.substring(0, contextPath.length() - 1)
                     : contextPath) + "/"
                     + (serverEndpointPath.startsWith("/") ? serverEndpointPath.substring(1) : serverEndpointPath);
+            // Make sure the provided ComponentProviderService is passed to TyrusServerEndpointConfigurator.
+            // Otherwise, configurator.getEndpointInstance(endpointClass) let the other CdiComponentProvider
+            // (configurator.componentProviderService.providers) to instantiate the Endpoint, but
+            // ComponentProviderService CdiComponentProvider would be called for removeSession() and cleanup
+            // (different CdiComponentProvider.cdiBeanToContext ==> leak)
+            if (TyrusServerEndpointConfigurator.class.isInstance(configurator)) {
+                ((TyrusServerEndpointConfigurator) configurator).setComponentProviderService(componentProvider);
+            }
         } else {
             this.serverEndpointPath = null;
             this.endpointPath = null;
