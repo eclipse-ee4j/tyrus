@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -24,20 +24,22 @@ import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerEndpointConfig;
 
+import org.glassfish.tyrus.core.collection.LazyValue;
+import org.glassfish.tyrus.core.collection.Values;
 import org.glassfish.tyrus.core.extension.ExtendedExtension;
 import org.glassfish.tyrus.core.frame.Frame;
 
 /**
- * Tyrus implementation of {@link ServerEndpointConfig.Configurator}.
+ * Tyrus' implementation of {@link ServerEndpointConfig.Configurator}.
  *
  * @author Pavel Bucek
  */
 public class TyrusServerEndpointConfigurator extends ServerEndpointConfig.Configurator {
 
-    private final ComponentProviderService componentProviderService;
+    private LazyValue<ComponentProviderService> componentProviderService;
 
     public TyrusServerEndpointConfigurator() {
-        this.componentProviderService = ComponentProviderService.create();
+        this.componentProviderService = Values.lazy(() -> ComponentProviderService.create());
     }
 
     @Override
@@ -155,6 +157,14 @@ public class TyrusServerEndpointConfigurator extends ServerEndpointConfig.Config
     @Override
     public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
         //noinspection unchecked
-        return (T) componentProviderService.getEndpointInstance(endpointClass);
+        return (T) componentProviderService.get().getEndpointInstance(endpointClass);
+    }
+
+    /**
+     * Reuse existing {@link ComponentProviderService}.
+     * @param componentProviderService The reused {@link ComponentProviderService}.
+     */
+    void setComponentProviderService(ComponentProviderService componentProviderService) {
+        this.componentProviderService = Values.lazy(() -> componentProviderService);
     }
 }

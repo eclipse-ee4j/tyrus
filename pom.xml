@@ -115,6 +115,7 @@
         <jaxb.ri.version>4.0.0-M3</jaxb.ri.version>
         <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version>
         <servlet.api.version>6.0.0</servlet.api.version>
+        <spring.boot.version>2.6.7</spring.boot.version>
 
         <api_package>jakarta.websocket</api_package>
         <impl_namespace>org.glassfish</impl_namespace>
@@ -743,6 +744,16 @@
                 <artifactId>jakarta.annotation-api</artifactId>
                 <version>${annotation-api.version}</version>
             </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-starter-websocket</artifactId>-->
+<!--                <version>${spring.boot.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.springframework.boot</groupId>-->
+<!--                <artifactId>spring-boot-starter-test</artifactId>-->
+<!--                <version>${spring.boot.version}</version>-->
+<!--            </dependency>-->
         </dependencies>
     </dependencyManagement>
 </project>
