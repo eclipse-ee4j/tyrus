@@ -39,6 +39,8 @@ module org.glassfish.tyrus.core {
     exports org.glassfish.tyrus.core.uri.internal;
     exports org.glassfish.tyrus.core.wsadl.model;
 
+    opens org.glassfish.tyrus.core.wsadl.model to jakarta.xml.bind;
+
     uses org.glassfish.tyrus.core.ComponentProvider;
 
     provides jakarta.websocket.server.ServerEndpointConfig.Configurator with org.glassfish.tyrus.core.TyrusServerEndpointConfigurator;
