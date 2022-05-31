@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -14,12 +14,12 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
-package org.glassfish.tyrus.tests.servlet.basic;
+package org.glassfish.tyrus.tests.servlet.basic.test;
 
 import static org.junit.Assume.assumeTrue;
 
 /**
- * Secured (using SSL) run of tests in {@link org.glassfish.tyrus.tests.servlet.basic.ServletTestBase}.
+ * Secured (using SSL) run of tests in {@link ServletTestBase}.
  * <p/>
  * The test will be run only if system property {@code tyrus.test.port.ssl} is set.
  *

@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
-package org.glassfish.tyrus.tests.servlet.basic;
+package org.glassfish.tyrus.tests.servlet.basic.test;
 
 import java.io.IOException;
 import java.net.URI;
@@ -39,6 +39,12 @@ import org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer;
 import org.glassfish.tyrus.server.Server;
 import org.glassfish.tyrus.test.tools.TestContainer;
 
+import org.glassfish.tyrus.tests.servlet.basic.MultiEchoEndpoint;
+import org.glassfish.tyrus.tests.servlet.basic.OnOpenCloseEndpoint;
+import org.glassfish.tyrus.tests.servlet.basic.PlainEchoEndpoint;
+import org.glassfish.tyrus.tests.servlet.basic.RequestUriEndpoint;
+import org.glassfish.tyrus.tests.servlet.basic.TyrusBroadcastEndpoint;
+import org.glassfish.tyrus.tests.servlet.basic.WebSocketBroadcastEndpoint;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -14,17 +14,11 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
-package org.glassfish.tyrus.tests.servlet.basic;
+module org.glassfish.tyrus.tests.servlet.basic {
+    requires jakarta.websocket;
+    requires jakarta.websocket.client;
 
-/**
- * Unsecured (not using SSL) run of tests in {@link org.glassfish.tyrus.tests.servlet.basic.ServletTestBase}
- *
- * @author Petr Janouch
- */
-public class WsServletTest extends ServletTestBase {
+    requires org.glassfish.tyrus.core;
 
-    @Override
-    protected String getScheme() {
-        return "ws";
-    }
+    exports org.glassfish.tyrus.tests.servlet.basic;
 }

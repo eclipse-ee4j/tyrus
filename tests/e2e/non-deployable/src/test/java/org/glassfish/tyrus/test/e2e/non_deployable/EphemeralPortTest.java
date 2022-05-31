@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -24,15 +24,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
-import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.Endpoint;
 import jakarta.websocket.EndpointConfig;
 import jakarta.websocket.MessageHandler;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.Session;
+import jakarta.websocket.WebSocketContainer;
 import jakarta.websocket.server.ServerEndpoint;
 
+import org.glassfish.tyrus.container.grizzly.client.GrizzlyContainerProvider;
 import org.glassfish.tyrus.server.Server;
 
 import org.junit.Test;
@@ -57,7 +58,13 @@ public class EphemeralPortTest {
         final CountDownLatch latch = new CountDownLatch(1);
 
         try {
-            ContainerProvider.getWebSocketContainer().connectToServer(new Endpoint() {
+            // ContainerProvider.getWebSocketContainer() returns randomly in-memory container with module-info
+            new GrizzlyContainerProvider() {
+                @Override
+                protected WebSocketContainer getContainer() {
+                    return super.getContainer();
+                }
+            }.getContainer().connectToServer(new Endpoint() {
                 @Override
                 public void onOpen(Session session, EndpointConfig config) {
 
