@@ -17,7 +17,7 @@
 package org.glassfish.tyrus.core.collection;
 
 /**
- * A collection of {@link Value Value provider} factory & utility methods.
+ * A collection of {@link Value Value provider} factory &amp; utility methods.
  *
  * @author Marek Potociar
  */
@@ -52,12 +52,14 @@ public final class Values {
     }
 
     /**
+     * <p>
      * Get a new constant {@link Value value provider} whose {@link Value#get() get()}
      * method always returns the instance supplied to the {@code value} parameter.
-     * <p/>
+     * </p>
+     * <p>
      * In case the supplied value constant is {@code null}, an {@link #empty() empty} value
      * provider is returned.
-     *
+     * </p>
      * @param <T>   value type.
      * @param value value instance to be provided.
      * @return constant value provider.
@@ -104,10 +106,11 @@ public final class Values {
 
     /**
      * Get a new lazily initialized {@link Value value provider}.
-     * <p/>
+     * <p>
      * The value returned by its {@link Value#get() get()} method is lazily retrieved during a first
      * call to the method from the supplied {@code delegate} value provider and is then cached for
      * a subsequent retrieval.
+     * </p>
      * <p>
      * The implementation of the returned lazy value provider is thread-safe and is guaranteed to
      * invoke the {@code get()} method on the supplied {@code delegate} value provider instance at
@@ -129,9 +132,10 @@ public final class Values {
 
     /**
      * Get a new eagerly initialized {@link Value value provider}.
-     * <p/>
+     * <p>
      * The value returned by its {@link Value#get() get()} method is eagerly computed from the supplied
      * {@code delegate} value provider and is then stored in a final field for a subsequent retrieval.
+     * </p>
      * <p>
      * The implementation of the returned eager value provider is thread-safe and is guaranteed to
      * invoke the {@code get()} method on the supplied {@code delegate} value provider instance once

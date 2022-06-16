@@ -16,6 +16,9 @@
 
 package org.glassfish.tyrus.core;
 
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -161,10 +164,26 @@ public class TyrusServerEndpointConfigurator extends ServerEndpointConfig.Config
     }
 
     /**
-     * Reuse existing {@link ComponentProviderService}.
-     * @param componentProviderService The reused {@link ComponentProviderService}.
+     * Check whether the user defined {@link ServerEndpointConfig.Configurator} has overridden
+     * {@link ServerEndpointConfig.Configurator#getEndpointInstance(Class)} method.
+     * In that case, CDIProvider does not manage the instantiation.
+     * @param configurator The user defined {@link ServerEndpointConfig.Configurator} subclass
+     * @param <T> The subclass type
+     * @return {@code true} iff the user creates the endpoint instance on their own.
      */
-    void setComponentProviderService(ComponentProviderService componentProviderService) {
-        this.componentProviderService = Values.lazy(() -> componentProviderService);
+    static <T extends ServerEndpointConfig.Configurator> boolean overridesGetEndpointInstance(T configurator) {
+        final String getInstanceName = "getEndpointInstance";
+        if (null == configurator) {
+            return false;
+        }
+        try {
+            final Method originalMethod = TyrusServerEndpointConfigurator.class.isInstance(configurator)
+                    ? TyrusServerEndpointConfigurator.class.getMethod(getInstanceName, Class.class)
+                    : ServerEndpointConfig.Configurator.class.getMethod(getInstanceName, Class.class);
+            final Method configMethod = configurator.getClass().getMethod(getInstanceName, Class.class);
+            return !originalMethod.equals(configMethod);
+        } catch (NoSuchMethodException e) {
+            return false;
+        }
     }
 }

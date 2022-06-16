@@ -215,21 +215,13 @@ public class TyrusEndpointWrapper {
                     ? contextPath.substring(0, contextPath.length() - 1)
                     : contextPath) + "/"
                     + (serverEndpointPath.startsWith("/") ? serverEndpointPath.substring(1) : serverEndpointPath);
-            // Make sure the provided ComponentProviderService is passed to TyrusServerEndpointConfigurator.
-            // Otherwise, configurator.getEndpointInstance(endpointClass) let the other CdiComponentProvider
-            // (configurator.componentProviderService.providers) to instantiate the Endpoint, but
-            // ComponentProviderService CdiComponentProvider would be called for removeSession() and cleanup
-            // (different CdiComponentProvider.cdiBeanToContext ==> leak)
-            if (TyrusServerEndpointConfigurator.class.isInstance(configurator)) {
-                ((TyrusServerEndpointConfigurator) configurator).setComponentProviderService(componentProvider);
-            }
         } else {
             this.serverEndpointPath = null;
             this.endpointPath = null;
         }
-
-        this.componentProvider =
-                configurator == null ? componentProvider : new ComponentProviderService(componentProvider) {
+        this.componentProvider = !TyrusServerEndpointConfigurator.overridesGetEndpointInstance(configurator)
+                        ? componentProvider
+                        : new ComponentProviderService(componentProvider) {
                     @Override
                     public <T> T getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
                         return configurator.getEndpointInstance(endpointClass);

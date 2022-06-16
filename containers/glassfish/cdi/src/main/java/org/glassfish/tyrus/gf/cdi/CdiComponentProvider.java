@@ -44,7 +44,7 @@ public class CdiComponentProvider extends ComponentProvider {
 
     private final boolean managerRetrieved;
 
-    private final Map<Object, CdiInjectionContext> cdiBeanToContext;
+    private static final Map<Object, CdiInjectionContext> cdiBeanToContext = new ConcurrentHashMap<Object, CdiInjectionContext>();
 
     /**
      * Constructor.
@@ -54,7 +54,6 @@ public class CdiComponentProvider extends ComponentProvider {
      * @throws javax.naming.NamingException when Bean Manager cannot be looked up.
      */
     public CdiComponentProvider() throws NamingException {
-        cdiBeanToContext = new ConcurrentHashMap<Object, CdiInjectionContext>();
         InitialContext ic = new InitialContext();
         BeanManager manager = null;
 
