@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -161,8 +161,8 @@ public class AnnotatedEndpoint extends Endpoint {
         this.endpointEventListener = endpointEventListener;
 
         if (isServerEndpoint) {
-            if (TyrusServerEndpointConfigurator.class
-                    .equals(((ServerEndpointConfig) configuration).getConfigurator().getClass())) {
+            final ServerEndpointConfig.Configurator srvEndpointConfig = ((ServerEndpointConfig) configuration).getConfigurator();
+            if (!TyrusServerEndpointConfigurator.overridesGetEndpointInstance(srvEndpointConfig)) {
                 // if the platform Configurator is Tyrus provided, it doesn't need to be called to get an endpoint
                 // instance, since it uses ComponentProviderService anyway.
                 this.componentProvider = componentProvider;
@@ -171,8 +171,7 @@ public class AnnotatedEndpoint extends Endpoint {
                 this.componentProvider = new ComponentProviderService(componentProvider) {
                     @Override
                     public <T> Object getEndpointInstance(Class<T> endpointClass) throws InstantiationException {
-                        return ((ServerEndpointConfig) configuration).getConfigurator()
-                                                                     .getEndpointInstance(endpointClass);
+                        return srvEndpointConfig.getEndpointInstance(endpointClass);
                     }
                 };
             }
