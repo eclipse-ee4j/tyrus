@@ -17,8 +17,6 @@
 package org.glassfish.tyrus.core;
 
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
