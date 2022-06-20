@@ -22,17 +22,17 @@ The [2.0.2 release](https://github.com/eclipse-ee4j/tyrus/releases/tag/2.0.2)
 is the Jakarta EE 9 release of the Eclipse Tyrus project.
 
 
-## August 31, 2021 - Eclipse Tyrus 1.18 Final Release ##
+## Jun 17, 2022 - Eclipse Tyrus 1.19 Final Release ##
 
-The [1.18 release](https://github.com/eclipse-ee4j/tyrus/releases/tag/1.18)
+The [1.19 release](https://github.com/eclipse-ee4j/tyrus/releases/tag/1.19)
 is the Jakarta EE 8 release of the Eclipse Tyrus project.
 
 # <a name="Links"></a>Links
 
 - [Tyrus 2.x documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest/index/)
 - [Tyrus 2.x api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest/)
-- [Tyrus 1.18 documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest1x/index/)
-- [Tyrus 1.18 api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest1x/)
+- [Tyrus 1.19 documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest1x/index/)
+- [Tyrus 1.19 api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest1x/)
 - [Tyrus project page](https://projects.eclipse.org/projects/ee4j.tyrus)
 - [JSR-356 page on JCP site](https://jcp.org/en/jsr/detail?id=356)
 - [TCK Results](https://eclipse-ee4j.github.io/tyrus/TCK-Results.html)
