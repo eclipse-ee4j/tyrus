@@ -16,7 +16,7 @@
 
 package org.glassfish.tyrus.core;
 
-import javax.websocket.CloseReason;
+import jakarta.websocket.CloseReason;
 import org.junit.Assert;
 import org.junit.Test;
 

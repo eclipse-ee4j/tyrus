@@ -18,6 +18,8 @@ package org.glassfish.tyrus.core;
 
 import jakarta.websocket.CloseReason;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * Enum containing standard CloseReasons defined in RFC 6455, see chapter
  * <a href="https://tools.ietf.org/html/rfc6455#section-7.4.1">7.4.1 Defined Status Codes</a>.
