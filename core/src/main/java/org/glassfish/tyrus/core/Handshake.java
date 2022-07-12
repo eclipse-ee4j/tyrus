@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -185,7 +185,9 @@ public final class Handshake {
 
         Map<String, List<String>> requestHeaders = upgradeRequest.getHeaders();
         requestHeaders.put(UpgradeRequest.HOST, Collections.singletonList(host));
-        requestHeaders.put(UpgradeRequest.ORIGIN_HEADER, Collections.singletonList("http://" + host));
+
+        String originSchema = upgradeRequest.isSecure() ? "https" : "http";
+        requestHeaders.put(UpgradeRequest.ORIGIN_HEADER, Collections.singletonList(originSchema + "://" + host));
     }
 
     /**

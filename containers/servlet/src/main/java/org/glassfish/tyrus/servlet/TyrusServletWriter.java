@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -74,12 +74,17 @@ class TyrusServletWriter extends Writer implements WriteListener {
     public synchronized void onWritePossible() throws IOException {
         LOGGER.log(Level.FINEST, "OnWritePossible called");
 
-        while (!queue.isEmpty() && servletOutputStream.isReady()) {
-            final QueuedFrame queuedFrame = queue.poll();
-            assert queuedFrame != null;
+        try /* servletOutputStream.isReady() */ {
+            while (!queue.isEmpty() && servletOutputStream.isReady()) {
+                final QueuedFrame queuedFrame = queue.poll();
+                assert queuedFrame != null;
 
-            _write(queuedFrame.dataFrame, queuedFrame.completionHandler);
+                _write(queuedFrame.dataFrame, queuedFrame.completionHandler);
+            }
+        } catch (Exception e) {
+            onError(e);
         }
+
     }
 
     @Override
@@ -106,16 +111,20 @@ class TyrusServletWriter extends Writer implements WriteListener {
             }
         }
 
-        if (queue.isEmpty() && servletOutputStream.isReady()) {
-            _write(buffer, completionHandler);
-        } else {
-            final QueuedFrame queuedFrame = new QueuedFrame(completionHandler, buffer);
-            queue.offer(queuedFrame);
+        try /* servletOutputStream.isReady() */ {
+            if (queue.isEmpty() && servletOutputStream.isReady()) {
+                _write(buffer, completionHandler);
+            } else {
+                final QueuedFrame queuedFrame = new QueuedFrame(completionHandler, buffer);
+                queue.offer(queuedFrame);
 
-            if (!isListenerSet) {
-                isListenerSet = true;
-                servletOutputStream.setWriteListener(this);
+                if (!isListenerSet) {
+                    isListenerSet = true;
+                    servletOutputStream.setWriteListener(this);
+                }
             }
+        } catch (Exception e) {
+            completionHandler.failed(e);
         }
     }
 
