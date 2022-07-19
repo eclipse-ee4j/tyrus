@@ -24,6 +24,7 @@ module org.glassfish.tyrus.test.servlet.embedded.gf {
     requires jakarta.servlet;
 
     requires org.glassfish.tyrus.server;
+    requires org.glassfish.tyrus.client;
 
     exports org.glassfish.tyrus.tests.servlet.embedded;
 
