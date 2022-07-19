@@ -20,6 +20,7 @@ module org.glassfish.tyrus.tests.servlet.basic.test {
 
     requires junit;
 
+    requires org.glassfish.tyrus.client;
     requires org.glassfish.tyrus.container.grizzly.client;
     requires org.glassfish.tyrus.container.grizzly.server;
     requires org.glassfish.tyrus.server;
