@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -30,6 +30,7 @@ import jakarta.websocket.CloseReason;
 import org.glassfish.tyrus.core.CloseReasons;
 import org.glassfish.tyrus.core.TyrusUpgradeResponse;
 import org.glassfish.tyrus.core.Utils;
+import org.glassfish.tyrus.core.uri.internal.UriComponent;
 import org.glassfish.tyrus.spi.ClientEngine;
 import org.glassfish.tyrus.spi.ReadHandler;
 import org.glassfish.tyrus.spi.UpgradeRequest;
@@ -415,7 +416,7 @@ class GrizzlyClientFilter extends BaseFilter {
         sb.append(uri.getPath());
         final String query = uri.getQuery();
         if (query != null) {
-            sb.append('?').append(query);
+            sb.append('?').append(isDoubleEncodedQuery(query) ? query : uri.getRawQuery());
         }
         if (sb.length() == 0) {
             sb.append('/');
@@ -436,6 +437,19 @@ class GrizzlyClientFilter extends BaseFilter {
             builder.header(headerEntry.getKey(), finalHeaderValue.toString());
         }
         return HttpContent.builder(builder.build()).build();
+    }
+
+    private static boolean isDoubleEncodedQuery(String query) {
+        final int size = query.length();
+        int index = -1;
+        while ((index = query.indexOf('%', index + 1)) != -1 && index < size - 2) {
+            char c1 = query.charAt(index + 1);
+            char c2 = query.charAt(index + 2);
+            if (UriComponent.isHexCharacter(c1) && UriComponent.isHexCharacter(c2)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private class ProcessTask extends TaskProcessor.Task {
