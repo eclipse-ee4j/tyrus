@@ -765,6 +765,10 @@ public class GrizzlyClientSocket {
             return new ExtendedSSLEngineConfigurator((SSLEngineConfigurator) configuratorObject, uri.getHost());
         }
 
+        if (configuratorObject instanceof SslEngineConfigurator) {
+            return new ExtendedSSLEngineConfigurator((SslEngineConfigurator) configuratorObject, uri.getHost());
+        }
+
         // if we have reached here the ssl engine configuration property is set, but is of incompatible type
         LOGGER.log(Level.CONFIG,
                    String.format("Invalid type of configuration property of %s (%s), %s cannot be cast to %s or %s",
