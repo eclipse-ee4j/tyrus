@@ -21,6 +21,11 @@ broadcasting.
 The [2.1.1 release](https://github.com/eclipse-ee4j/tyrus/releases/tag/2.1.1)
 is the Jakarta EE 10 release of the Eclipse Tyrus project.
 
+## Jul 12, 2022 - Eclipse Tyrus 2.0.4 Final Release ##
+
+The [2.0.4 release](https://github.com/eclipse-ee4j/tyrus/releases/tag/2.0.4)
+is the Jakarta EE 9 release of the Eclipse Tyrus project.
+
 
 ## September 29, 2022 - Eclipse Tyrus 1.20 Final Release ##
 
@@ -29,8 +34,10 @@ is the Jakarta EE 8 release of the Eclipse Tyrus project.
 
 # <a name="Links"></a>Links
 
-- [Tyrus 2.x documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest/index/)
-- [Tyrus 2.x api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest/)
+- [Tyrus 2.1.x documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest/index/)
+- [Tyrus 2.1.x api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest/)
+- [Tyrus 2.0.x documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest20x/index/)
+- [Tyrus 2.0.x api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest20x/)
 - [Tyrus 1.20 documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest1x/index/)
 - [Tyrus 1.20 api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest1x/)
 - [Tyrus project page](https://projects.eclipse.org/projects/ee4j.tyrus)
