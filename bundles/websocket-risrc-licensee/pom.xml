@@ -56,8 +56,8 @@
                             <stripVersion>false</stripVersion>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>javax.websocket</groupId>
-                                    <artifactId>javax.websocket-api</artifactId>
+                                    <groupId>jakarta.websocket</groupId>
+                                    <artifactId>jakarta.websocket-api</artifactId>
                                     <version>${websocket-api.version}</version>
                                     <classifier>sources</classifier>
                                     <type>jar</type>
