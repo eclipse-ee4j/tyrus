@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -752,11 +752,16 @@ public class TyrusEndpointWrapper {
                 throw collector.composeComprehensiveException();
             }
 
+            final TyrusConfiguration tyrusConfiguration = ((RequestContext) upgradeRequest).getTyrusConfiguration();
+            final EndpointConfig endpointConfig = configuration instanceof  ServerEndpointConfig
+                    ? new ServerEndpointConfigWrapper((ServerEndpointConfig) configuration, tyrusConfiguration.userProperties())
+                    : configuration;
+
             if (programmaticEndpoint) {
-                ((Endpoint) toCall).onOpen(session, configuration);
+                ((Endpoint) toCall).onOpen(session, endpointConfig);
             } else {
                 try {
-                    onOpen.invoke(toCall, session, configuration);
+                    onOpen.invoke(toCall, session, endpointConfig);
                 } catch (InvocationTargetException e) {
                     throw e.getCause();
                 }
