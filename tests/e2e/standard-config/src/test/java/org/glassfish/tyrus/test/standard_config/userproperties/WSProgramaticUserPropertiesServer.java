@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2022 Contributors to the Eclipse Foundation.
+ * Copyright (c) 2021, 2023 Contributors to the Eclipse Foundation.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -68,6 +68,8 @@ public class WSProgramaticUserPropertiesServer extends Endpoint implements Messa
     public void onOpen(Session session, EndpointConfig config) {
         this.session = session;
         session.addMessageHandler(this);
+        checkKey(config.getUserProperties(), UserPropertiesConfigurator.KEY_3);
+        checkKey(config.getUserProperties(), UserPropertiesConfigurator.KEY_4);
     }
 
     @Override
