@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -162,7 +162,8 @@ class GrizzlyServerFilter extends BaseFilter {
                 return ctx.getInvokeAction();
             }
 
-            final String ATTR_NAME = "org.glassfish.tyrus.container.grizzly.WebSocketFilter.HANDSHAKE_PROCESSED";
+            // https://github.com/eclipse-ee4j/tyrus/issues/737: each GrizzlyServerFilet & each path have different ATTR_NAME
+            final String ATTR_NAME = "org.glassfish.tyrus.container.grizzly.WebSocketFilter.HANDSHAKE_PROCESSED." + contextPath;
 
             final AttributeHolder attributeHolder = ctx.getAttributes();
             if (attributeHolder != null) {
