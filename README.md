@@ -16,9 +16,9 @@ broadcasting.
 
 # <a name="Latest_News"></a>Latest News
 
-## November 21, 2022 - Eclipse Tyrus 2.1.2 Final Release ##
+## February 17, 2023 - Eclipse Tyrus 2.1.3 Final Release ##
 
-The [2.1.2 release](https://github.com/eclipse-ee4j/tyrus/releases/tag/2.1.2)
+The [2.1.3 release](https://github.com/eclipse-ee4j/tyrus/releases/tag/2.1.3)
 is the Jakarta EE 10 release of the Eclipse Tyrus project.
 
 ## July 12, 2022 - Eclipse Tyrus 2.0.4 Final Release ##
