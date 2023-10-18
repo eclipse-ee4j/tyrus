@@ -101,18 +101,18 @@
     </contributors>
 
     <properties>
-        <websocket-api.version>2.1.0</websocket-api.version>
+        <websocket-api.version>2.1.1</websocket-api.version>
         <!--<websocket.api.build_number>18</websocket.api.build_number>-->
 
         <annotation-api.version>2.1.1</annotation-api.version>
         <cdi-api.version>4.0.1</cdi-api.version>
         <ejb-api.version>4.0.1</ejb-api.version>
         <grizzly.version>4.0.0</grizzly.version>
-        <glassfish.version>7.0.1</glassfish.version>
-        <json-api.version>2.1.1</json-api.version>
-        <json-impl.version>1.1.1</json-impl.version>
-        <jaxb.api.version>4.0.0</jaxb.api.version>
-        <jaxb.ri.version>4.0.1</jaxb.ri.version>
+        <glassfish.version>7.0.9</glassfish.version>
+        <json-api.version>2.1.2</json-api.version>
+        <json-impl.version>1.1.4</json-impl.version>
+        <jaxb.api.version>4.0.1</jaxb.api.version>
+        <jaxb.ri.version>4.0.3</jaxb.ri.version>
         <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version>
         <servlet.api.version>6.0.0</servlet.api.version>
         <spring.boot.version>2.6.7</spring.boot.version>

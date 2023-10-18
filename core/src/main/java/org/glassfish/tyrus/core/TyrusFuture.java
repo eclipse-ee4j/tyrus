@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,60 +16,13 @@
 
 package org.glassfish.tyrus.core;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
- * Simple {@link Future} implementation.
- *
- * @author Stepan Kopriva
+ * Tyrus {@link Future} implementation.
  */
-public class TyrusFuture<T> implements Future<T> {
-
-    private volatile T result;
-    private volatile Throwable throwable = null;
-    private final CountDownLatch latch = new CountDownLatch(1);
-
-    @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
-        return false;
-    }
-
-    @Override
-    public boolean isCancelled() {
-        return false;
-    }
-
-    @Override
-    public boolean isDone() {
-        return (latch.getCount() == 0);
-    }
-
-    @Override
-    public T get() throws InterruptedException, ExecutionException {
-        latch.await();
-
-        if (throwable != null) {
-            throw new ExecutionException(throwable);
-        }
-
-        return result;
-    }
-
-    @Override
-    public T get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-        if (latch.await(timeout, unit)) {
-            if (throwable != null) {
-                throw new ExecutionException(throwable);
-            }
-            return result;
-        }
-
-        throw new TimeoutException();
-    }
+public class TyrusFuture<T> extends CompletableFuture<T> {
 
     /**
      * Sets the result of the message writing process.
@@ -77,10 +30,7 @@ public class TyrusFuture<T> implements Future<T> {
      * @param result result
      */
     public void setResult(T result) {
-        if (latch.getCount() == 1) {
-            this.result = result;
-            latch.countDown();
-        }
+        complete(result);
     }
 
     /**
@@ -89,9 +39,6 @@ public class TyrusFuture<T> implements Future<T> {
      * @param throwable throwable.
      */
     public void setFailure(Throwable throwable) {
-        if (latch.getCount() == 1) {
-            this.throwable = throwable;
-            latch.countDown();
-        }
+        completeExceptionally(throwable);
     }
 }
