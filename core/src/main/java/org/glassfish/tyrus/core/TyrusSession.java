@@ -482,9 +482,8 @@ public class TyrusSession implements DistributedSession {
     }
 
     void restartIdleTimeoutExecutor() {
-        cancelIdleTimeoutExecutor();
-
         synchronized (idleTimeoutLock) {
+            cancelIdleTimeoutExecutor();
             idleTimeoutFuture =
                     service.schedule(new IdleTimeoutCommand(), this.getMaxIdleTimeout(), TimeUnit.MILLISECONDS);
         }
