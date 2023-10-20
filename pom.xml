@@ -105,8 +105,8 @@
         <cdi-api.version>3.0.0</cdi-api.version>
         <ejb-api.version>4.0.0</ejb-api.version>
         <grizzly.version>3.0.1</grizzly.version>
-        <json-api.version>2.0.1</json-api.version>
-        <json-impl.version>1.0.0</json-impl.version>
+        <json-api.version>2.0.2</json-api.version>
+        <json-impl.version>1.0.5</json-impl.version>
         <jaxb.api.version>3.0.1</jaxb.api.version>
         <jaxb.ri.version>3.0.2</jaxb.ri.version>
         <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version>
