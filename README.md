@@ -34,12 +34,21 @@ is the Jakarta EE 8 release of the Eclipse Tyrus project.
 
 # <a name="Links"></a>Links
 
+#### Tyrus 2.1 (Jakarta EE 10)
 - [Tyrus 2.1.x documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest/index/)
 - [Tyrus 2.1.x api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest/)
+
+
+#### Tyrus 2.0 (Jakarta EE 9)
 - [Tyrus 2.0.x documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest20x/index/)
 - [Tyrus 2.0.x api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest20x/)
-- [Tyrus 1.21 documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest1x/index/)
-- [Tyrus 1.21 api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest1x/)
+
+
+#### Tyrus 1.x (Jakarta EE 8)
+- [Tyrus 1.x documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest1x/index/)
+- [Tyrus 1.x api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest1x/)
+
+### Other
 - [Tyrus project page](https://projects.eclipse.org/projects/ee4j.tyrus)
 - [JSR-356 page on JCP site](https://jcp.org/en/jsr/detail?id=356)
 - [TCK Results](https://eclipse-ee4j.github.io/tyrus/TCK-Results.html)
