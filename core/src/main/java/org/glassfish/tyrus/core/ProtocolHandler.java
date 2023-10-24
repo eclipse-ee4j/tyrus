@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -476,7 +476,14 @@ public final class ProtocolHandler {
             outgoingCloseFrame = new CloseFrame(closeReason);
         }
 
-        final Future<Frame> send = send(outgoingCloseFrame, null, CLOSE, false);
+        Future<Frame> send;
+        try {
+            send = send(outgoingCloseFrame, null, CLOSE, false);
+        } catch (Exception e) {
+            send = new TyrusFuture<>();
+            ((TyrusFuture) send).setFailure(e);
+            LOGGER.warning(LocalizationMessages.EXCEPTION_CLOSE(e.getMessage()));
+        }
 
         webSocket.onClose(new CloseFrame(closeReason));
 
