@@ -36,36 +36,17 @@ The project maintains the following source code repositories:
 
 This project leverages the following third party content.
 
-asm (5.0.3)
-
-* License: New BSD license
-
-atinject (Package javax.inject) (1.0)
+atinject (Package jakarta.inject) (1.0)
 
 * License: Apache License, 2.0
 
-cdi-api (1.2)
+cdi-api (2.0.2)
 
-* License: Apache-2.0
-
-ejb-api (3.2)
-
-* License: (CDDL-1.1 OR GPL-2.0+ OR GPL-2.0+ WITH Classpath-exception-2.0)
-* Project: https://javaee.github.io/glassfish/
-* Source:
-   http://search.maven.org/remotecontent?filepath=javax/ejb/javax.ejb-api/3.2/javax.ejb-api-3.2-sources.jar
+* License: Apache License, 2.0
 
 Google Guava (18.0)
 
 * License: Apache License, 2.0
-
-grizzly-framework (2.3.22)
-
-* License: (CDDL-1.1 OR GPL-2.0-only Or GPL-2.0 only With
-   Classpath-exception-2.0) AND LicenseRef-Public-Domain AND BSD-3-Clause AND
-   Apache-2.0
-* Project: https://javaee.github.io/grizzly/
-* Source: https://github.com/eclipse-ee4j/grizzly/
 
 hamcrest-core (1.1)
 
@@ -81,29 +62,10 @@ javassist (3.18)
 * Source:
    https://github.com/jboss-javassist/javassist/releases/tag/rel_3_18_1_ga
 
-javax.json-api (1.0)
-
-* License: CDDL-1.1 OR GPL-2.0 
-
-javax.servlet-api (3.1.0)
-
-* License: Apache-2.0 AND (CDDL-1.1 or GPL-2.0)
-
+  
 javax.validation:validation-api:jar:1.1.0.Final (1.1.0)
 
 * License: Apache-2.0
-
-javax.websocket-api (1.1)
-
-* License: (CDDL-1.1 OR GPL-2.0-only OR GPL-2.0-only WITH
-   Classpath-exception-2.0) AND BSD-3-Clause AND Public Domain
-* Project: https://projects.eclipse.org/projects/ee4j.websocket
-* Source: https://github.com/eclipse-ee4j/websocket-api
-
-javax.ws.rs-api:2.0.1 (2.0.1)
-
-* License: (CDDL-1.1 OR GPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0) AND
-   Apache-2.0
 
 jline (2.14.5)
 
@@ -111,7 +73,7 @@ jline (2.14.5)
 * Project: https://github.com/jline/jline2
 * Source: https://github.com/jline/jline2
 
-junit (4.10)
+junit (4.13.2)
 
 * License: Common Public License 1.0
 
