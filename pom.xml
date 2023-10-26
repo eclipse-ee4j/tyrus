@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.8</version>
+        <version>1.0.9</version>
     </parent>
 
     <groupId>org.glassfish.tyrus</groupId>
@@ -68,8 +68,8 @@
 
     <developers>
         <developer>
-            <id>roman_grigoriadi</id>
-            <name>Roman Grigoriadi</name>
+            <id>jan_supol</id>
+            <name>Jan Supol</name>
             <organization>Oracle Corporation</organization>
             <organizationUrl>http://www.oracle.com</organizationUrl>
             <roles>
@@ -79,6 +79,9 @@
     </developers>
 
     <contributors>
+        <contributor>
+            <name>Pavel Bucek</name>
+        </contributor>
         <contributor>
             <name>Martin Matula</name>
             <url>http://blog.alutam.com</url>
@@ -95,16 +98,19 @@
         <contributor>
             <name>Petr Janouch</name>
         </contributor>
+        <contributor>
+            <name>Roman Grigoriadi</name>
+        </contributor>
     </contributors>
 
     <properties>
-        <websocket-api.version>1.1.1</websocket-api.version>
+        <websocket-api.version>1.1.2</websocket-api.version>
         <!--<websocket.api.build_number>18</websocket.api.build_number>-->
 
         <servlet.api.version>4.0.4</servlet.api.version>
         <grizzly.version>2.4.4</grizzly.version>
         <javax.ejb-api.version>3.2.6</javax.ejb-api.version>
-        <cdi-api.version>1.2</cdi-api.version>
+        <cdi-api.version>2.0.2</cdi-api.version>
         <json-api.version>1.1.6</json-api.version>
         <json-impl.version>1.1.6</json-impl.version>
         <spring.boot.version>2.6.7</spring.boot.version>
@@ -123,7 +129,7 @@
         <packages.private>org.glassfish.*</packages.private>
 
         <!-- Non Final properties for impl jar -->
-        <apijar.bundle.version>1.1</apijar.bundle.version>
+        <apijar.bundle.version>1.1.2</apijar.bundle.version>
         <impljar.bundle.specversion>${spec_version}.99.b${build_number}</impljar.bundle.specversion>
         <impljar.maven.version>${new_impl_version}-b${build_number}</impljar.maven.version>
         <impljar.bundle.version>${spec_version}.99.b${build_number}</impljar.bundle.version>
@@ -491,8 +497,8 @@
                 <version>${javax.ejb-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>javax.enterprise</groupId>
-                <artifactId>cdi-api</artifactId>
+                <groupId>jakarta.enterprise</groupId>
+                <artifactId>jakarta.enterprise.cdi-api</artifactId>
                 <version>${cdi-api.version}</version>
             </dependency>
             <dependency>
