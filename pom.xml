@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.8</version>
+        <version>1.0.9</version>
     </parent>
 
     <groupId>org.glassfish.tyrus</groupId>
@@ -76,6 +76,9 @@
     </developers>
 
     <contributors>
+        <contributor>
+            <name>Pavel Bucek</name>
+        </contributor>
         <contributor>
             <name>Martin Matula</name>
             <url>http://blog.alutam.com</url>
