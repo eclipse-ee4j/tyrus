@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2021, 2023 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -124,7 +124,6 @@
         <plugins>
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.0.0-M5</version>
                 <inherited>false</inherited>
                 <executions>
                     <execution>
@@ -153,19 +152,18 @@
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-api</artifactId>
-                        <version>3.0.0-M5</version>
+                        <version>${maven.surefire.plugin.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>common-java5</artifactId>
-                        <version>3.0.0-M5</version>
+                        <version>${maven.surefire.plugin.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>unpack</id>
@@ -283,7 +281,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
                 <configuration>
                     <target>11</target>
                 </configuration>
