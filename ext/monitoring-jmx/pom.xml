@@ -28,6 +28,12 @@
     <artifactId>tyrus-monitoring-jmx</artifactId>
     <name>Tyrus Monitoring JMX</name>
 
+    <properties>
+        <argLine>
+            --add-reads org.glassfish.tyrus.ext.monitoring.jmx=org.glassfish.tyrus.client
+        </argLine>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.glassfish.tyrus</groupId>

@@ -27,6 +27,7 @@ Building Tyrus can be done using `mvn clean install`, but sometimes (such as for
 
 ## Links
 
+- Documentation: https://eclipse-ee4j.github.io/tyrus/
 - Website: https://projects.eclipse.org/projects/ee4j.tyrus
 - Issues tracker: https://github.com/eclipse-ee4j/tyrus/issues
 - Mailing list: https://accounts.eclipse.org/mailing-list/tyrus-dev 
