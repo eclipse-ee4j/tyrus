@@ -51,6 +51,11 @@ jakarta.xml.bind-api Version: 3.0
 * License: BSD-3-Clause
 * Copyright (c) 2017, 2018 Oracle and/or its affiliates
 
+jline (2.14.5)
+* License: BSD-3-Clause
+* Project: https://github.com/jline/jline2
+* Source: https://github.com/jline/jline2
+
 ## Cryptography
 
 Content may contain encryption software. The country in which you are currently

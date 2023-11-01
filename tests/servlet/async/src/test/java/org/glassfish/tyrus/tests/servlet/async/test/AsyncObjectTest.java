@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -14,7 +14,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
-package org.glassfish.tyrus.tests.servlet.async;
+package org.glassfish.tyrus.tests.servlet.async.test;
 
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
@@ -35,6 +35,9 @@ import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.server.Server;
 import org.glassfish.tyrus.test.tools.TestContainer;
 
+import org.glassfish.tyrus.tests.servlet.async.ObjectFutureEndpoint;
+import org.glassfish.tyrus.tests.servlet.async.ObjectHandlerEndpoint;
+import org.glassfish.tyrus.tests.servlet.async.ServiceEndpoint;
 import org.junit.Assert;
 import org.junit.Test;
 

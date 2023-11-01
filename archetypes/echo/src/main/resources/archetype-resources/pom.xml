@@ -15,7 +15,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>3.4.0</version>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                 </configuration>
@@ -23,11 +23,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.9.0</version>
+                <inherited>true</inherited>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                    <encoding>UTF-8</encoding>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <showWarnings>false</showWarnings>
+                    <fork>false</fork>
                 </configuration>
             </plugin>
         </plugins>
@@ -66,6 +67,7 @@
     </dependencies>
     <properties>
         <websocket-api.version>2.1.0</websocket-api.version>
+        <java.version>11</java.version>
         <tyrus.version>${project.version}</tyrus.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
