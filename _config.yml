@@ -6,6 +6,10 @@ remote_theme: eclipsefdn/jekyll-theme-eclipsefdn
 title: [Eclipse Tyrus]
 description: [Java API for WebSocket reference implementation for easy development of WebSocket applications (JSR 356)]
 
+latestVersion:   '1.21'
+latest20Version: '2.0.5'
+latest21Version: '2.1.4'
+
 links:
   source: https://github.com/eclipse-ee4j/tyrus
   docs: https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest/index/
