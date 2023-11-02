@@ -27,7 +27,7 @@
 
     <groupId>org.glassfish.tyrus</groupId>
     <artifactId>tyrus-project</artifactId>
-    <version>2.1.4</version>
+    <version>2.1.99-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>tyrus</name>
     <description>Tyrus is the reference implementation of Java API for WebSocket (JSR-356)</description>
