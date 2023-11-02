@@ -16,20 +16,20 @@ broadcasting.
 
 # <a name="Latest_News"></a>Latest News
 
-## February 17, 2023 - Eclipse Tyrus 2.1.3 Final Release ##
+## November 02, 2023 - Eclipse Tyrus {{ site.latest21Version }} Final Release ##
 
-The [2.1.3 release](https://github.com/eclipse-ee4j/tyrus/releases/tag/2.1.3)
+The [{{ site.latest21Version }} release](https://github.com/eclipse-ee4j/tyrus/releases/tag/{{ site.latest21Version }})
 is the Jakarta EE 10 release of the Eclipse Tyrus project.
 
-## October 20, 2023 - Eclipse Tyrus 2.0.5 Final Release ##
+## October 20, 2023 - Eclipse Tyrus {{ site.latest20Version }} Final Release ##
 
-The [2.0.5 release](https://github.com/eclipse-ee4j/tyrus/releases/tag/2.0.5)
+The [{{ site.latest20Version }} release](https://github.com/eclipse-ee4j/tyrus/releases/tag/{{ site.latest20Version }})
 is the Jakarta EE 9 release of the Eclipse Tyrus project.
 
 
-## October 19, 2023 - Eclipse Tyrus 1.21 Final Release ##
+## October 19, 2023 - Eclipse Tyrus {{ site.latestVersion }} Final Release ##
 
-The [1.21 release](https://github.com/eclipse-ee4j/tyrus/releases/tag/1.21)
+The [{{ site.latestVersion }} release](https://github.com/eclipse-ee4j/tyrus/releases/tag/{{ site.latestVersion }})
 is the Jakarta EE 8 release of the Eclipse Tyrus project.
 
 # <a name="Links"></a>Links
