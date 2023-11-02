@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.glassfish.tyrus.archetypes</groupId>
         <artifactId>tyrus-archetypes-project</artifactId>
-        <version>2.1.99-SNAPSHOT</version>
+        <version>2.1.4</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <description>
