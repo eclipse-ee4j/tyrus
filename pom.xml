@@ -107,13 +107,24 @@
         <websocket-api.version>1.1.2</websocket-api.version>
         <!--<websocket.api.build_number>18</websocket.api.build_number>-->
 
-        <servlet.api.version>4.0.4</servlet.api.version>
-        <grizzly.version>2.4.4</grizzly.version>
-        <javax.ejb-api.version>3.2.6</javax.ejb-api.version>
+        <javax.annotation.version>1.3.5</javax.annotation.version>
+        <activation.api.version>1.2.2</activation.api.version> <!-- inherited from JAX-B, do not update unless inline with it -->
         <cdi-api.version>2.0.2</cdi-api.version>
+        <grizzly.version>2.4.4</grizzly.version>
+        <inject.api.version>1.0</inject.api.version><!-- inherited from CDI, do not update unless inline with it -->
+        <javax.ejb-api.version>3.2.6</javax.ejb-api.version>
+        <jaxb.api.version>2.3.3</jaxb.api.version>
+        <jaxb.ri.version>2.3.8</jaxb.ri.version>
+        <jline.version>2.14.5</jline.version>
         <json-api.version>1.1.6</json-api.version>
         <json-impl.version>1.1.6</json-impl.version>
+        <servlet.api.version>4.0.4</servlet.api.version>
         <spring.boot.version>2.6.7</spring.boot.version>
+
+        <maven.compiler.plugin>3.11.0</maven.compiler.plugin>
+        <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
+        <maven.surefire.plugin.version>3.2.1</maven.surefire.plugin.version>
+        <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
 
         <api_package>javax.websocket</api_package>
         <impl_namespace>org.glassfish</impl_namespace>
@@ -137,11 +148,6 @@
         <impljar.impl.version>${new_spec_version}-b${build_number}</impljar.impl.version>
 
         <netbeans.hint.license>gf-cddl-gpl</netbeans.hint.license>
-
-        <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
-        <jaxb.api.version>2.3.3</jaxb.api.version>
-        <jaxb.ri.version>2.3.8</jaxb.ri.version>
-        <javax.annotation.version>1.3.5</javax.annotation.version>
     </properties>
 
     <modules>
@@ -159,86 +165,54 @@
     </modules>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-sources</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>jar-no-fork</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <configuration>
-                    <mavenExecutorId>forked-path</mavenExecutorId>
-                    <useReleaseProfile>false</useReleaseProfile>
-                    <arguments>${release.arguments}</arguments>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.1</version>
-                <configuration>
-                    <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.0.0</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.puppycrawl.tools</groupId>
-                        <artifactId>checkstyle</artifactId>
-                        <version>8.18</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <consoleOutput>true</consoleOutput>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <configLocation>etc/config/checkstyle-build.xml</configLocation>
-                            <failOnViolation>true</failOnViolation>
-                            <excludes>**/guide/*,**/org/glassfish/tyrus/core/wsadl/model/**/*,**/LocalizationMessages.java</excludes>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>3.6.0</version>
                 </plugin>
                 <plugin>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${maven.compiler.plugin}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.6.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.2.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.5.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${maven.war.plugin.version}</version>
+                    <configuration>
+                        <failOnMissingWebXml>false</failOnMissingWebXml>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.glassfish.copyright</groupId>
@@ -256,6 +230,7 @@
                         <warn>true</warn>
                         <!-- for use with repair -->
                         <update>false</update>
+                        <quiet>false</quiet>
                         <!-- check that year is correct -->
                         <ignoreYear>false</ignoreYear>
                         <templateFile>etc/config/copyright.txt</templateFile>
@@ -264,7 +239,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>1.8</version>
+                    <version>3.4.0</version>
                     <executions>
                         <execution>
                             <phase>generate-sources</phase>
@@ -313,21 +288,14 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>2.4.0</version>
+                    <version>5.1.4</version> <!-- 5.1.5  brings dependencies on JDK packages -->
                     <extensions>true</extensions>
                     <configuration>
                         <instructions>
                             <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                             <_nodefaultversion>false</_nodefaultversion>
+                            <Include-Resource>{maven-resources},${project.build.directory}/legal</Include-Resource>
                         </instructions>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>3.4.0</version>
-                    <configuration>
-                        <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -356,30 +324,195 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.17</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>2.1</version>
-                </plugin>
-                <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.2.1</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>com.sun.tools.xjc.maven2</groupId>
                     <artifactId>maven-jaxb-plugin</artifactId>
                     <version>1.1.1</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>8.18</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
             </plugins>
         </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>legal.source.folder</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <configuration>
+                    <mavenExecutorId>forked-path</mavenExecutorId>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <arguments>${release.arguments}</arguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <consoleOutput>true</consoleOutput>
+                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            <configLocation>etc/config/checkstyle-build.xml</configLocation>
+                            <failOnViolation>true</failOnViolation>
+                            <excludes>**/guide/*,**/org/glassfish/tyrus/core/wsadl/model/**/*,**/LocalizationMessages.java</excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 
     <profiles>
+        <profile>
+            <id>copy-legal-docs</id>
+            <activation>
+                <file>
+                    <missing>${basedir}/src/test/java/org/glassfish/tyrus/test</missing>
+                </file>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-resources-plugin</artifactId>
+                            <version>2.6</version>
+                            <extensions>true</extensions>
+                            <!-- Add legal information, NOTICE.md and LINCENSE.md to jars -->
+                            <executions>
+                                <execution>
+                                    <!-- copy the files to classes folder for maven-jar/war-plugin to grab it -->
+                                    <id>copy-legaldocs</id>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <phase>process-sources</phase>
+                                    <configuration>
+                                        <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                                        <resources>
+                                            <resource>
+                                                <directory>${legal.source.folder}</directory>
+                                                <targetPath>META-INF/</targetPath>
+                                                <includes>
+                                                    <include>NOTICE.md</include>
+                                                    <include>LICENSE.md</include>
+                                                </includes>
+                                            </resource>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <!-- copy the files to source folder for maven-source-plugin to grab it -->
+                                    <id>copy-legaldocs-to-sources</id>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <phase>process-sources</phase>
+                                    <configuration>
+                                        <outputDirectory>${project.build.directory}/generated-sources/rsrc-gen</outputDirectory>
+                                        <resources>
+                                            <resource>
+                                                <directory>${legal.source.folder}</directory>
+                                                <targetPath>META-INF/</targetPath>
+                                                <includes>
+                                                    <include>NOTICE.md</include>
+                                                    <include>LICENSE.md</include>
+                                                </includes>
+                                            </resource>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <!-- copy the files to legal folder for felix plugin to grab it -->
+                                    <id>copy-legaldocs-to-osgi-bundles</id>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <phase>process-sources</phase>
+                                    <configuration>
+                                        <outputDirectory>${project.build.directory}/legal</outputDirectory>
+                                        <resources>
+                                            <resource>
+                                                <directory>${legal.source.folder}</directory>
+                                                <targetPath>META-INF/</targetPath>
+                                                <includes>
+                                                    <include>NOTICE.md</include>
+                                                    <include>LICENSE.md</include>
+                                                </includes>
+                                            </resource>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
         <profile>
             <id>release</id>
             <build>
@@ -388,7 +521,6 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-release-plugin</artifactId>
-                            <version>2.5</version>
                             <configuration>
                                 <mavenExecutorId>forked-path</mavenExecutorId>
                                 <useReleaseProfile>false</useReleaseProfile>
@@ -399,7 +531,6 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>2.9.1</version>
                             <configuration>
                                 <minmemory>128m</minmemory>
                                 <maxmemory>512m</maxmemory>
@@ -425,7 +556,6 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>2.9.1</version>
                             <configuration>
                                 <excludePackageNames>*.tests.*,*.sample.*</excludePackageNames>
                                 <minmemory>128m</minmemory>
@@ -467,7 +597,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.0.0</version>
                 <configuration>
                     <configLocation>etc/config/checkstyle.xml</configLocation>
                 </configuration>
