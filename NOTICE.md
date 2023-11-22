@@ -33,53 +33,21 @@ The project maintains the following source code repositories:
 * https://github.com/eclipse-ee4j/tyrus
 
 ## Third-party Content
+This project leverages the following third party content:
 
-This project leverages the following third party content.
-
-atinject (Package jakarta.inject) (1.0)
-
+jakarta.enterprise.cdi-api Version 3.0.0
 * License: Apache License, 2.0
+* Copyright 2010, Red Hat, Inc., and individual contributors
 
-cdi-api (2.0.2)
-
+jakarta.inject Version 2.0.0
 * License: Apache License, 2.0
+* Copyright (C) 2009 The JSR-330 Expert Group
 
-Google Guava (18.0)
-
-* License: Apache License, 2.0
-
-hamcrest-core (1.1)
-
-* License: BSD-3-Clause
-* Project: http://hamcrest.org/JavaHamcrest/
-* Source:
-   https://github.com/hamcrest/JavaHamcrest/releases/tag/hamcrest-java-1.1
-
-javassist (3.18)
-
-* License: (MPL-1.1 OR LGPL-2.1-or-later OR Apache-2.0)	
-* Project: http://jboss-javassist.github.io/javassist/
-* Source:
-   https://github.com/jboss-javassist/javassist/releases/tag/rel_3_18_1_ga
-
-  
-javax.validation:validation-api:jar:1.1.0.Final (1.1.0)
-
-* License: Apache-2.0
-
-jline (2.14.5)
-
+jline Version: 2.14.5
 * License: BSD-3-Clause
 * Project: https://github.com/jline/jline2
 * Source: https://github.com/jline/jline2
 
-junit (4.13.2)
-
-* License: Common Public License 1.0
-
-org.osgi.core (4.2.0)
-
-* License: Apache-2.0
 
 ## Cryptography
 
