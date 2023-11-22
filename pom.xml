@@ -105,17 +105,24 @@
         <!--<websocket.api.build_number>18</websocket.api.build_number>-->
 
         <annotation-api.version>2.0.0</annotation-api.version>
+        <activation.api.version>2.0.1</activation.api.version> <!-- inherited from JAX-B -->
         <cdi-api.version>3.0.0</cdi-api.version>
         <ejb-api.version>4.0.0</ejb-api.version>
         <grizzly.version>3.0.1</grizzly.version>
-        <json-api.version>2.0.2</json-api.version>
-        <json-impl.version>1.0.5</json-impl.version>
+        <inject.api.version>2.0.0</inject.api.version><!-- inherited from CDI, do not update unless inline with it -->
         <jaxb.api.version>3.0.1</jaxb.api.version>
         <jaxb.ri.version>3.0.2</jaxb.ri.version>
-        <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version>
+        <jline.version>2.14.5</jline.version>
+        <json-api.version>2.0.2</json-api.version>
+        <json-impl.version>1.0.5</json-impl.version>
         <servlet.api.version>5.0.0</servlet.api.version>
+        <spring.boot.version>2.6.7</spring.boot.version>
 
+
+        <maven.compiler.plugin>3.11.0</maven.compiler.plugin>
+        <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
         <maven.surefire.plugin.version>3.2.1</maven.surefire.plugin.version>
+        <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
 
         <api_package>jakarta.websocket</api_package>
         <impl_namespace>org.glassfish</impl_namespace>
@@ -285,6 +292,7 @@
                         <instructions>
                             <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                             <_nodefaultversion>false</_nodefaultversion>
+                            <Include-Resource>{maven-resources},${project.build.directory}/legal</Include-Resource>
                         </instructions>
                     </configuration>
                     <executions>
@@ -332,10 +340,27 @@
                     <artifactId>maven-jaxb-plugin</artifactId>
                     <version>1.1.1</version>
                 </plugin>
-
             </plugins>
         </pluginManagement>
+
         <plugins>
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>1.0</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>legal.source.folder</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -407,6 +432,92 @@
 
     <profiles>
         <profile>
+            <id>copy-legal-docs</id>
+            <activation>
+                <file>
+                    <missing>${basedir}/src/test/java/org/glassfish/tyrus/test</missing>
+                </file>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-resources-plugin</artifactId>
+                            <version>3.3.1</version>
+                            <extensions>true</extensions>
+                            <!-- Add legal information, NOTICE.md and LINCENSE.md to jars -->
+                            <executions>
+                                <execution>
+                                    <!-- copy the files to classes folder for maven-jar/war-plugin to grab it -->
+                                    <id>copy-legaldocs</id>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <phase>process-sources</phase>
+                                    <configuration>
+                                        <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                                        <resources>
+                                            <resource>
+                                                <directory>${legal.source.folder}</directory>
+                                                <targetPath>META-INF/</targetPath>
+                                                <includes>
+                                                    <include>NOTICE.md</include>
+                                                    <include>LICENSE.md</include>
+                                                </includes>
+                                            </resource>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <!-- copy the files to source folder for maven-source-plugin to grab it -->
+                                    <id>copy-legaldocs-to-sources</id>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <phase>process-sources</phase>
+                                    <configuration>
+                                        <outputDirectory>${project.build.directory}/generated-sources/rsrc-gen</outputDirectory>
+                                        <resources>
+                                            <resource>
+                                                <directory>${legal.source.folder}</directory>
+                                                <targetPath>META-INF/</targetPath>
+                                                <includes>
+                                                    <include>NOTICE.md</include>
+                                                    <include>LICENSE.md</include>
+                                                </includes>
+                                            </resource>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                                <execution>
+                                    <!-- copy the files to legal folder for felix plugin to grab it -->
+                                    <id>copy-legaldocs-to-osgi-bundles</id>
+                                    <goals>
+                                        <goal>copy-resources</goal>
+                                    </goals>
+                                    <phase>process-sources</phase>
+                                    <configuration>
+                                        <outputDirectory>${project.build.directory}/legal</outputDirectory>
+                                        <resources>
+                                            <resource>
+                                                <directory>${legal.source.folder}</directory>
+                                                <targetPath>META-INF/</targetPath>
+                                                <includes>
+                                                    <include>NOTICE.md</include>
+                                                    <include>LICENSE.md</include>
+                                                </includes>
+                                            </resource>
+                                        </resources>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
             <id>release</id>
             <build>
                 <pluginManagement>
@@ -414,7 +525,6 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-release-plugin</artifactId>
-                            <version>2.5</version>
                             <configuration>
                                 <mavenExecutorId>forked-path</mavenExecutorId>
                                 <useReleaseProfile>false</useReleaseProfile>
@@ -425,7 +535,6 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>2.9.1</version>
                             <configuration>
                                 <minmemory>128m</minmemory>
                                 <maxmemory>512m</maxmemory>
@@ -451,7 +560,6 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>2.9.1</version>
                             <configuration>
                                 <excludePackageNames>*.tests.*,*.sample.*</excludePackageNames>
                                 <minmemory>128m</minmemory>
@@ -493,7 +601,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.0.0</version>
                 <configuration>
                     <configLocation>etc/config/checkstyle.xml</configLocation>
                 </configuration>

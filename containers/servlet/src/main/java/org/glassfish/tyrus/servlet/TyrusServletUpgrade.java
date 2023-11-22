@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -193,7 +193,7 @@ class TyrusServletUpgrade {
             final WebSocketEngine.UpgradeInfo upgradeInfo = engine.upgrade(requestContext, tyrusUpgradeResponse);
             switch (upgradeInfo.getStatus()) {
                 case HANDSHAKE_FAILED:
-                    appendTraceHeaders(httpServletResponse, tyrusUpgradeResponse);
+                    appendAllHeaders(httpServletResponse, tyrusUpgradeResponse);
                     httpServletResponse.sendError(tyrusUpgradeResponse.getStatus());
                     break;
                 case NOT_APPLICABLE:
@@ -216,9 +216,7 @@ class TyrusServletUpgrade {
                     }
 
                     httpServletResponse.setStatus(tyrusUpgradeResponse.getStatus());
-                    for (Map.Entry<String, List<String>> entry : tyrusUpgradeResponse.getHeaders().entrySet()) {
-                        httpServletResponse.addHeader(entry.getKey(), Utils.getHeaderFromList(entry.getValue()));
-                    }
+                    appendAllHeaders(httpServletResponse, tyrusUpgradeResponse);
 
                     httpServletResponse.flushBuffer();
                     LOGGER.fine("Handshake Complete");
@@ -261,6 +259,13 @@ class TyrusServletUpgrade {
             if (entry.getKey().contains(UpgradeResponse.TRACING_HEADER_PREFIX)) {
                 httpServletResponse.addHeader(entry.getKey(), Utils.getHeaderFromList(entry.getValue()));
             }
+        }
+    }
+
+    private static void appendAllHeaders(HttpServletResponse httpServletResponse, TyrusUpgradeResponse
+            tyrusUpgradeResponse) {
+        for (Map.Entry<String, List<String>> entry : tyrusUpgradeResponse.getHeaders().entrySet()) {
+            httpServletResponse.addHeader(entry.getKey(), Utils.getHeaderFromList(entry.getValue()));
         }
     }
 
