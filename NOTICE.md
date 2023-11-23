@@ -33,28 +33,21 @@ The project maintains the following source code repositories:
 * https://github.com/eclipse-ee4j/tyrus
 
 ## Third-party Content
-The following non-EPL 2.0 code is distributed in Tyrus bundles:
+This project leverages the following third party content:
 
-jakarta.activation 2.0
-* License: BSD-3-Clause
-* Copyright (c) 2018 Oracle and/or its affiliates
-
-jakarta.enterprise.cdi-api Version 3.0.0
+jakarta.enterprise.cdi-api Version 4.0.1
 * License: Apache License, 2.0
 * Copyright 2010, Red Hat, Inc., and individual contributors
 
-jakarta.inject Version: 2.0
+jakarta.inject Version: 2.0.1
 * License: Apache License, 2.0
 * Copyright (C) 2009 The JSR-330 Expert Group
 
-jakarta.xml.bind-api Version: 3.0
-* License: BSD-3-Clause
-* Copyright (c) 2017, 2018 Oracle and/or its affiliates
-
-jline (2.14.5)
+jline Version: 2.14.5
 * License: BSD-3-Clause
 * Project: https://github.com/jline/jline2
 * Source: https://github.com/jline/jline2
+
 
 ## Cryptography
 

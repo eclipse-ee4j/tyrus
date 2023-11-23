@@ -102,30 +102,35 @@
 
     <properties>
         <websocket-api.version>2.1.1</websocket-api.version>
-        <!--<websocket.api.build_number>18</websocket.api.build_number>-->
 
         <annotation-api.version>2.1.1</annotation-api.version>
+        <activation.api.version>2.1.2</activation.api.version> <!-- inherited from JAX-B -->
         <cdi-api.version>4.0.1</cdi-api.version>
         <ejb-api.version>4.0.1</ejb-api.version>
         <grizzly.version>4.0.0</grizzly.version>
         <glassfish.version>7.0.9</glassfish.version>
+        <inject.api.version>2.0.1</inject.api.version><!-- inherited from CDI, do not update unless inline with it -->
+        <jaxb.api.version>4.0.1</jaxb.api.version>
+        <jaxb.ri.version>4.0.4</jaxb.ri.version>
+        <jline.version>2.14.5</jline.version>
         <json-api.version>2.1.2</json-api.version>
         <json-impl.version>1.1.4</json-impl.version>
-        <jaxb.api.version>4.0.1</jaxb.api.version>
-        <jaxb.ri.version>4.0.3</jaxb.ri.version>
-        <maven-javadoc-plugin.version>3.3.1</maven-javadoc-plugin.version>
         <servlet.api.version>6.0.0</servlet.api.version>
         <spring.boot.version>2.6.7</spring.boot.version>
 
+
+        <maven.compiler.plugin>3.11.0</maven.compiler.plugin>
+        <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
         <maven.surefire.plugin.version>3.2.1</maven.surefire.plugin.version>
+        <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
 
         <api_package>jakarta.websocket</api_package>
         <impl_namespace>org.glassfish</impl_namespace>
         <spec_version>0.0</spec_version>
-        <new_spec_version>2.0</new_spec_version>
-        <new_impl_version>2.0</new_impl_version>
+        <new_spec_version>2.1</new_spec_version>
+        <new_impl_version>2.1</new_impl_version>
         <build_number>11</build_number>
-        <spec_impl_version>2.0.0</spec_impl_version>
+        <spec_impl_version>2.1.0</spec_impl_version>
         <impl_version>0.0.0</impl_version>
 
         <impljar.extensionName>${api_package}</impljar.extensionName>
@@ -133,7 +138,7 @@
         <packages.private>org.glassfish.*</packages.private>
 
         <!-- Non Final properties for impl jar -->
-        <apijar.bundle.version>2.1.0</apijar.bundle.version>
+        <apijar.bundle.version>2.1.1</apijar.bundle.version>
         <impljar.bundle.specversion>${spec_version}.99.b${build_number}</impljar.bundle.specversion>
         <impljar.maven.version>${new_impl_version}-b${build_number}</impljar.maven.version>
         <impljar.bundle.version>${spec_version}.99.b${build_number}</impljar.bundle.version>
@@ -290,6 +295,15 @@
                             <Include-Resource>{maven-resources},${project.build.directory}/legal</Include-Resource>
                         </instructions>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <id>osgi-bundle</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>bundle</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -326,7 +340,6 @@
                     <artifactId>maven-jaxb-plugin</artifactId>
                     <version>1.1.1</version>
                 </plugin>
-
             </plugins>
         </pluginManagement>
 
@@ -351,7 +364,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -370,7 +382,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>
@@ -389,7 +400,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.1</version>
                 <configuration>
                     <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
                 </configuration>
@@ -438,7 +448,7 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-resources-plugin</artifactId>
-                            <version>2.6</version>
+                            <version>3.3.1</version>
                             <extensions>true</extensions>
                             <!-- Add legal information, NOTICE.md and LINCENSE.md to jars -->
                             <executions>
@@ -519,7 +529,6 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-release-plugin</artifactId>
-                            <version>2.5</version>
                             <configuration>
                                 <mavenExecutorId>forked-path</mavenExecutorId>
                                 <useReleaseProfile>false</useReleaseProfile>
@@ -530,7 +539,6 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>${maven-javadoc-plugin.version}</version>
                             <configuration>
                                 <minmemory>128m</minmemory>
                                 <maxmemory>512m</maxmemory>
@@ -556,7 +564,6 @@
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>${maven-javadoc-plugin.version}</version>
                             <configuration>
                                 <excludePackageNames>*.tests.*,*.sample.*</excludePackageNames>
                                 <minmemory>128m</minmemory>
@@ -598,7 +605,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.0.0</version>
                 <configuration>
                     <configLocation>etc/config/checkstyle.xml</configLocation>
                 </configuration>
