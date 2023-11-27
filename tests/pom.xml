@@ -33,6 +33,7 @@
     <modules>
         <module>containers</module>
         <module>e2e</module>
+        <module>release-test</module>
         <module>servlet</module>
         <module>tools</module>
     </modules>

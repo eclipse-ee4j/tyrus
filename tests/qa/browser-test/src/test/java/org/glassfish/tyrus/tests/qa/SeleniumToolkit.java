@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,14 +20,19 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.ChromeDriverService;
+import org.openqa.selenium.FirefoxProfile;
+import org.openqa.selenium.InternetExplorerDriverService;
+import org.openqa.selenium.Platform;
+import org.openqa.selenium.SafariDriver;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.firefox.FirefoxBinary;
@@ -44,11 +49,9 @@ import org.openqa.selenium.safari.SafariDriver;
 public class SeleniumToolkit {
 
     enum Browser {
-
         FIREFOX, IE, CHROME, SAFARI
     }
 
-    ;
     private final String WIN_FIREFOX_BIN = "C:/Program Files (x86)/Mozilla Firefox/firefox.exe";
     private static final Logger logger = Logger.getLogger(SeleniumToolkit.class.getCanonicalName());
     private static List<WebDriver> webDriverInstances = new CopyOnWriteArrayList<WebDriver>();
@@ -147,8 +150,8 @@ public class SeleniumToolkit {
     public void setUpExplorer() {
         try {
             System.setProperty(InternetExplorerDriverService.IE_DRIVER_EXE_PROPERTY, getEnv("IE_DRIVER"));
-            assert new File(System.getProperty(InternetExplorerDriverService.IE_DRIVER_EXE_PROPERTY)).exists() :
-                    "IE_DRIVER exists";
+            assert new File(System.getProperty(InternetExplorerDriverService.IE_DRIVER_EXE_PROPERTY)).exists()
+                    : "IE_DRIVER exists";
             driver = new InternetExplorerDriver();
             commonBrowserSetup();
             logger.log(Level.INFO, "IE Setup PASSED");

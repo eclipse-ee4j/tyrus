@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -68,8 +68,8 @@ public class BrowserTest {
     }
 
     private void chatScalabitlity(SeleniumToolkit.Browser browser) throws InterruptedException, Exception {
-        logger.log(Level.INFO, "=============testScalabilityWith" + TestScenarios.MAX_CHAT_CLIENTS +
-                "Users===============================");
+        logger.log(Level.INFO, "=============testScalabilityWith" + TestScenarios.MAX_CHAT_CLIENTS
+                + "Users===============================");
         List<SeleniumToolkit> toolkits = new ArrayList<SeleniumToolkit>();
         // Launch 100 browsers
         for (int idx = 0; idx < TestScenarios.MAX_CHAT_CLIENTS; idx++) {
