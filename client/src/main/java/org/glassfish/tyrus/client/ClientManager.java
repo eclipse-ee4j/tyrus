@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -42,6 +42,7 @@ import javax.websocket.Extension;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
+import org.glassfish.tyrus.client.exception.Exceptions;
 import org.glassfish.tyrus.core.AnnotatedEndpoint;
 import org.glassfish.tyrus.core.BaseContainer;
 import org.glassfish.tyrus.core.ComponentProviderService;
@@ -52,6 +53,7 @@ import org.glassfish.tyrus.core.TyrusEndpointWrapper;
 import org.glassfish.tyrus.core.TyrusFuture;
 import org.glassfish.tyrus.core.TyrusSession;
 import org.glassfish.tyrus.core.Utils;
+import org.glassfish.tyrus.core.collection.SupplierWithEx;
 import org.glassfish.tyrus.core.monitoring.EndpointEventListener;
 import org.glassfish.tyrus.spi.ClientContainer;
 import org.glassfish.tyrus.spi.ClientEngine;
@@ -295,74 +297,38 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
                             "Class argument in connectToServer(Class, URI) is to be annotated endpoint class. Class "
                                     + "%s does not have @ClientEndpoint", annotatedEndpointClass.getName()));
         }
-        try {
-            return connectToServer(annotatedEndpointClass, null, path.toString(), true).get();
-        } catch (InterruptedException e) {
-            throw new DeploymentException(e.getMessage(), e);
-        } catch (ExecutionException e) {
-            final Throwable cause = e.getCause();
-            if (cause instanceof DeploymentException) {
-                throw (DeploymentException) cause;
-            } else if (cause instanceof IOException) {
-                throw (IOException) cause;
-            } else {
-                throw new DeploymentException(cause.getMessage(), cause);
-            }
-        }
+        return tryCatchInterruptedExecutionEx(() -> connectToServer(annotatedEndpointClass, null, path.toString(), true));
     }
 
     @Override
     public Session connectToServer(Class<? extends Endpoint> endpointClass, ClientEndpointConfig cec, URI path) throws
             DeploymentException, IOException {
-        try {
-            return connectToServer(endpointClass, cec, path.toString(), true).get();
-        } catch (InterruptedException e) {
-            throw new DeploymentException(e.getMessage(), e);
-        } catch (ExecutionException e) {
-            final Throwable cause = e.getCause();
-            if (cause instanceof DeploymentException) {
-                throw (DeploymentException) cause;
-            } else if (cause instanceof IOException) {
-                throw (IOException) cause;
-            } else {
-                throw new DeploymentException(cause.getMessage(), cause);
-            }
-        }
+        return tryCatchInterruptedExecutionEx(() -> connectToServer(endpointClass, cec, path.toString(), true));
     }
 
     @Override
     public Session connectToServer(Endpoint endpointInstance, ClientEndpointConfig cec, URI path) throws
             DeploymentException, IOException {
-        try {
-            return connectToServer(endpointInstance, cec, path.toString(), true).get();
-        } catch (InterruptedException e) {
-            throw new DeploymentException(e.getMessage(), e);
-        } catch (ExecutionException e) {
-            final Throwable cause = e.getCause();
-            if (cause instanceof DeploymentException) {
-                throw (DeploymentException) cause;
-            } else if (cause instanceof IOException) {
-                throw (IOException) cause;
-            } else {
-                throw new DeploymentException(cause.getMessage(), cause);
-            }
-        }
+        return tryCatchInterruptedExecutionEx(() -> connectToServer(endpointInstance, cec, path.toString(), true));
     }
 
     @Override
     public Session connectToServer(Object obj, URI path) throws DeploymentException, IOException {
+        return tryCatchInterruptedExecutionEx(() -> connectToServer(obj, null, path.toString(), true));
+    }
+
+    private Session tryCatchInterruptedExecutionEx(SupplierWithEx<Future<Session>, DeploymentException> supplier)
+            throws DeploymentException, IOException {
         try {
-            return connectToServer(obj, null, path.toString(), true).get();
+            return supplier.get().get();
         } catch (InterruptedException e) {
             throw new DeploymentException(e.getMessage(), e);
         } catch (ExecutionException e) {
             final Throwable cause = e.getCause();
-            if (cause instanceof DeploymentException) {
-                throw (DeploymentException) cause;
-            } else if (cause instanceof IOException) {
+            if (cause instanceof IOException) {
                 throw (IOException) cause;
             } else {
-                throw new DeploymentException(cause.getMessage(), cause);
+                throw Exceptions.deploymentException(cause.getMessage(), cause);
             }
         }
     }
@@ -652,11 +618,7 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
                                     if (countedDown) {
                                         final Throwable exception = listener.getThrowable();
                                         if (exception != null) {
-                                            if (exception instanceof DeploymentException) {
-                                                throw (DeploymentException) exception;
-                                            } else {
-                                                throw new DeploymentException("Handshake error.", exception);
-                                            }
+                                            throw Exceptions.deploymentException("Handshake error.", exception);
                                         }
 
                                         future.setResult(listener.getSession());
@@ -669,10 +631,8 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
                                             timeoutHandler.handleTimeout();
                                         }
                                     }
-                                } catch (DeploymentException e) {
-                                    throw e;
                                 } catch (Exception e) {
-                                    throw new DeploymentException("Handshake response not received.", e);
+                                    throw Exceptions.deploymentException("Handshake response not received.", e);
                                 }
 
                                 throw new DeploymentException("Handshake response not received.");

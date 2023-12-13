@@ -25,6 +25,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.websocket.ClientEndpoint;
 import javax.websocket.ClientEndpointConfig;
 import javax.websocket.DeploymentException;
 import javax.websocket.EndpointConfig;
@@ -36,7 +37,10 @@ import javax.websocket.server.ServerEndpoint;
 import javax.websocket.server.ServerEndpointConfig;
 
 import org.glassfish.tyrus.client.ClientManager;
+import org.glassfish.tyrus.client.exception.DeploymentHandshakeException;
 import org.glassfish.tyrus.server.Server;
+import org.glassfish.tyrus.spi.TyrusClientEndpointConfigurator;
+import org.glassfish.tyrus.spi.UpgradeRequest;
 import org.glassfish.tyrus.spi.UpgradeResponse;
 import org.glassfish.tyrus.test.standard_config.bean.TestEndpoint;
 import org.glassfish.tyrus.test.tools.TestContainer;
@@ -188,6 +192,161 @@ public class HandshakeTest extends TestContainer {
         } catch (DeploymentException de) {
             Assert.assertEquals(STATUS, status.get().intValue());
             Assert.assertEquals(HEADER, header.get());
+        } finally {
+            server.stop();
+        }
+    }
+
+    public static class Status401SetterConfiguration extends ServerEndpointConfig.Configurator {
+        @Override
+        public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
+            ((UpgradeResponse) response).setStatus(401);
+            response.getHeaders().put(HEADER, Collections.singletonList(HEADER));
+        }
+    }
+
+    @Test
+    public void test401InConfigurer() throws DeploymentException, IOException {
+        @ServerEndpoint(value = "/status", configurator = Status401SetterConfiguration.class)
+        class Status401SetterEndpoint {
+            @OnMessage
+            public void onMessage(String message) {
+                throw new IllegalStateException("ON MESSAGE");
+            }
+        }
+
+        final AtomicReference<Integer> status = new AtomicReference<>();
+        final AtomicReference<String> header = new AtomicReference<>();
+
+        Server server = startServer(Status401SetterEndpoint.class);
+
+        ClientEndpointConfig.Configurator cecc = new ClientEndpointConfig.Configurator() {
+            @Override
+            public void afterResponse(HandshakeResponse hr) {
+                status.set(((UpgradeResponse) hr).getStatus());
+                header.set(((UpgradeResponse) hr).getFirstHeaderValue(HEADER));
+            }
+        };
+
+        ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().configurator(cecc).build();
+
+        try {
+            ClientManager client = createClient();
+            Session session = client.connectToServer(new TestEndpointAdapter() {
+                @Override
+                public void onMessage(String message) {
+                }
+
+                @Override
+                public void onOpen(Session session) {
+                    try {
+                        session.getBasicRemote().sendText("This should never be sent");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public EndpointConfig getEndpointConfig() {
+                    return cec;
+                }
+            }, cec, getURI(Status401SetterEndpoint.class));
+
+            throw new IllegalStateException("DeploymentException was not thrown");
+        } catch (DeploymentHandshakeException de) {
+            Assert.assertEquals(401, status.get().intValue());
+            Assert.assertEquals(status.get().intValue(), de.getHttpStatusCode());
+            Assert.assertEquals(HEADER, header.get());
+        } finally {
+            server.stop();
+        }
+    }
+
+    @Test
+    public void beforeRequestUpgradeRequest() throws DeploymentException, IOException {
+        @ServerEndpoint(value = "/status", configurator = StatusSetterConfiguration.class)
+        class StatusSetterEndpoint {
+            @OnMessage
+            public void onMessage(String message) {
+                throw new IllegalStateException("ON MESSAGE");
+            }
+        }
+
+        final AtomicReference<UpgradeRequest> requestAtomicReference = new AtomicReference<>();
+
+        Server server = startServer(StatusSetterEndpoint.class);
+
+        ClientEndpointConfig.Configurator cecc = new TyrusClientEndpointConfigurator() {
+            @Override
+            public void beforeRequest(UpgradeRequest upgradeRequest) {
+                requestAtomicReference.set(upgradeRequest);
+            }
+        };
+
+        ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().configurator(cecc).build();
+
+        try {
+            ClientManager client = createClient();
+            Session session = client.connectToServer(new TestEndpointAdapter() {
+                @Override
+                public void onMessage(String message) {
+                }
+
+                @Override
+                public void onOpen(Session session) {
+                    try {
+                        session.getBasicRemote().sendText("This should never be sent");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public EndpointConfig getEndpointConfig() {
+                    return cec;
+                }
+            }, cec, getURI(StatusSetterEndpoint.class));
+
+            throw new IllegalStateException("DeploymentException was not thrown");
+        } catch (DeploymentException de) {
+            Assert.assertEquals(getURI(StatusSetterEndpoint.class), requestAtomicReference.get().getRequestURI());
+        } finally {
+            server.stop();
+        }
+    }
+
+    public static final AtomicReference<UpgradeRequest> REQUEST_ATOMIC_REFERENCE = new AtomicReference<>();
+
+    public static class AnnotatedBeforeRequestTestClientConfigurator extends TyrusClientEndpointConfigurator {
+        @Override
+        public void beforeRequest(UpgradeRequest upgradeRequest) {
+            REQUEST_ATOMIC_REFERENCE.set(upgradeRequest);
+        }
+    }
+
+    @ClientEndpoint(configurator = AnnotatedBeforeRequestTestClientConfigurator.class)
+    public static class AnnotatedBeforeRequestTestClient {
+
+    }
+
+    @Test
+    public void beforeRequestUpgradeRequestOnAnnotatedClient() throws DeploymentException, IOException {
+        @ServerEndpoint(value = "/status", configurator = StatusSetterConfiguration.class)
+        class StatusSetterEndpoint {
+            @OnMessage
+            public void onMessage(String message) {
+                throw new IllegalStateException("ON MESSAGE");
+            }
+        }
+
+        Server server = startServer(StatusSetterEndpoint.class);
+
+        try {
+            ClientManager client = createClient();
+            Session session = client.connectToServer(AnnotatedBeforeRequestTestClient.class, getURI(StatusSetterEndpoint.class));
+            throw new IllegalStateException("DeploymentException was not thrown");
+        } catch (DeploymentException de) {
+            Assert.assertEquals(getURI(StatusSetterEndpoint.class), REQUEST_ATOMIC_REFERENCE.get().getRequestURI());
         } finally {
             server.stop();
         }
