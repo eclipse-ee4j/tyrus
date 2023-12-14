@@ -15,6 +15,9 @@ communication overhead. Therefore Tyrus and WebSocket in general are suitable fo
 applications that require sending a huge volume of relatively small messages like
 online games or market ticker broadcasting.
 
+## Current 2.2.x branch
+This is Jakarta EE 11 / Jakarta WebSocket 2.2.0 compatible branch of Tyrus
+
 ## Building Eclipse Tyrus
 
 Building Tyrus can be done using `mvn clean install`, but sometimes (such as for building 2.x from a tag) 
