@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -94,7 +94,7 @@ public class AnnotatedEndpoint extends Endpoint {
                                               boolean isServerEndpoint, int incomingBufferSize, ErrorCollector
                                               collector, EndpointEventListener endpointEventListener) {
         return fromClass(annotatedClass, componentProvider, isServerEndpoint, incomingBufferSize, collector,
-                                      endpointEventListener, Collections.emptySet());
+                                      endpointEventListener, (Set<Extension>) (Set) Collections.emptySet());
     }
 
     /**
@@ -131,7 +131,7 @@ public class AnnotatedEndpoint extends Endpoint {
             Object annotatedInstance, ComponentProviderService componentProvider, boolean isServerEndpoint,
             int incomingBufferSize, ErrorCollector collector) {
         return fromInstance(annotatedInstance, componentProvider, isServerEndpoint, incomingBufferSize,
-                                     collector, Collections.emptySet());
+                                     collector, (Set<Extension>) (Set) Collections.emptySet());
     }
 
      /**
