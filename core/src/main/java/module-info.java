@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021, 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,6 +19,7 @@
  */
 module org.glassfish.tyrus.core {
     requires java.logging;
+    requires static java.xml;
 
     requires static jakarta.xml.bind;
     requires transitive jakarta.websocket;
@@ -30,6 +31,7 @@ module org.glassfish.tyrus.core {
     exports org.glassfish.tyrus.core;
     exports org.glassfish.tyrus.core.cluster;
     exports org.glassfish.tyrus.core.coder;
+    exports org.glassfish.tyrus.core.collection;
     exports org.glassfish.tyrus.core.extension;
     exports org.glassfish.tyrus.core.frame;
     exports org.glassfish.tyrus.core.l10n;
