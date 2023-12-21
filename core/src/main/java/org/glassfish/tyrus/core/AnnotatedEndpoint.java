@@ -95,7 +95,7 @@ public class AnnotatedEndpoint extends Endpoint {
                                               boolean isServerEndpoint, int incomingBufferSize, ErrorCollector
                                               collector, EndpointEventListener endpointEventListener) {
         return fromClass(annotatedClass, componentProvider, isServerEndpoint, incomingBufferSize, collector,
-                                      endpointEventListener, (Set<Extension>) (Set) Collections.emptySet());
+                                      endpointEventListener, Collections.emptySet());
     }
 
     /**
@@ -132,7 +132,7 @@ public class AnnotatedEndpoint extends Endpoint {
             Object annotatedInstance, ComponentProviderService componentProvider, boolean isServerEndpoint,
             int incomingBufferSize, ErrorCollector collector) {
         return fromInstance(annotatedInstance, componentProvider, isServerEndpoint, incomingBufferSize,
-                                     collector, (Set<Extension>) (Set) Collections.emptySet());
+                                     collector, Collections.emptySet());
     }
 
      /**

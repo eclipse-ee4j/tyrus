@@ -297,45 +297,25 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
                             "Class argument in connectToServer(Class, URI) is to be annotated endpoint class. Class "
                                     + "%s does not have @ClientEndpoint", annotatedEndpointClass.getName()));
         }
-        return tryCatchInterruptedExecutionEx(new SupplierWithEx<Future<Session>, DeploymentException>() {
-            @Override
-            public Future<Session> get() throws DeploymentException {
-                return connectToServer(annotatedEndpointClass, null, path.toString(), true);
-            }
-        });
+        return tryCatchInterruptedExecutionEx(() -> connectToServer(annotatedEndpointClass, null, path.toString(), true));
     }
 
     @Override
     public Session connectToServer(final Class<? extends Endpoint> endpointClass,
                                    final ClientEndpointConfig cec,
                                    final URI path) throws DeploymentException, IOException {
-        return tryCatchInterruptedExecutionEx(new SupplierWithEx<Future<Session>, DeploymentException>() {
-            @Override
-            public Future<Session> get() throws DeploymentException {
-                return connectToServer(endpointClass, cec, path.toString(), true);
-            }
-        });
+        return tryCatchInterruptedExecutionEx(() -> connectToServer(endpointClass, cec, path.toString(), true));
     }
 
     @Override
     public Session connectToServer(final Endpoint endpointInstance, final ClientEndpointConfig cec, final URI path) throws
             DeploymentException, IOException {
-        return tryCatchInterruptedExecutionEx(new SupplierWithEx<Future<Session>, DeploymentException>() {
-            @Override
-            public Future<Session> get() throws DeploymentException {
-                return connectToServer(endpointInstance, cec, path.toString(), true);
-            }
-        });
+        return tryCatchInterruptedExecutionEx(() -> connectToServer(endpointInstance, cec, path.toString(), true));
     }
 
     @Override
     public Session connectToServer(final Object obj, final URI path) throws DeploymentException, IOException {
-        return tryCatchInterruptedExecutionEx(new SupplierWithEx<Future<Session>, DeploymentException>() {
-            @Override
-            public Future<Session> get() throws DeploymentException {
-                return connectToServer(obj, null, path.toString(), true);
-            }
-        });
+        return tryCatchInterruptedExecutionEx(() -> connectToServer(obj, null, path.toString(), true));
     }
 
     private Session tryCatchInterruptedExecutionEx(SupplierWithEx<Future<Session>, DeploymentException> supplier)

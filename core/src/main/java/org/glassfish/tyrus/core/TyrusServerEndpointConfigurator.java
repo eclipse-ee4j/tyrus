@@ -17,8 +17,6 @@
 package org.glassfish.tyrus.core;
 
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +26,6 @@ import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerEndpointConfig;
 
 import org.glassfish.tyrus.core.collection.LazyValue;
-import org.glassfish.tyrus.core.collection.Value;
 import org.glassfish.tyrus.core.collection.Values;
 import org.glassfish.tyrus.core.extension.ExtendedExtension;
 import org.glassfish.tyrus.core.frame.Frame;
@@ -43,12 +40,7 @@ public class TyrusServerEndpointConfigurator extends ServerEndpointConfig.Config
     private LazyValue<ComponentProviderService> componentProviderService;
 
     public TyrusServerEndpointConfigurator() {
-        this.componentProviderService = Values.lazy(new Value<ComponentProviderService>() {
-            @Override
-            public ComponentProviderService get() {
-                return ComponentProviderService.create();
-            }
-        });
+        this.componentProviderService = Values.lazy(() -> ComponentProviderService.create());
     }
 
     @Override
