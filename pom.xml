@@ -101,21 +101,21 @@
     </contributors>
 
     <properties>
-        <websocket-api.version>2.1.1</websocket-api.version>
+        <websocket-api.version>2.2.0-M1</websocket-api.version>
 
-        <annotation-api.version>2.1.1</annotation-api.version>
+        <annotation-api.version>3.0.0-M1</annotation-api.version>
         <activation.api.version>2.1.2</activation.api.version> <!-- inherited from JAX-B -->
-        <cdi-api.version>4.0.1</cdi-api.version>
+        <cdi-api.version>4.1.0-M1</cdi-api.version>
         <ejb-api.version>4.0.1</ejb-api.version>
-        <grizzly.version>4.0.0</grizzly.version>
+        <grizzly.version>4.0.2</grizzly.version>
         <glassfish.version>7.0.9</glassfish.version>
         <inject.api.version>2.0.1</inject.api.version><!-- inherited from CDI, do not update unless inline with it -->
         <jaxb.api.version>4.0.1</jaxb.api.version>
         <jaxb.ri.version>4.0.4</jaxb.ri.version>
         <jline.version>2.14.5</jline.version>
-        <json-api.version>2.1.2</json-api.version>
-        <json-impl.version>1.1.4</json-impl.version>
-        <servlet.api.version>6.0.0</servlet.api.version>
+        <json-api.version>2.1.3</json-api.version>
+        <json-impl.version>1.1.5</json-impl.version>
+        <servlet.api.version>6.1.0-M1</servlet.api.version>
         <spring.boot.version>2.6.7</spring.boot.version>
 
 
