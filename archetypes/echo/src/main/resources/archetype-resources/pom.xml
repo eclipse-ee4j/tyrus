@@ -67,7 +67,7 @@
         </dependency>
     </dependencies>
     <properties>
-        <websocket-api.version>2.1.1</websocket-api.version>
+        <websocket-api.version>2.2.0-M1</websocket-api.version>
         <java.version>11</java.version>
         <tyrus.version>${project.version}</tyrus.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

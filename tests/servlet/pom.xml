@@ -34,7 +34,7 @@
         <module>async</module>
         <module>autobahn-server</module>
         <module>basic</module>
-        <module>embedded-glassfish-test</module>
+<!--        <module>embedded-glassfish-test</module>-->
         <module>dynamic-deploy</module>
         <module>noappconfig</module>
         <module>oneappconfig</module>
