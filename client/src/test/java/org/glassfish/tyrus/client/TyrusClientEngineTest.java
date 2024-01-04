@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -444,6 +444,11 @@ public class TyrusClientEngineTest {
             }
 
             @Override
+            public String getReasonPhrase() {
+                return null;
+            }
+
+            @Override
             public Map<String, List<String>> getHeaders() {
                 headers.put(HandshakeResponse.SEC_WEBSOCKET_ACCEPT, Collections.singletonList(serverKey));
                 return headers;
@@ -466,6 +471,11 @@ public class TyrusClientEngineTest {
             @Override
             public void setReasonPhrase(String reason) {
 
+            }
+
+            @Override
+            public String getReasonPhrase() {
+                return null;
             }
 
             @Override
