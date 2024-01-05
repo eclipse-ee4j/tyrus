@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -290,7 +290,7 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
     }
 
     @Override
-    public Session connectToServer(Class annotatedEndpointClass, URI path) throws DeploymentException, IOException {
+    public Session connectToServer(final Class annotatedEndpointClass, final URI path) throws DeploymentException, IOException {
         if (annotatedEndpointClass.getAnnotation(ClientEndpoint.class) == null) {
             throw new DeploymentException(
                     String.format(
@@ -301,19 +301,20 @@ public class ClientManager extends BaseContainer implements WebSocketContainer {
     }
 
     @Override
-    public Session connectToServer(Class<? extends Endpoint> endpointClass, ClientEndpointConfig cec, URI path) throws
-            DeploymentException, IOException {
+    public Session connectToServer(final Class<? extends Endpoint> endpointClass,
+                                   final ClientEndpointConfig cec,
+                                   final URI path) throws DeploymentException, IOException {
         return tryCatchInterruptedExecutionEx(() -> connectToServer(endpointClass, cec, path.toString(), true));
     }
 
     @Override
-    public Session connectToServer(Endpoint endpointInstance, ClientEndpointConfig cec, URI path) throws
+    public Session connectToServer(final Endpoint endpointInstance, final ClientEndpointConfig cec, final URI path) throws
             DeploymentException, IOException {
         return tryCatchInterruptedExecutionEx(() -> connectToServer(endpointInstance, cec, path.toString(), true));
     }
 
     @Override
-    public Session connectToServer(Object obj, URI path) throws DeploymentException, IOException {
+    public Session connectToServer(final Object obj, final URI path) throws DeploymentException, IOException {
         return tryCatchInterruptedExecutionEx(() -> connectToServer(obj, null, path.toString(), true));
     }
 
