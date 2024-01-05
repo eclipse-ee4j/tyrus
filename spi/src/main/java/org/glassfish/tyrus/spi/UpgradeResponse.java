@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -64,14 +64,21 @@ public abstract class UpgradeResponse implements HandshakeResponse {
     public abstract void setStatus(int status);
 
     /**
-     * Get HTTP reason phrase.
+     * Set HTTP reason phrase.
      * <p>
-     * TODO remove ?? we are using only for "Switching Protocols" and that is
-     * TODO standard status code 101
-     *
+     *     Warning: The Reason Phrase is removed from HTTP/2 and from Servlet 6.
+     * </p>
      * @param reason reason phrase to be set.
      */
     public abstract void setReasonPhrase(String reason);
+
+    /**
+     * Get HTTP reason phrase.
+     * <p>
+     *     Warning: The Reason Phrase is removed from HTTP/2 and from Servlet 6.
+     * </p>
+     */
+    public abstract String getReasonPhrase();
 
     /**
      * Gets the value of the response header with the given name.
