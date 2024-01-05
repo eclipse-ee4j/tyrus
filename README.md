@@ -9,9 +9,9 @@ for easy development of WebSocket applications.Eclipse Tyrus is also
 a Jakarta WebSocket 2.0 compatible implementation.
 
  WebSocket protocol defined by IETF 
-provides bi-directional communication between the server and the remote host. The
+provides bidirectional communication between the server and the remote host. The
 pros are mainly the ability to communicate both ways, low latency and small
-communication overhead. Therefore Tyrus and WebSocket in general are suitable for web
+communication overhead. Therefore, Tyrus and WebSocket in general are suitable for web
 applications that require sending a huge volume of relatively small messages like
 online games or market ticker broadcasting.
 
@@ -19,6 +19,15 @@ online games or market ticker broadcasting.
 
 Building Tyrus can be done using `mvn clean install`, but sometimes (such as for building 2.x from a tag) 
 `mvn clean install -Pstaging` would be required.
+
+## Tyrus Git Branches
+
+| branch | Jakarta Version                 | Tyrus Version |
+|--------|---------------------------------|---------------|
+| master | Java EE 8 / Jakarta EE 8 branch | Tyrus 1.x     |
+| 2.0.x  | Jakarta EE 9 branch             | Tyrus 2.0.x   |
+| 2.1.x  | Jakarta EE 10 branch            | Tyrus 2.1.x   |
+| 2.x    | Jakarta EE 11 branch            | Tyrus 2.2.x   |
 
 ## Licensing
 

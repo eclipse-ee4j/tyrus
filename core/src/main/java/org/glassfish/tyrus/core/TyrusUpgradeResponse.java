@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -52,10 +52,13 @@ public class TyrusUpgradeResponse extends UpgradeResponse {
 
     /**
      * Get HTTP reason phrase.
+     * <p>
+     *     Warning: The Reason Phrase is removed from HTTP/2 and from Servlet 6.
+     * </p>
      *
      * @return reason phrase.
      */
-//    @Override
+    @Override
     public String getReasonPhrase() {
         return reasonPhrase;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -15,16 +15,6 @@
  */
 
 /**
- * Tyrus Client Module
+ * Common Client Exceptions
  */
-
-module org.glassfish.tyrus.client {
-    requires java.logging;
-    requires jakarta.websocket;
-    requires org.glassfish.tyrus.core;
-    requires org.glassfish.tyrus.spi;
-
-    exports org.glassfish.tyrus.client;
-    exports org.glassfish.tyrus.client.auth;
-    exports org.glassfish.tyrus.client.exception;
-}
+package org.glassfish.tyrus.client.exception;
