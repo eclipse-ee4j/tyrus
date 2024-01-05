@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -60,6 +60,10 @@ public class HandshakeTest extends TestContainer {
     private String receivedMessage;
 
     private static final String SENT_MESSAGE = "hello";
+    private static final int STATUS = 499;
+    private static final String HEADER = "TEST_HEADER";
+    private static final String TEST_REASON = "Any Reason";
+
 
     public static class MyClientEndpointConfigurator extends ClientEndpointConfig.Configurator {
 
@@ -129,10 +133,6 @@ public class HandshakeTest extends TestContainer {
         }
     }
 
-
-    static final int STATUS = 499;
-    static final String HEADER = "TEST_HEADER";
-
     public static class StatusSetterConfiguration extends ServerEndpointConfig.Configurator {
         @Override
         public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
@@ -201,6 +201,7 @@ public class HandshakeTest extends TestContainer {
         @Override
         public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
             ((UpgradeResponse) response).setStatus(401);
+            ((UpgradeResponse) response).setReasonPhrase(TEST_REASON);
             response.getHeaders().put(HEADER, Collections.singletonList(HEADER));
         }
     }
@@ -217,6 +218,7 @@ public class HandshakeTest extends TestContainer {
 
         final AtomicReference<Integer> status = new AtomicReference<>();
         final AtomicReference<String> header = new AtomicReference<>();
+        final AtomicReference<String> reasonPhrase = new AtomicReference<>();
 
         Server server = startServer(Status401SetterEndpoint.class);
 
@@ -224,6 +226,7 @@ public class HandshakeTest extends TestContainer {
             @Override
             public void afterResponse(HandshakeResponse hr) {
                 status.set(((UpgradeResponse) hr).getStatus());
+                reasonPhrase.set(((UpgradeResponse) hr).getReasonPhrase());
                 header.set(((UpgradeResponse) hr).getFirstHeaderValue(HEADER));
             }
         };
@@ -257,6 +260,7 @@ public class HandshakeTest extends TestContainer {
             Assert.assertEquals(401, status.get().intValue());
             Assert.assertEquals(status.get().intValue(), de.getHttpStatusCode());
             Assert.assertEquals(HEADER, header.get());
+            Assert.assertEquals(TEST_REASON, reasonPhrase.get());
         } finally {
             server.stop();
         }
