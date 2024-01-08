@@ -107,7 +107,7 @@
         <activation.api.version>2.1.2</activation.api.version> <!-- inherited from JAX-B -->
         <cdi-api.version>4.0.1</cdi-api.version>
         <ejb-api.version>4.0.1</ejb-api.version>
-        <grizzly.version>4.0.0</grizzly.version>
+        <grizzly.version>4.0.2</grizzly.version>
         <glassfish.version>7.0.9</glassfish.version>
         <inject.api.version>2.0.1</inject.api.version><!-- inherited from CDI, do not update unless inline with it -->
         <jaxb.api.version>4.0.1</jaxb.api.version>
