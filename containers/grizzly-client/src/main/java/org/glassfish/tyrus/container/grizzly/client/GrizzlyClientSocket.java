@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -49,6 +49,7 @@ import javax.net.ssl.SSLParameters;
 import org.glassfish.tyrus.client.ClientManager;
 import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.client.SslEngineConfigurator;
+import org.glassfish.tyrus.client.exception.Exceptions;
 import org.glassfish.tyrus.core.TyrusFuture;
 import org.glassfish.tyrus.core.Utils;
 import org.glassfish.tyrus.spi.ClientEngine;
@@ -207,7 +208,7 @@ public class GrizzlyClientSocket {
                     (sharedTransport && sharedTransportTimeoutProperty != null) ? sharedTransportTimeoutProperty : 30;
             this.clientEngine = clientEngine;
         } catch (RuntimeException e) {
-            throw new DeploymentException(e.getMessage(), e);
+            throw Exceptions.deploymentException(e.getMessage(), e);
         }
 
         grizzlyConnector = new Callable<Void>() {
@@ -229,12 +230,10 @@ public class GrizzlyClientSocket {
     public void connect() throws DeploymentException, IOException {
         try {
             grizzlyConnector.call();
-        } catch (DeploymentException e) {
-            throw e;
         } catch (IOException e) {
             throw e;
         } catch (Exception e) {
-            throw new DeploymentException(e.getMessage(), e);
+            throw Exceptions.deploymentException(e.getMessage(), e);
         }
     }
 
@@ -386,7 +385,7 @@ public class GrizzlyClientSocket {
                         throw new DeploymentException("SSL handshake has failed", e.getCause());
                     } catch (Exception e) {
                         closeTransport(privateTransport);
-                        throw new DeploymentException(String.format("Connection to '%s' failed.", requestURI),
+                        throw Exceptions.deploymentException(String.format("Connection to '%s' failed.", requestURI),
                                                       e.getCause());
                     }
                 }
@@ -416,7 +415,7 @@ public class GrizzlyClientSocket {
             }
         }
 
-        throw new DeploymentException("Connection failed.", exception);
+        throw Exceptions.deploymentException("Connection failed.", exception);
     }
 
     private static TCPNIOTransport createTransport(ThreadPoolConfig workerThreadPoolConfig,
