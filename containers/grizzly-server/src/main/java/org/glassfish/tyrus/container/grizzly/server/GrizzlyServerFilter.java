@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -286,6 +286,9 @@ class GrizzlyServerFilter extends BaseFilter {
                 ((HttpRequestPacket) ((HttpContent) ctx.getMessage()).getHttpHeader()).getResponse();
         responsePacket.setProtocol(Protocol.HTTP_1_1);
         responsePacket.setStatus(response.getStatus());
+        if (response.getReasonPhrase() != null) {
+            responsePacket.setReasonPhrase(response.getReasonPhrase());
+        }
 
         // TODO
 //        responsePacket.setReasonPhrase(response.getReasonPhrase());

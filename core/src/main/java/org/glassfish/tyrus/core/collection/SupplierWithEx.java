@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -14,20 +14,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  */
 
-/**
- * Tyrus Grizzly Client Container Module
- */
+package org.glassfish.tyrus.core.collection;
 
-module org.glassfish.tyrus.container.grizzly.client {
-    requires java.logging;
-    requires jakarta.websocket;
-    requires org.glassfish.grizzly;
-    requires org.glassfish.grizzly.http;
-    requires org.glassfish.tyrus.spi;
-    requires org.glassfish.tyrus.client;
-    requires org.glassfish.tyrus.core;
-
-    exports org.glassfish.tyrus.container.grizzly.client;
-
-    provides jakarta.websocket.ContainerProvider with org.glassfish.tyrus.container.grizzly.client.GrizzlyContainerProvider;
+@FunctionalInterface
+public interface SupplierWithEx<T, EX extends Exception> {
+    T get() throws EX;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -65,6 +65,7 @@ import org.glassfish.tyrus.spi.ClientContainer;
 import org.glassfish.tyrus.spi.ClientEngine;
 import org.glassfish.tyrus.spi.Connection;
 import org.glassfish.tyrus.spi.ReadHandler;
+import org.glassfish.tyrus.spi.TyrusClientEndpointConfigurator;
 import org.glassfish.tyrus.spi.UpgradeRequest;
 import org.glassfish.tyrus.spi.UpgradeResponse;
 import org.glassfish.tyrus.spi.Writer;
@@ -169,6 +170,9 @@ public class TyrusClientEngine implements ClientEngine {
                 clientHandShake.prepareRequest();
 
                 UpgradeRequest upgradeRequest = clientHandShake.getRequest();
+                if (TyrusClientEndpointConfigurator.class.isInstance(config.getConfigurator())) {
+                    ((TyrusClientEndpointConfigurator) config.getConfigurator()).beforeRequest(upgradeRequest);
+                }
                 config.getConfigurator().beforeRequest(upgradeRequest.getHeaders());
 
                 clientEngineState = TyrusClientEngineState.UPGRADE_REQUEST_CREATED;
@@ -251,6 +255,7 @@ public class TyrusClientEngine implements ClientEngine {
                 throw new IllegalArgumentException(LocalizationMessages.ARGUMENT_NOT_NULL("upgradeResponse"));
             }
 
+            final ClientEngine.ClientUpgradeInfo upgradeInfo;
             switch (upgradeResponse.getStatus()) {
                 case 101:
                     return handleSwitchProtocol(upgradeResponse, writer, closeListener);
@@ -262,7 +267,8 @@ public class TyrusClientEngine implements ClientEngine {
                 case 308:
                     return handleRedirect(upgradeResponse);
                 case 401:
-                    return handleAuth(upgradeResponse);
+                    upgradeInfo = handleAuth(upgradeResponse);
+                    break;
                 case 503:
 
                     // get Retry-After header
@@ -293,19 +299,21 @@ public class TyrusClientEngine implements ClientEngine {
 
                     listener.onError(new RetryAfterException(
                             LocalizationMessages.HANDSHAKE_HTTP_RETRY_AFTER_MESSAGE(), delay));
-                    return UPGRADE_INFO_FAILED;
+                    upgradeInfo = UPGRADE_INFO_FAILED;
+                    break;
                 default:
-                    ((ClientEndpointConfig) endpointWrapper.getEndpointConfig()).getConfigurator().afterResponse(upgradeResponse);
-
                     clientEngineState = TyrusClientEngineState.FAILED;
                     HandshakeException e = new HandshakeException(
                             upgradeResponse.getStatus(),
                             LocalizationMessages.INVALID_RESPONSE_CODE(101, upgradeResponse.getStatus()));
                     listener.onError(e);
                     redirectUriHistory.clear();
-                    return UPGRADE_INFO_FAILED;
+                    upgradeInfo = UPGRADE_INFO_FAILED;
+                    break;
             }
 
+            ((ClientEndpointConfig) endpointWrapper.getEndpointConfig()).getConfigurator().afterResponse(upgradeResponse);
+            return upgradeInfo;
         }
 
         redirectUriHistory.clear();
