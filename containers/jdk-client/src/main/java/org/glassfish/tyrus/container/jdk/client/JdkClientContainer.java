@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -43,6 +43,7 @@ import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.client.SslContextConfigurator;
 import org.glassfish.tyrus.client.SslEngineConfigurator;
 import org.glassfish.tyrus.client.ThreadPoolConfig;
+import org.glassfish.tyrus.client.exception.Exceptions;
 import org.glassfish.tyrus.core.ReflectionHelper;
 import org.glassfish.tyrus.core.Utils;
 import org.glassfish.tyrus.spi.ClientContainer;
@@ -184,7 +185,7 @@ public class JdkClientContainer implements ClientContainer {
                     }
                 }
 
-                throw new DeploymentException("Connection failed.", exception);
+                throw Exceptions.deploymentException("Connection failed.", exception);
             }
         };
 
@@ -199,7 +200,7 @@ public class JdkClientContainer implements ClientContainer {
                 throw (IOException) e;
             }
 
-            throw new DeploymentException(e.getMessage(), e);
+            throw Exceptions.deploymentException(e.getMessage(), e);
         }
     }
 
