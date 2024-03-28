@@ -23,7 +23,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven.compiler.plugin}</version>
+                <version>${maven.compiler.plugin.version}</version>
                 <inherited>true</inherited>
                 <configuration>
                     <source>${java.version}</source>
@@ -67,11 +67,11 @@
         </dependency>
     </dependencies>
     <properties>
-        <websocket-api.version>2.2.0-M1</websocket-api.version>
+        <websocket-api.version>2.2.0</websocket-api.version>
         <java.version>11</java.version>
         <tyrus.version>${project.version}</tyrus.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.plugin>3.11.0</maven.compiler.plugin>
+        <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
         <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
     </properties>
 </project>
