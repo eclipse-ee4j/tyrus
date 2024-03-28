@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.glassfish.tyrus.tests</groupId>
         <artifactId>tyrus-tests-project</artifactId>
-        <version>2.1.99-SNAPSHOT</version>
+        <version>2.2.99-SNAPSHOT</version>
     </parent>
 
     <groupId>org.glassfish.tyrus.tests.servlet</groupId>
@@ -34,9 +34,6 @@
         <module>async</module>
         <module>autobahn-server</module>
         <module>basic</module>
-<!-- Until new GF with new grizzly is released
-        <module>embedded-glassfish-test</module>
--->
         <module>dynamic-deploy</module>
         <module>noappconfig</module>
         <module>oneappconfig</module>
@@ -50,6 +47,13 @@
         <module>debug</module>
     </modules>
 
-    <dependencies>
-    </dependencies>
+    <profiles>
+        <profile>
+            <id>JDK21+</id>
+            <activation><jdk>[21,)</jdk></activation>
+            <modules>
+                <module>embedded-glassfish-test</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>
