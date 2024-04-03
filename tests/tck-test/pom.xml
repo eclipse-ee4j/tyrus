@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0, which is available at
+    http://www.eclipse.org/legal/epl-2.0.
+
+    This Source Code may also be made available under the following Secondary
+    Licenses when the conditions for such availability set forth in the
+    Eclipse Public License v. 2.0 are satisfied: GNU General Public License,
+    version 2 with the GNU Classpath Exception, which is available at
+    https://www.gnu.org/software/classpath/license.html.
+
+    SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.glassfish.tyrus</groupId>
+        <artifactId>tyrus-project</artifactId>
+        <version>2.2.99-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <groupId>org.glassfish.tyrus.tests</groupId>
+    <artifactId>tyrus-tck-test</artifactId>
+    <packaging>jar</packaging>
+    <name>Tyrus TCK Tests</name>
+
+    <description>Tyrus TCK tests</description>
+
+    <properties>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <tyrus.version>2.2.0-M1</tyrus.version> <!-- the public version that pass the tck -->
+        <glassfish.container.version>8.0.0-M3</glassfish.container.version>
+        <glassfish.home>${project.build.directory}/glassfish8</glassfish.home>
+        <jakarta.platform.version>10.0.0</jakarta.platform.version>
+        <junit.jupiter.version>5.7.2</junit.jupiter.version>
+        <jakarta.websocket.version>2.2.0</jakarta.websocket.version>
+        <tck.artifactId>websocket-tck-spec-tests</tck.artifactId>
+        <tck.version>2.2.0</tck.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.jupiter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.tyrus</groupId>
+                <artifactId>tyrus-bom</artifactId>
+                <version>${tyrus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>jakarta-snapshots</id>
+            <url>https://jakarta.oss.sonatype.org/content/repositories/staging/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.7.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit5</groupId>
+            <artifactId>arquillian-junit5-container</artifactId>
+            <version>1.7.0.Alpha10</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-glassfish-managed-6</artifactId>
+            <version>1.0.0.Alpha1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>2.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>3.0.0</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.tck</groupId>
+            <artifactId>${tck.artifactId}</artifactId>
+            <version>${tck.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.tck</groupId>
+            <artifactId>websocket-tck-spec-tests</artifactId>
+            <version>${tck.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.websocket</groupId>
+            <artifactId>jakarta.websocket-api</artifactId>
+            <version>${jakarta.websocket.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.websocket</groupId>
+            <artifactId>jakarta.websocket-client-api</artifactId>
+            <version>${jakarta.websocket.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>${jakarta.platform.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.main.common</groupId>
+            <artifactId>simple-glassfish-api</artifactId>
+            <version>${glassfish.container.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.web</groupId>
+            <artifactId>web-core</artifactId>
+            <version>${glassfish.container.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.tyrus</groupId>
+            <artifactId>tyrus-container-servlet</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.tyrus</groupId>
+            <artifactId>tyrus-core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.tyrus</groupId>
+            <artifactId>tyrus-container-grizzly-client</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.tyrus</groupId>
+            <artifactId>tyrus-container-jdk-client</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-locator</artifactId>
+            <version>3.0.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.glassfish.main.distributions</groupId>
+                                    <artifactId>glassfish</artifactId>
+                                    <version>${glassfish.container.version}</version>
+                                    <type>zip</type>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>jakarta.websocket</groupId>
+                                    <artifactId>jakarta.websocket-api</artifactId>
+                                    <version>${websocket-api.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
+                                    <destFileName>jakarta.websocket-api.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>jakarta.websocket</groupId>
+                                    <artifactId>jakarta.websocket-client-api</artifactId>
+                                    <version>${websocket-api.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
+                                    <destFileName>jakarta.websocket-client-api.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.glassfish.tyrus</groupId>
+                                    <artifactId>tyrus-client</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
+                                    <destFileName>tyrus-client.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.glassfish.tyrus</groupId>
+                                    <artifactId>tyrus-container-glassfish-cdi</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
+                                    <destFileName>tyrus-container-glassfish-cdi.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.glassfish.tyrus</groupId>
+                                    <artifactId>tyrus-container-glassfish-ejb</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
+                                    <destFileName>tyrus-container-glassfish-ejb.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.glassfish.tyrus</groupId>
+                                    <artifactId>tyrus-container-grizzly-client</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
+                                    <destFileName>tyrus-container-grizzly-client.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.glassfish.tyrus</groupId>
+                                    <artifactId>tyrus-container-servlet</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
+                                    <destFileName>tyrus-container-servlet.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.glassfish.tyrus</groupId>
+                                    <artifactId>tyrus-core</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
+                                    <destFileName>tyrus-core.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.glassfish.tyrus</groupId>
+                                    <artifactId>tyrus-server</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
+                                    <destFileName>tyrus-server.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.glassfish.tyrus</groupId>
+                                    <artifactId>tyrus-spi</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${modules.dir}</outputDirectory>
+                                    <destFileName>tyrus-spi.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>3.2.5</version>
+                <executions>
+                    <execution>
+                        <id>gf-tests</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>false</skipTests> <!-- Do not skip when the jersey-tck profile is on -->
+                            <dependenciesToScan>
+                                <dependency>jakarta.tck:${tck.artifactId}</dependency>
+                            </dependenciesToScan>
+                            <systemPropertyVariables>
+                                <ws_wait>5</ws_wait>
+                                <lib.name>websockettck</lib.name>
+                                <GLASSFISH_HOME>${glassfish.home}</GLASSFISH_HOME>
+                                <webServerHost>localhost</webServerHost>
+                                <webServerPort>8080</webServerPort>
+                                <junit.log.traceflag>true</junit.log.traceflag>
+                                <porting.ts.url.class.1>com.sun.ts.tests.websocket.lib.implementation.sun.common.SunRIURL</porting.ts.url.class.1>
+                                <jimage.dir>${project.build.directory}/jdk11-bundle</jimage.dir>
+                                <signature.sigTestClasspath>${glassfish.home}/glassfish/modules/jakarta.websocket-api.jar:${project.build.directory}/jdk11-bundle/java.base:${project.build.directory}/jdk11-bundle/java.rmi:${project.build.directory}/jdk11-bundle/java.naming</signature.sigTestClasspath>
+                            </systemPropertyVariables>
+                            <environmentVariables>
+                                <GLASSFISH_HOME>${glassfish.home}</GLASSFISH_HOME>
+                            </environmentVariables>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
