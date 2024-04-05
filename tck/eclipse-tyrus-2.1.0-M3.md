@@ -3,7 +3,7 @@ TCK Results
 
  As required by the
 [Eclipse Foundation Technology Compatibility Kit License](https://www.eclipse.org/legal/tck.php),
-the following is a summary of the TCK results for releases of Eclipse Jersey.
+the following is a summary of the TCK results for releases of Eclipse Tyrus
 
  # Eclipse Tyrus 2.1.0-M3 Certification Request
 
