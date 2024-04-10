@@ -25,15 +25,15 @@ the following is a summary of the TCK results for releases of Eclipse Tyrus.
    * [Jakarta WebSocket Client API](https://jakarta.oss.sonatype.org/content/repositories/staging/jakarta/websocket/jakarta.websocket-client-api/2.2.0/jakarta.websocket-client-api-2.2.0.jar)
 - [x] TCK Version, digital SHA-256 fingerprint and download URL<br/>
  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [Jakarta Websocket TCK 2.2.0](https://www.eclipse.org/downloads/download.php?file=/ee4j/jakartaee-tck/jakartaee11/staged/eftl/jakarta-websocket-tck-2.2.0.zip)<br/>
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SHA-256: 825e310ebf218e252545aea242ed1e5df7e83561193251eddeeb712bad6aa225
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SHA-256: ff50825305bd1318a4e6bdfab21b829cfd8cf89fab8a970f007b52636d3f2629
 - [x] Public URL of TCK Results Summary<br/>
- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [TCK results summary](eclipse-tyrus-2.2.0-M1-summary)
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; [TCK results summary](eclipse-tyrus-2.2.0-M1-jdk17-summary)
 - [x] Any Additional Specification Certification Requirements<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; None
 - [x] Java runtime used to run the implementation<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Java version: 21.0.2, vendor: Oracle Corporation, runtime: /opt/tools/java/openjdk/jdk-21/21.0.2
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Java version: 17.0.2, vendor: Oracle Corporation, runtime: /opt/tools/java/openjdk/jdk-17/17.0.2+8
 - [x] Summary of the information for the certification environment, operating system, cloud, ...<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linux basic-5tzms 6.2.9-300.fc38.x86_64 #1 SMP PREEMPT_DYNAMIC Thu Mar 30 22:32:58 UTC 2023 x86_64 GNU/Linux
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Linux basic-3x5r1 6.2.9-300.fc38.x86_64 #1 SMP PREEMPT_DYNAMIC Thu Mar 30 22:32:58 UTC 2023 x86_64 GNU/Linux
 - [x] By checking this box I acknowledge that the Organization I represent accepts the terms of the [EFTL](https://www.eclipse.org/legal/tck.php).
 - [x] By checking this box I attest that all TCK requirements have been met, including any compatibility rules.
 
