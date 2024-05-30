@@ -309,4 +309,39 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>staging</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <repositories>
+                <repository>
+                    <id>sonatype-nexus-staging</id>
+                    <name>Sonatype Nexus Staging</name>
+                    <url>${sonatypeOssDistMgmtStagingUrl}</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>sonatype-nexus-staging</id>
+                    <name>Sonatype Nexus Staging</name>
+                    <url>${sonatypeOssDistMgmtStagingUrl}</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+    </profiles>
 </project>

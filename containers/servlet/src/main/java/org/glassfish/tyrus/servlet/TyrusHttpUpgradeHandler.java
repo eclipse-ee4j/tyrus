@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -46,6 +46,15 @@ import org.glassfish.tyrus.spi.Writer;
  */
 public class TyrusHttpUpgradeHandler implements HttpUpgradeHandler, ReadListener {
 
+    /**
+     * <p>
+     *     The size to precede OutOfMemory Exception and potentially DDoS attacks when buffering incoming WebSocket frames.
+     * </p>
+     * <p>
+     *     The default value is 4194315 bytes, which correspond to 4M plus few bytes to frame headers.
+     * </p>
+     *
+     */
     public static final String FRAME_BUFFER_SIZE = "org.glassfish.tyrus.servlet.incoming-buffer-size";
 
     private final CountDownLatch connectionLatch = new CountDownLatch(1);
@@ -98,6 +107,12 @@ public class TyrusHttpUpgradeHandler implements HttpUpgradeHandler, ReadListener
         connectionLatch.countDown();
     }
 
+    /**
+     * Sets the required information before {@link #init(WebConnection)} is invoked.
+     * @param upgradeInfo The WebSocket UpgradeInfo.
+     * @param writer The Tyrus SPI Writer.
+     * @param authenticated Whether the authentication has been used.
+     */
     public void preInit(WebSocketEngine.UpgradeInfo upgradeInfo, Writer writer, boolean authenticated) {
         this.upgradeInfo = upgradeInfo;
         this.writer = writer;
@@ -249,6 +264,10 @@ public class TyrusHttpUpgradeHandler implements HttpUpgradeHandler, ReadListener
         return sb.toString();
     }
 
+    /**
+     * Override the default {@link #FRAME_BUFFER_SIZE}.
+     * @param incomingBufferSize The new incoming frame buffer size value.
+     */
     public void setIncomingBufferSize(int incomingBufferSize) {
         this.incomingBufferSize = incomingBufferSize;
     }
