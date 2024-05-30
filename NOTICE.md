@@ -35,7 +35,7 @@ The project maintains the following source code repositories:
 ## Third-party Content
 This project leverages the following third party content:
 
-jakarta.enterprise.cdi-api Version 4.1.0.RC1
+jakarta.enterprise.cdi-api Version 4.1.0
 * License: Apache License, 2.0
 * Copyright 2010, Red Hat, Inc., and individual contributors
 
