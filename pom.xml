@@ -117,12 +117,17 @@
         <json-impl.version>1.0.5</json-impl.version>
         <servlet.api.version>5.0.0</servlet.api.version>
         <spring.boot.version>2.6.7</spring.boot.version>
+        <glassfish.container.version>6.2.5</glassfish.container.version>
 
+        <java.version>1.8</java.version>
+        <java11.build.outputDirectory>${project.basedir}/target11/classes</java11.build.outputDirectory>
+        <java11.sourceDirectory>${project.basedir}/src/main/java11</java11.sourceDirectory>
 
-        <maven.compiler.plugin>3.11.0</maven.compiler.plugin>
-        <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
+        <maven.compiler.plugin>3.13.0</maven.compiler.plugin>
+        <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
         <maven.surefire.plugin.version>3.2.1</maven.surefire.plugin.version>
         <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
+        <cyclonedx.mvn.plugin.version>2.8.0</cyclonedx.mvn.plugin.version>
 
         <api_package>jakarta.websocket</api_package>
         <impl_namespace>org.glassfish</impl_namespace>
@@ -171,7 +176,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.7.1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
@@ -179,7 +184,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
+                    <version>${maven.compiler.plugin}</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-release-plugin</artifactId>
@@ -314,11 +319,14 @@
                         <doctitle>Tyrus ${project.version} API Documentation</doctitle>
                         <windowtitle>Tyrus ${project.version} API</windowtitle>
                         <links>
-                            <link>https://projects.eclipse.org/projects/ee4j.tyrus</link>
+                            <link>https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest20x/</link>
                         </links>
                         <excludePackageNames>
                             *.core.l10n.*:*.internal.*:org.glassfish.tyrus.core.wsadl.model
                         </excludePackageNames>
+                        <sourceFileExcludes>
+                            <sourceFileExclude>**/module-info.java</sourceFileExclude>
+                        </sourceFileExcludes>
                     </configuration>
                     <executions>
                         <execution>
@@ -378,8 +386,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -592,6 +600,185 @@
                 </plugins>
             </build>
         </profile>
+
+        <profile>
+            <id>sbom</id>
+            <activation>
+                <property>
+                    <name>!skipSBOM</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.cyclonedx</groupId>
+                        <artifactId>cyclonedx-maven-plugin</artifactId>
+                        <version>${cyclonedx.mvn.plugin.version}</version>
+                        <inherited>true</inherited>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>makeAggregateBom</goal>
+                                </goals>
+                                <configuration>
+                                    <!--                            <schemaVersion>1.4</schemaVersion>-->
+                                    <projectType>framework</projectType>
+                                    <excludeTestProject>true</excludeTestProject>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>jdk11+</id>
+            <activation>
+                <jdk>[11,)</jdk>
+                <file><exists>src/main/java11/module-info.java</exists></file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>add.java11</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                </goals>
+                                <configuration>
+                                    <sources>
+                                        <source>src/main/java11</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>11</source>
+                            <target>11</target>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>test</phase>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${java11.build.outputDirectory}" />
+                                        <copy todir="${java11.build.outputDirectory}">
+                                            <fileset dir="${project.build.outputDirectory}/" includes="module-info.class" />
+                                        </copy>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>clean11</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${java11.build.outputDirectory}</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>copyJDK11FilesToMultiReleaseJar</id>
+            <activation>
+                <file>
+                    <!-- ${java11.build.outputDirectory} does not work here -->
+                    <exists>target11/classes/module-info.class</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <inherited>true</inherited>
+                        <executions>
+                            <execution>
+                                <id>copy-module-info-source</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.directory}/generated-sources/rsrc-gen/META-INF/versions/11/</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${java11.sourceDirectory}/</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-module-info-class</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>copy-resources</goal>
+                                </goals>
+                                <configuration>
+                                    <outputDirectory>${project.build.outputDirectory}/META-INF/versions/11</outputDirectory>
+                                    <resources>
+                                        <resource>
+                                            <directory>${java11.build.outputDirectory}</directory>
+                                        </resource>
+                                    </resources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>maven-bundle-plugin</artifactId>
+                        <version>5.1.4</version> <!-- 5.1.5  brings dependencies on JDK packages -->
+                        <extensions>true</extensions>
+                        <configuration>
+                            <instructions>
+                                <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
+                                <_nodefaultversion>false</_nodefaultversion>
+                                <Include-Resource>{maven-resources},${project.build.directory}/legal</Include-Resource>
+                                <Multi-Release>true</Multi-Release>
+                            </instructions>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>osgi-bundle</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>bundle</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <reporting>
@@ -767,7 +954,7 @@
             <dependency>
                 <groupId>org.glassfish.main.extras</groupId>
                 <artifactId>glassfish-embedded-all</artifactId>
-                <version>6.2.1</version>
+                <version>${glassfish.container.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
