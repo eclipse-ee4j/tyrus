@@ -31,7 +31,7 @@
     <name>Tyrus Servlet Tests on Glassfish</name>
 
     <properties>
-        <glassfish.container.version>6.2.1</glassfish.container.version>
+        <glassfish.container.version>6.2.5</glassfish.container.version>
         <junit.jupiter.version>5.7.2</junit.jupiter.version>
     </properties>
 
@@ -279,10 +279,9 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <target>11</target>
+                    <release>11</release>
                 </configuration>
             </plugin>
         </plugins>
