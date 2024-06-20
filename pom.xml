@@ -77,11 +77,11 @@
 
     <contributors>
         <contributor>
-            <name>Martin Matula</name>
-            <url>http://blog.alutam.com</url>
+            <name>Pavel Bucek</name>
         </contributor>
         <contributor>
-            <name>Pavel Bucek</name>
+            <name>Martin Matula</name>
+            <url>http://blog.alutam.com</url>
         </contributor>
         <contributor>
             <name>Stepan Kopriva</name>
@@ -118,11 +118,13 @@
         <servlet.api.version>6.0.0</servlet.api.version>
         <spring.boot.version>2.6.7</spring.boot.version>
 
+        <java.version>11</java.version>
 
-        <maven.compiler.plugin>3.11.0</maven.compiler.plugin>
-        <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
+        <maven.compiler.plugin>3.13.0</maven.compiler.plugin>
+        <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
         <maven.surefire.plugin.version>3.2.1</maven.surefire.plugin.version>
         <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
+        <cyclonedx.mvn.plugin.version>2.8.0</cyclonedx.mvn.plugin.version>
 
         <api_package>jakarta.websocket</api_package>
         <impl_namespace>org.glassfish</impl_namespace>
@@ -171,15 +173,15 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.7.1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
+                    <version>${maven.compiler.plugin}</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-release-plugin</artifactId>
@@ -314,7 +316,7 @@
                         <doctitle>Tyrus ${project.version} API Documentation</doctitle>
                         <windowtitle>Tyrus ${project.version} API</windowtitle>
                         <links>
-                            <link>https://projects.eclipse.org/projects/ee4j.tyrus</link>
+                            <link>https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest/</link>
                         </links>
                         <excludePackageNames>
                             *.core.l10n.*:*.internal.*:org.glassfish.tyrus.core.wsadl.model
@@ -383,8 +385,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -592,6 +594,37 @@
                             <target>1.8</target>
                             <encoding>UTF-8</encoding>
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>sbom</id>
+            <activation>
+                <property>
+                    <name>!skipSBOM</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.cyclonedx</groupId>
+                        <artifactId>cyclonedx-maven-plugin</artifactId>
+                        <version>${cyclonedx.mvn.plugin.version}</version>
+                        <inherited>true</inherited>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>makeAggregateBom</goal>
+                                </goals>
+                                <configuration>
+                                    <!--                            <schemaVersion>1.4</schemaVersion>-->
+                                    <projectType>framework</projectType>
+                                    <excludeTestProject>true</excludeTestProject>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
