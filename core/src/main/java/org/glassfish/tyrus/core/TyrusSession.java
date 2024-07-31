@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -36,6 +36,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -77,7 +78,7 @@ public class TyrusSession implements DistributedSession {
     private final Map<String, String> pathParameters;
     private final Principal userPrincipal;
     private final Map<String, List<String>> requestParameterMap;
-    private final Object idleTimeoutLock = new Object();
+    private final ReentrantLock idleTimeoutLock = new ReentrantLock();
     private final String id;
     private final String connectionId;
     private final Map<String, Object> userProperties;
@@ -94,6 +95,7 @@ public class TyrusSession implements DistributedSession {
 
     private final Map<RemoteSession.DistributedMapKey, Object> distributedPropertyMap;
     private final Map<String, Object> distributedUserProperties;
+    private final ReentrantLock handlerManagerLock = new ReentrantLock();
 
     private volatile long maxIdleTimeout = 0;
     private volatile ScheduledFuture<?> idleTimeoutFuture = null;
@@ -333,8 +335,11 @@ public class TyrusSession implements DistributedSession {
     @Override
     public void addMessageHandler(MessageHandler handler) {
         checkConnectionState(State.CLOSED);
-        synchronized (handlerManager) {
+        handlerManagerLock.lock();
+        try {
             handlerManager.addMessageHandler(handler);
+        } finally {
+            handlerManagerLock.unlock();
         }
     }
 
@@ -357,8 +362,11 @@ public class TyrusSession implements DistributedSession {
     @Override
     public <T> void addMessageHandler(Class<T> clazz, MessageHandler.Whole<T> handler) {
         checkConnectionState(State.CLOSED);
-        synchronized (handlerManager) {
+        handlerManagerLock.lock();
+        try {
             handlerManager.addMessageHandler(clazz, handler);
+        } finally {
+            handlerManagerLock.unlock();
         }
     }
 
@@ -381,23 +389,32 @@ public class TyrusSession implements DistributedSession {
     @Override
     public <T> void addMessageHandler(Class<T> clazz, MessageHandler.Partial<T> handler) {
         checkConnectionState(State.CLOSED);
-        synchronized (handlerManager) {
+        handlerManagerLock.lock();
+        try {
             handlerManager.addMessageHandler(clazz, handler);
+        } finally {
+            handlerManagerLock.unlock();
         }
     }
 
     @Override
     public Set<MessageHandler> getMessageHandlers() {
-        synchronized (handlerManager) {
+        handlerManagerLock.lock();
+        try {
             return handlerManager.getMessageHandlers();
+        } finally {
+            handlerManagerLock.unlock();
         }
     }
 
     @Override
     public void removeMessageHandler(MessageHandler handler) {
         checkConnectionState(State.CLOSED);
-        synchronized (handlerManager) {
+        handlerManagerLock.lock();
+        try {
             handlerManager.removeMessageHandler(handler);
+        } finally {
+            handlerManagerLock.unlock();
         }
     }
 
@@ -513,27 +530,36 @@ public class TyrusSession implements DistributedSession {
     }
 
     void restartIdleTimeoutExecutor() {
-        synchronized (idleTimeoutLock) {
+        idleTimeoutLock.lock();
+        try {
             cancelIdleTimeoutExecutor();
             idleTimeoutFuture =
                     service.schedule(new IdleTimeoutCommand(), this.getMaxIdleTimeout(), TimeUnit.MILLISECONDS);
+        } finally {
+            idleTimeoutLock.unlock();
         }
     }
 
     private void cancelIdleTimeoutExecutor() {
         if (this.maxIdleTimeout < 1) {
-            synchronized (idleTimeoutLock) {
+            idleTimeoutLock.lock();
+            try {
                 if (idleTimeoutFuture != null) {
                     idleTimeoutFuture.cancel(true);
                 }
                 return;
+            } finally {
+                idleTimeoutLock.unlock();
             }
         }
 
-        synchronized (idleTimeoutLock) {
+        idleTimeoutLock.lock();
+        try {
             if (idleTimeoutFuture != null) {
                 idleTimeoutFuture.cancel(false);
             }
+        } finally {
+            idleTimeoutLock.unlock();
         }
     }
 
@@ -567,8 +593,11 @@ public class TyrusSession implements DistributedSession {
         }
 
         List<Map.Entry<Class<?>, MessageHandler>> orderedMessageHandlers;
-        synchronized (handlerManager) {
+        handlerManagerLock.lock();
+        try {
             orderedMessageHandlers = handlerManager.getOrderedWholeMessageHandlers();
+        } finally {
+            handlerManagerLock.unlock();
         }
 
         for (CoderWrapper<Decoder> decoder : availableDecoders) {
@@ -602,8 +631,11 @@ public class TyrusSession implements DistributedSession {
 
     <T> MessageHandler.Whole<T> getMessageHandler(Class<T> c) {
         List<Map.Entry<Class<?>, MessageHandler>> orderedMessageHandlers;
-        synchronized (handlerManager) {
+        handlerManagerLock.lock();
+        try {
             orderedMessageHandlers = handlerManager.getOrderedWholeMessageHandlers();
+        } finally {
+            handlerManagerLock.unlock();
         }
 
         for (Map.Entry<Class<?>, MessageHandler> entry : orderedMessageHandlers) {

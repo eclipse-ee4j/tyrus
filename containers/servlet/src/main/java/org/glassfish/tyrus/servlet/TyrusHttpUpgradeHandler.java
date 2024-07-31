@@ -53,7 +53,6 @@ public class TyrusHttpUpgradeHandler implements HttpUpgradeHandler, ReadListener
      * <p>
      *     The default value is 4194315 bytes, which correspond to 4M plus few bytes to frame headers.
      * </p>
-     *
      */
     public static final String FRAME_BUFFER_SIZE = "org.glassfish.tyrus.servlet.incoming-buffer-size";
 
