@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.glassfish.tyrus.bundles</groupId>
         <artifactId>tyrus-bundles</artifactId>
-        <version>2.2.99-SNAPSHOT</version>
+        <version>2.2.0</version>
     </parent>
 
     <artifactId>tyrus-samples</artifactId>
