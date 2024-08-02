@@ -7,6 +7,8 @@ Tyrus 2.0.x is a compatible implementation of [Jakarta WebSocket](https://jakart
 
 Tyrus 2.1.x is a compatible implementation of [Jakarta WebSocket](https://jakarta.ee/specifications/websocket/) 2.1.
 
+Tyrus 2.2.x is a compatible implementation of [Jakarta WebSocket](https://jakarta.ee/specifications/websocket/) 2.2.
+
 WebSocket protocol defined by IETF provides bi-directional communication between 
 the server and the remote host. The pros are mainly the ability to communicate 
 both ways, low latency and small communication overhead. Therefore Tyrus and 
@@ -15,6 +17,11 @@ a huge volume of relatively small messages like online games or market ticker
 broadcasting.
 
 # <a name="Latest_News"></a>Latest News
+
+## August 1, 2024 - Eclipse Tyrus {{ site.latest22Version }} Final Release ##
+
+The [{{ site.latest22Version }} release](https://github.com/eclipse-ee4j/tyrus/releases/tag/{{ site.latest22Version }})
+is the Jakarta EE 11 release of the Eclipse Tyrus project.
 
 ## January 17, 2024 - Eclipse Tyrus {{ site.latest21Version }} Final Release ##
 
@@ -33,6 +40,11 @@ The [{{ site.latestVersion }} release](https://github.com/eclipse-ee4j/tyrus/rel
 is the Jakarta EE 8 release of the Eclipse Tyrus project.
 
 # <a name="Links"></a>Links
+
+#### Tyrus 2.2 (Jakarta EE 11)
+- [Tyrus 2.2.x documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest/index22x/)
+- [Tyrus 2.2.x api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest22x/)
+
 
 #### Tyrus 2.1 (Jakarta EE 10)
 - [Tyrus 2.1.x documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest/index/)
