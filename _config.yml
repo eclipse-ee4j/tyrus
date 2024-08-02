@@ -9,6 +9,7 @@ description: [Java API for WebSocket reference implementation for easy developme
 latestVersion:   '1.21'
 latest20Version: '2.0.7'
 latest21Version: '2.1.5'
+latest22Version: '2.2.0'
 
 links:
   source: https://github.com/eclipse-ee4j/tyrus
