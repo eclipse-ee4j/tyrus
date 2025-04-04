@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -21,6 +21,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.server.ServerEndpointConfig;
@@ -224,6 +226,7 @@ public class GrizzlyServerContainer extends ServerContainerFactory {
 
         private final TyrusWebSocketEngine engine;
         private final HttpHandler staticHttpHandler;
+        private final Lock contextLock = new ReentrantLock();
 
         private JAXBContext wsadlJaxbContext;
 
@@ -232,11 +235,16 @@ public class GrizzlyServerContainer extends ServerContainerFactory {
             this.staticHttpHandler = staticHttpHandler;
         }
 
-        private synchronized JAXBContext getWsadlJaxbContext() throws JAXBException {
-            if (wsadlJaxbContext == null) {
-                wsadlJaxbContext = JAXBContext.newInstance(Application.class.getPackage().getName());
+        private JAXBContext getWsadlJaxbContext() throws JAXBException {
+            contextLock.lock();
+            try {
+                if (wsadlJaxbContext == null) {
+                    wsadlJaxbContext = JAXBContext.newInstance(Application.class.getPackage().getName());
+                }
+                return wsadlJaxbContext;
+            } finally {
+                contextLock.unlock();
             }
-            return wsadlJaxbContext;
         }
 
         @Override

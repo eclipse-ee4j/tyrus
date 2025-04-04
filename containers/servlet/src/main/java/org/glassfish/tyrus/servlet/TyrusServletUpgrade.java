@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -41,12 +41,15 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
 
 class TyrusServletUpgrade {
     private static final Logger LOGGER = Logger.getLogger(TyrusServletUpgrade.class.getName());
     private TyrusWebSocketEngine engine;
     private final boolean wsadlEnabled;
+    private final Lock jaxbContextLock = new ReentrantLock();
 
     // I don't like this map, but it seems like it is necessary. I am forced to handle subscriptions
     // for HttpSessionListener because the listener itself must be registered *before* ServletContext
@@ -269,11 +272,16 @@ class TyrusServletUpgrade {
         }
     }
 
-    private synchronized JAXBContext getWsadlJaxbContext() throws JAXBException {
-        if (wsadlJaxbContext == null) {
-            wsadlJaxbContext = JAXBContext.newInstance(Application.class.getPackage().getName());
+    private JAXBContext getWsadlJaxbContext() throws JAXBException {
+        jaxbContextLock.lock();
+        try {
+            if (wsadlJaxbContext == null) {
+                wsadlJaxbContext = JAXBContext.newInstance(Application.class.getPackage().getName());
+            }
+            return wsadlJaxbContext;
+        } finally {
+            jaxbContextLock.unlock();
         }
-        return wsadlJaxbContext;
     }
 
     public void destroy() {
