@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,6 +20,8 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLEngine;
@@ -72,6 +74,7 @@ class SslFilter extends Filter {
     private final HostnameVerifier customHostnameVerifier;
     private final String serverHost;
     private final WriteQueue writeQueue = new WriteQueue();
+    private final Lock lock = new ReentrantLock();
 
     private volatile State state = State.NOT_STARTED;
     private volatile boolean tlsv13 = false;
@@ -134,41 +137,46 @@ class SslFilter extends Filter {
     }
 
     @Override
-    synchronized void write(final ByteBuffer applicationData, final CompletionHandler<ByteBuffer> completionHandler) {
-        switch (state) {
-            // before SSL is started, write just passes through
-            case NOT_STARTED: {
-                writeQueue.write(applicationData, completionHandler);
-                return;
-            }
+    void write(final ByteBuffer applicationData, final CompletionHandler<ByteBuffer> completionHandler) {
+        lock.lock();
+        try {
+            switch (state) {
+                // before SSL is started, write just passes through
+                case NOT_STARTED: {
+                    writeQueue.write(applicationData, completionHandler);
+                    return;
+                }
 
             /* TODO:
              The current model does not permit calling write before SSL handshake has completed, if we allow this
              we could easily get rid of the onSslHandshakeCompleted event. The SSL filter can simply store the write until
              the handshake has completed like during re-handshake. With such a change HANDSHAKING and REHANDSHAKING could
              be collapsed into one state. */
-            case HANDSHAKING: {
-                completionHandler.failed(new IllegalStateException("Cannot write until SSL handshake has been completed"));
-                break;
-            }
+                case HANDSHAKING: {
+                    completionHandler.failed(new IllegalStateException("Cannot write until SSL handshake has been completed"));
+                    break;
+                }
 
             /* Suspend all writes until the re-handshaking is done. Data are permitted during re-handshake in SSL, but this
              would only complicate things */
-            case REHANDSHAKING: {
-                storePendingApplicationWrite(applicationData, completionHandler);
-                break;
-            }
+                case REHANDSHAKING: {
+                    storePendingApplicationWrite(applicationData, completionHandler);
+                    break;
+                }
 
-            case DATA: {
-                handleWrite(applicationData, completionHandler);
-                break;
-            }
+                case DATA: {
+                    handleWrite(applicationData, completionHandler);
+                    break;
+                }
 
-            case CLOSED: {
-                // the engine is closed just abort with failure
-                completionHandler.failed(new IllegalStateException("SSL session has been closed"));
-                break;
+                case CLOSED: {
+                    // the engine is closed just abort with failure
+                    completionHandler.failed(new IllegalStateException("SSL session has been closed"));
+                    break;
+                }
             }
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -231,22 +239,27 @@ class SslFilter extends Filter {
         }
     }
 
-    private synchronized void handlePostWrite(final ByteBuffer applicationData,
+    private void handlePostWrite(final ByteBuffer applicationData,
                                               final CompletionHandler<ByteBuffer> completionHandler) {
-        if (state == State.REHANDSHAKING) {
-            if (applicationData.hasRemaining()) {
-                // the remaining data will be sent after re-handshake
-                storePendingApplicationWrite(applicationData, completionHandler);
-                // start re-handshaking
-                doHandshakeStep(emptyBuffer);
-            }
-        } else {
-            if (applicationData.hasRemaining()) {
-                // make sure to empty the application output buffer
-                handleWrite(applicationData, completionHandler);
+        lock.lock();
+        try {
+            if (state == State.REHANDSHAKING) {
+                if (applicationData.hasRemaining()) {
+                    // the remaining data will be sent after re-handshake
+                    storePendingApplicationWrite(applicationData, completionHandler);
+                    // start re-handshaking
+                    doHandshakeStep(emptyBuffer);
+                }
             } else {
-                completionHandler.completed(applicationData);
+                if (applicationData.hasRemaining()) {
+                    // make sure to empty the application output buffer
+                    handleWrite(applicationData, completionHandler);
+                } else {
+                    completionHandler.completed(applicationData);
+                }
             }
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -269,59 +282,64 @@ class SslFilter extends Filter {
     }
 
     @Override
-    synchronized void close() {
-        if (state == State.NOT_STARTED) {
-            downstreamFilter.close();
-            return;
-        }
-
-        sslEngine.closeOutbound();
+    void close() {
+        lock.lock();
         try {
-            LazyBuffer lazyBuffer = new LazyBuffer();
+            if (state == State.NOT_STARTED) {
+                downstreamFilter.close();
+                return;
+            }
 
-            while (sslEngine.getHandshakeStatus() == SSLEngineResult.HandshakeStatus.NEED_WRAP) {
-                ByteBuffer buffer = lazyBuffer.get();
-                SSLEngineResult result = sslEngine.wrap(emptyBuffer, buffer);
+            sslEngine.closeOutbound();
+            try {
+                LazyBuffer lazyBuffer = new LazyBuffer();
 
-                switch (result.getStatus()) {
-                    case BUFFER_OVERFLOW: {
-                        lazyBuffer.resize();
-                        break;
-                    }
+                while (sslEngine.getHandshakeStatus() == SSLEngineResult.HandshakeStatus.NEED_WRAP) {
+                    ByteBuffer buffer = lazyBuffer.get();
+                    SSLEngineResult result = sslEngine.wrap(emptyBuffer, buffer);
 
-                    case BUFFER_UNDERFLOW: {
+                    switch (result.getStatus()) {
+                        case BUFFER_OVERFLOW: {
+                            lazyBuffer.resize();
+                            break;
+                        }
+
+                        case BUFFER_UNDERFLOW: {
                         /* This basically says that there is not enough data to create an SSL packet. Javadoc suggests that
                         BUFFER_UNDERFLOW can occur only after unwrap(), but to be 100% sure we handle all possible error
                         states: */
-                        throw new IllegalStateException("SSL engine underflow while close operation \n" + getDebugState());
+                            throw new IllegalStateException("SSL engine underflow while close operation \n" + getDebugState());
+                        }
+
+                        // CLOSE or OK are expected outcomes
                     }
 
-                    // CLOSE or OK are expected outcomes
                 }
 
+                if (lazyBuffer.isAllocated()) {
+                    ByteBuffer buffer = lazyBuffer.get();
+                    ((Buffer) buffer).flip();
+                    writeQueue.write(buffer, new CompletionHandler<ByteBuffer>() {
+
+                        @Override
+                        public void completed(ByteBuffer result) {
+                            downstreamFilter.close();
+                        }
+
+                        @Override
+                        public void failed(Throwable throwable) {
+                            downstreamFilter.close();
+                        }
+                    });
+                } else {
+                    // make sure we close even if SSL had nothing to send
+                    downstreamFilter.close();
+                }
+            } catch (Exception e) {
+                handleSslError(e);
             }
-
-            if (lazyBuffer.isAllocated()) {
-                ByteBuffer buffer = lazyBuffer.get();
-                ((Buffer) buffer).flip();
-                writeQueue.write(buffer, new CompletionHandler<ByteBuffer>() {
-
-                    @Override
-                    public void completed(ByteBuffer result) {
-                        downstreamFilter.close();
-                    }
-
-                    @Override
-                    public void failed(Throwable throwable) {
-                        downstreamFilter.close();
-                    }
-                });
-            } else {
-                // make sure we close even if SSL had nothing to send
-                downstreamFilter.close();
-            }
-        } catch (Exception e) {
-            handleSslError(e);
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -418,7 +436,8 @@ class SslFilter extends Filter {
         LazyBuffer inputBuffer = new LazyBuffer();
         boolean handshakeFinished = false;
 
-        synchronized (this) {
+        lock.lock();
+        try {
             SSLEngineResult.HandshakeStatus hs = sslEngine.getHandshakeStatus();
             if (!isHandshaking(hs)) {
                 // we stopped handshaking while waiting for the lock
@@ -537,6 +556,8 @@ class SslFilter extends Filter {
             } catch (Exception e) {
                 handleSslError(e);
             }
+        } finally {
+            lock.unlock();
         }
 
         /* Handle any read data.
@@ -675,7 +696,8 @@ class SslFilter extends Filter {
         private final Queue<Runnable> pendingWrites = new LinkedList<>();
 
         void write(final ByteBuffer data, final CompletionHandler<ByteBuffer> completionHandler) {
-            synchronized (SslFilter.this) {
+            SslFilter.this.lock.lock();
+            try {
                 Runnable r = new Runnable() {
                     @Override
                     public void run() {
@@ -708,11 +730,14 @@ class SslFilter extends Filter {
                 if (pendingWrites.peek() == r) {
                     r.run();
                 }
+            } finally {
+                SslFilter.this.lock.unlock();
             }
         }
 
         private void onWriteCompleted() {
-            synchronized (SslFilter.this) {
+            SslFilter.this.lock.lock();
+            try {
                 // task in progress is at the head of the queue -> remove it
                 pendingWrites.poll();
                 Runnable next = pendingWrites.peek();
@@ -720,16 +745,21 @@ class SslFilter extends Filter {
                 if (next != null) {
                     next.run();
                 }
+            } finally {
+                SslFilter.this.lock.unlock();
             }
         }
 
         @Override
         public String toString() {
-            synchronized (SslFilter.this) {
+            SslFilter.this.lock.lock();
+            try {
                 return "WriteQueue{"
                         + "pendingWrites="
                         + pendingWrites.size()
                         + '}';
+            } finally {
+                SslFilter.this.lock.unlock();
             }
         }
     }

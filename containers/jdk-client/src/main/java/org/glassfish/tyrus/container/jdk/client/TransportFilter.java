@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -42,6 +42,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -62,6 +64,7 @@ class TransportFilter extends Filter {
     private static final Logger LOGGER = Logger.getLogger(TransportFilter.class.getName());
     private static final int DEFAULT_CONNECTION_CLOSE_WAIT = 30;
     private static final AtomicInteger openedConnections = new AtomicInteger(0);
+    private static final Lock TRANSPORT_LOCK = new ReentrantLock();
     private static final ScheduledExecutorService connectionCloseScheduler =
             Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
                 @Override
@@ -138,20 +141,23 @@ class TransportFilter extends Filter {
     }
 
     @Override
-    synchronized void close() {
-        if (!socketChannel.isOpen()) {
-            return;
-        }
+    void close() {
+        TRANSPORT_LOCK.lock();
         try {
-            socketChannel.close();
-        } catch (IOException e) {
-            LOGGER.log(Level.INFO, "Could not close a connection", e);
-        }
-        synchronized (TransportFilter.class) {
+            if (!socketChannel.isOpen()) {
+                return;
+            }
+            try {
+                socketChannel.close();
+            } catch (IOException e) {
+                LOGGER.log(Level.INFO, "Could not close a connection", e);
+            }
             openedConnections.decrementAndGet();
             if (openedConnections.get() == 0 && channelGroup != null) {
                 scheduleClose();
             }
+        } finally {
+            TRANSPORT_LOCK.unlock();
         }
 
         upstreamFilter = null;
@@ -166,8 +172,8 @@ class TransportFilter extends Filter {
     public void handleConnect(SocketAddress serverAddress, Filter upstreamFilter) {
         this.upstreamFilter = upstreamFilter;
 
+        TRANSPORT_LOCK.lock();
         try {
-            synchronized (TransportFilter.class) {
                 updateThreadPoolConfig();
                 initializeChannelGroup();
                 socketChannel = AsynchronousSocketChannel.open(channelGroup);
@@ -175,10 +181,11 @@ class TransportFilter extends Filter {
                     socketChannel.bind(new InetSocketAddress(bindingAddress, 0));
                 }
                 openedConnections.incrementAndGet();
-            }
         } catch (IOException e) {
             onError(e);
             return;
+        } finally {
+            TRANSPORT_LOCK.unlock();
         }
 
         try {
@@ -316,13 +323,16 @@ class TransportFilter extends Filter {
         closeWaitTask = connectionCloseScheduler.schedule(new Runnable() {
             @Override
             public void run() {
-                synchronized (TransportFilter.class) {
+                TRANSPORT_LOCK.lock();
+                try {
                     if (closeWaitTask == null) {
                         return;
                     }
                     channelGroup.shutdown();
                     channelGroup = null;
                     closeWaitTask = null;
+                } finally {
+                    TRANSPORT_LOCK.unlock();
                 }
             }
         }, currentContainerIdleTimeout, TimeUnit.SECONDS);
@@ -378,6 +388,7 @@ class TransportFilter extends Filter {
     private static class QueuingExecutor extends ThreadPoolExecutor {
 
         private final Queue<Runnable> taskQueue;
+        private final Lock taskQueueLock = new ReentrantLock();
         private final boolean threadSafeQueue;
 
         /**
@@ -421,11 +432,14 @@ class TransportFilter extends Filter {
                                                                      + "reached.", e);
                     }
                 } else {
-                    synchronized (taskQueue) {
+                    taskQueueLock.lock();
+                    try {
                         if (!taskQueue.offer(task)) {
                             throw new RejectedExecutionException("A limit of Tyrus client thread pool queue has been "
                                                                          + "reached.", e);
                         }
+                    } finally {
+                        taskQueueLock.unlock();
                     }
                 }
 
@@ -446,8 +460,11 @@ class TransportFilter extends Filter {
                     if (threadSafeQueue) {
                         dequeuedTask = taskQueue.poll();
                     } else {
-                        synchronized (taskQueue) {
+                        taskQueueLock.lock();
+                        try {
                             dequeuedTask = taskQueue.poll();
+                        } finally {
+                            taskQueueLock.unlock();
                         }
                     }
 
@@ -468,6 +485,7 @@ class TransportFilter extends Filter {
 
             private static final long serialVersionUID = -1607064661828834847L;
             private final Queue<Runnable> taskQueue;
+            private final Lock taskQueueLock = new ReentrantLock();
             private final boolean threadSafeQueue;
 
             private HandOffQueue(Queue<Runnable> taskQueue, boolean threadSafeQueue) {
@@ -482,8 +500,11 @@ class TransportFilter extends Filter {
                 if (threadSafeQueue) {
                     task = taskQueue.poll();
                 } else {
-                    synchronized (taskQueue) {
+                    taskQueueLock.lock();
+                    try {
                         task = taskQueue.poll();
+                    } finally {
+                        taskQueueLock.unlock();
                     }
                 }
                 if (task != null) {
@@ -501,8 +522,11 @@ class TransportFilter extends Filter {
                 if (threadSafeQueue) {
                     task = taskQueue.poll();
                 } else {
-                    synchronized (taskQueue) {
+                    taskQueueLock.lock();
+                    try {
                         task = taskQueue.poll();
+                    } finally {
+                        taskQueueLock.unlock();
                     }
                 }
                 if (task != null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -34,6 +34,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -158,7 +160,7 @@ public class GrizzlyClientSocket {
     private final Map<String, Object> properties;
 
     private static volatile TCPNIOTransport transport;
-    private static final Object TRANSPORT_LOCK = new Object();
+    private static final Lock TRANSPORT_LOCK = new ReentrantLock();
     private final Callable<Void> grizzlyConnector;
 
     private volatile TCPNIOTransport privateTransport;
@@ -282,8 +284,11 @@ public class GrizzlyClientSocket {
             }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Transport failed to start.", e);
-            synchronized (TRANSPORT_LOCK) {
+            TRANSPORT_LOCK.lock();
+            try {
                 transport = null;
+            } finally {
+                TRANSPORT_LOCK.unlock();
             }
             throw e;
         }
@@ -709,19 +714,23 @@ public class GrizzlyClientSocket {
 
     private static TCPNIOTransport getOrCreateSharedTransport(
             ThreadPoolConfig workerThreadPoolConfig, ThreadPoolConfig selectorThreadPoolConfig) throws IOException {
-        synchronized (TRANSPORT_LOCK) {
+        TRANSPORT_LOCK.lock();
+        try {
             if (transport == null) {
                 Logger.getLogger(GrizzlyClientSocket.class.getName()).log(Level.FINE, "Starting shared container.");
                 transport = createTransport(workerThreadPoolConfig, selectorThreadPoolConfig, true);
                 transport.start();
             }
+        } finally {
+            TRANSPORT_LOCK.unlock();
         }
 
         return transport;
     }
 
     static void closeSharedTransport() {
-        synchronized (TRANSPORT_LOCK) {
+        TRANSPORT_LOCK.lock();
+        try {
             if (transport != null) {
                 try {
                     Logger.getLogger(GrizzlyClientSocket.class.getName()).log(Level.FINE, "Stopping shared container.");
@@ -732,6 +741,8 @@ public class GrizzlyClientSocket {
                 }
             }
             transport = null;
+        } finally {
+            TRANSPORT_LOCK.unlock();
         }
     }
 
