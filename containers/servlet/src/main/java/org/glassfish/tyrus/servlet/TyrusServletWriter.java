@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,6 +40,7 @@ class TyrusServletWriter extends Writer implements WriteListener {
 
     private final TyrusHttpUpgradeHandler tyrusHttpUpgradeHandler;
     private final Deque<QueuedFrame> queue = new LinkedList<QueuedFrame>();
+    private final Lock queueAndStreamLock = new ReentrantLock();
 
     private static final Logger LOGGER = Logger.getLogger(TyrusServletWriter.class.getName());
 
@@ -71,9 +74,10 @@ class TyrusServletWriter extends Writer implements WriteListener {
     }
 
     @Override
-    public synchronized void onWritePossible() throws IOException {
+    public void onWritePossible() throws IOException {
         LOGGER.log(Level.FINEST, "OnWritePossible called");
 
+        queueAndStreamLock.lock();
         try /* servletOutputStream.isReady() */ {
             while (!queue.isEmpty() && servletOutputStream.isReady()) {
                 final QueuedFrame queuedFrame = queue.poll();
@@ -83,34 +87,48 @@ class TyrusServletWriter extends Writer implements WriteListener {
             }
         } catch (Exception e) {
             onError(e);
+        } finally {
+            queueAndStreamLock.unlock();
         }
 
     }
 
     @Override
-    public synchronized void onError(Throwable t) {
+    public void onError(Throwable t) {
         LOGGER.log(Level.WARNING, "TyrusServletWriter.onError", t);
 
         QueuedFrame queuedFrame;
-        while ((queuedFrame = queue.poll()) != null) {
-            queuedFrame.completionHandler.failed(t);
+        queueAndStreamLock.lock();
+        try {
+            while ((queuedFrame = queue.poll()) != null) {
+                queuedFrame.completionHandler.failed(t);
+            }
+        } finally {
+            queueAndStreamLock.unlock();
         }
+
     }
 
     @Override
-    public synchronized void write(final ByteBuffer buffer, CompletionHandler<ByteBuffer> completionHandler) {
+    public void write(final ByteBuffer buffer, CompletionHandler<ByteBuffer> completionHandler) {
 
         // first write
         if (servletOutputStream == null) {
+            queueAndStreamLock.lock();
             try {
-                servletOutputStream = tyrusHttpUpgradeHandler.getWebConnection().getOutputStream();
+                if (servletOutputStream == null) {
+                    servletOutputStream = tyrusHttpUpgradeHandler.getWebConnection().getOutputStream();
+                }
             } catch (IOException e) {
                 LOGGER.log(Level.CONFIG, "ServletOutputStream cannot be obtained", e);
                 completionHandler.failed(e);
                 return;
+            } finally {
+                queueAndStreamLock.unlock();
             }
         }
 
+        queueAndStreamLock.lock();
         try /* servletOutputStream.isReady() */ {
             if (queue.isEmpty() && servletOutputStream.isReady()) {
                 _write(buffer, completionHandler);
@@ -125,6 +143,8 @@ class TyrusServletWriter extends Writer implements WriteListener {
             }
         } catch (Exception e) {
             completionHandler.failed(e);
+        } finally {
+            queueAndStreamLock.unlock();
         }
     }
 

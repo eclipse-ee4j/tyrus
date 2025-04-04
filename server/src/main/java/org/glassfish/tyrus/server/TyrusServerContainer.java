@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -23,6 +23,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import jakarta.websocket.ClientEndpointConfig;
 import jakarta.websocket.DeploymentException;
@@ -51,6 +53,7 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
     private final Set<ServerEndpointConfig> dynamicallyAddedEndpointConfigs;
     private final Set<Class<?>> classes;
     private final ServerApplicationConfig serverApplicationConfig;
+    private final Lock clientManagerLock = new ReentrantLock();
 
     private boolean notYetStarted = true;
     private long defaultMaxSessionIdleTimeout = 0;
@@ -193,12 +196,17 @@ public abstract class TyrusServerContainer extends BaseContainer implements Serv
      *
      * @return {@link ClientManager} associated with this server container.
      */
-    protected synchronized ClientManager getClientManager() {
-        if (clientManager == null) {
-            clientManager = ClientManager.createClient(this);
-        }
+    protected ClientManager getClientManager() {
+        clientManagerLock.lock();
+        try {
+            if (clientManager == null) {
+                clientManager = ClientManager.createClient(this);
+            }
 
-        return clientManager;
+            return clientManager;
+        } finally {
+            clientManagerLock.unlock();
+        }
     }
 
     @Override
