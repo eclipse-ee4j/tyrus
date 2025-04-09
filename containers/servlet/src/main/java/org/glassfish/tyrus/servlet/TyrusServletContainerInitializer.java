@@ -77,6 +77,11 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
             return;
         }
 
+        if (ctx.getAttribute(ServerContainer.class.getName()) != null) {
+            // Already initialized
+            return;
+        }
+
         classes.removeAll(FILTERED_CLASSES);
 
         final Integer incomingBufferSize = getIntContextParam(ctx, TyrusHttpUpgradeHandler.FRAME_BUFFER_SIZE);

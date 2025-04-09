@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -19,11 +19,13 @@ package org.glassfish.tyrus.core;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -526,11 +528,37 @@ public class TyrusSessionTest {
         assertTrue(canceled.get());
     }
 
+    @Test
+    public void testIdleTimeoutNegative() throws Exception {
+        final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        final WebSocketContainer webSocketContainer = new TestContainer() {
+            @Override
+            public ScheduledExecutorService getScheduledExecutorService() {
+                return scheduler;
+            }
+        };
+        Field field = TyrusSession.class.getDeclaredField("idleTimeoutFuture");
+        field.setAccessible(true);
+
+        TyrusSession session = createSession(endpointWrapper, webSocketContainer);
+        ScheduledFuture future = (ScheduledFuture) field.get(session);
+        assertFalse("idleTimeoutFuture is cancelled", future.isCancelled());
+
+        session.setMaxIdleTimeout(2000L);
+        future = (ScheduledFuture) field.get(session);
+        assertFalse("idleTimeoutFuture is cancelled", future.isCancelled());
+
+        session.setMaxIdleTimeout(-1L);
+        future = (ScheduledFuture) field.get(session);
+        assertTrue("idleTimeoutFuture is NOT cancelled", future.isCancelled());
+
+        session.close();
+    }
+
     private TyrusSession createSession(TyrusEndpointWrapper endpointWrapper, WebSocketContainer container) {
         return new TyrusSession(container, new TestRemoteEndpoint(), endpointWrapper, null, null, false, null, null, null,
                 null, new HashMap<String, List<String>>(), null, null, null, new DebugContext());
     }
-
 
     private TyrusSession createSession(TyrusEndpointWrapper endpointWrapper) {
         return createSession(endpointWrapper, null);
