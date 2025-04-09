@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class MavenUtil {
@@ -52,7 +53,11 @@ public final class MavenUtil {
         }
         String version = MavenUtil.getDependencyVersion(dependency, properties);
         fileSuffix.append(version).append(File.separator);
-        fileSuffix.append(dependency.getArtifactId()).append('-').append(version).append(".").append(extension);
+        fileSuffix.append(dependency.getArtifactId()).append('-').append(version);
+        if (dependency.getClassifier() != null) {
+            fileSuffix.append('-').append(dependency.getClassifier());
+        }
+        fileSuffix.append(".").append(extension);
         return new File(repositoryRoot, fileSuffix.toString());
     }
 
@@ -103,7 +108,16 @@ public final class MavenUtil {
     static Stream<Dependency> streamTyrusJars() throws IOException, XmlPullParserException {
         Model model = getModelFromFile("pom.xml");
         List<Dependency> deps = getBomPomDependencies(model);
+        return streamTyrusJars(deps);
+    }
 
+    static Stream<Dependency> streamTyrusSources() throws IOException, XmlPullParserException {
+        Model model = getModelFromFile("pom.xml");
+        List<Dependency> deps = getBomPomSources(model);
+        return streamTyrusJars(deps);
+    }
+
+    private static Stream<Dependency> streamTyrusJars(List<Dependency> deps) throws IOException, XmlPullParserException {
         return deps.stream()
                 .filter(dep -> dep.getGroupId().startsWith("org.glassfish.tyrus"))
                 .filter(dep -> dep.getType().equals("jar"));
@@ -139,6 +153,14 @@ public final class MavenUtil {
         return bomPomModel.getDependencyManagement().getDependencies();
     }
 
+    private static List<Dependency> getBomPomSources(Model model) throws XmlPullParserException, IOException {
+        return getBomPomDependencies(model).stream()
+                .map(dependency -> {
+                    dependency.setClassifier("sources");
+                    return dependency;
+                })
+                .collect(Collectors.toList());
+    }
     static String getTyrusVersion(Properties properties) {
         String property = properties.getProperty(TYRUS_VERSION); // when it is in the pom.file
         if (property == null || property.startsWith("${")) {
