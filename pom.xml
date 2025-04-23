@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -162,6 +162,7 @@
         <module>server</module>
         <module>spi</module>
         <module>tests</module>
+        <module>tools</module>
     </modules>
 
     <build>
@@ -294,7 +295,6 @@
                         <instructions>
                             <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                             <_nodefaultversion>false</_nodefaultversion>
-                            <Include-Resource>{maven-resources},${project.build.directory}/legal</Include-Resource>
                         </instructions>
                     </configuration>
                 </plugin>
@@ -372,7 +372,7 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
-                        <phase>verify</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
@@ -425,96 +425,45 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.glassfish.tyrus.tools.plugins</groupId>
+                <artifactId>tyrus-jar-updater</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <id>copyLegal</id>
+                        <phase>pre-integration-test</phase>
+                        <goals><goal>update</goal></goals>
+                        <configuration>
+                            <jar>${project.build.directory}/${project.build.finalName}.jar</jar>
+                            <files>
+                                <file>${legal.source.folder}/LICENSE.md</file>
+                                <file>${legal.source.folder}/NOTICE.md</file>
+                            </files>
+                            <skip>org.glassfish.tyrus.samples:*,*:*-project,*:tyrus-archetype*,*:*-documentation,org.glassfish.tyrus.tests:*e2e*,org.glassfish.tyrus.tests.servlet*:*,org.glassfish.tyrus.bundles:*</skip>
+                            <dest>META-INF</dest>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copyLegalToSources</id>
+                        <phase>pre-integration-test</phase>
+                        <goals><goal>update</goal></goals>
+                        <configuration>
+                            <jar>${project.build.directory}/${project.build.finalName}-sources.jar</jar>
+                            <files>
+                                <file>${legal.source.folder}/LICENSE.md</file>
+                                <file>${legal.source.folder}/NOTICE.md</file>
+                            </files>
+                            <skip>org.glassfish.tyrus.samples:*,*:*-project,*:tyrus-archetype*,*:*-documentation,org.glassfish.tyrus.tests:*e2e*,org.glassfish.tyrus.tests.servlet*:*,org.glassfish.tyrus.bundles:*</skip>
+                            <dest>META-INF</dest>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
     <profiles>
-        <profile>
-            <id>copy-legal-docs</id>
-            <activation>
-                <file>
-                    <missing>${basedir}/src/test/java/org/glassfish/tyrus/test</missing>
-                </file>
-            </activation>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-resources-plugin</artifactId>
-                            <version>2.6</version>
-                            <extensions>true</extensions>
-                            <!-- Add legal information, NOTICE.md and LINCENSE.md to jars -->
-                            <executions>
-                                <execution>
-                                    <!-- copy the files to classes folder for maven-jar/war-plugin to grab it -->
-                                    <id>copy-legaldocs</id>
-                                    <goals>
-                                        <goal>copy-resources</goal>
-                                    </goals>
-                                    <phase>process-sources</phase>
-                                    <configuration>
-                                        <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                                        <resources>
-                                            <resource>
-                                                <directory>${legal.source.folder}</directory>
-                                                <targetPath>META-INF/</targetPath>
-                                                <includes>
-                                                    <include>NOTICE.md</include>
-                                                    <include>LICENSE.md</include>
-                                                </includes>
-                                            </resource>
-                                        </resources>
-                                    </configuration>
-                                </execution>
-                                <execution>
-                                    <!-- copy the files to source folder for maven-source-plugin to grab it -->
-                                    <id>copy-legaldocs-to-sources</id>
-                                    <goals>
-                                        <goal>copy-resources</goal>
-                                    </goals>
-                                    <phase>process-sources</phase>
-                                    <configuration>
-                                        <outputDirectory>${project.build.directory}/generated-sources/rsrc-gen</outputDirectory>
-                                        <resources>
-                                            <resource>
-                                                <directory>${legal.source.folder}</directory>
-                                                <targetPath>META-INF/</targetPath>
-                                                <includes>
-                                                    <include>NOTICE.md</include>
-                                                    <include>LICENSE.md</include>
-                                                </includes>
-                                            </resource>
-                                        </resources>
-                                    </configuration>
-                                </execution>
-                                <execution>
-                                    <!-- copy the files to legal folder for felix plugin to grab it -->
-                                    <id>copy-legaldocs-to-osgi-bundles</id>
-                                    <goals>
-                                        <goal>copy-resources</goal>
-                                    </goals>
-                                    <phase>process-sources</phase>
-                                    <configuration>
-                                        <outputDirectory>${project.build.directory}/legal</outputDirectory>
-                                        <resources>
-                                            <resource>
-                                                <directory>${legal.source.folder}</directory>
-                                                <targetPath>META-INF/</targetPath>
-                                                <includes>
-                                                    <include>NOTICE.md</include>
-                                                    <include>LICENSE.md</include>
-                                                </includes>
-                                            </resource>
-                                        </resources>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
         <profile>
             <id>release</id>
             <build>
