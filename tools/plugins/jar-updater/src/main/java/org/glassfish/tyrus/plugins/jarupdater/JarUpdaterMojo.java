@@ -86,7 +86,7 @@ public class JarUpdaterMojo extends AbstractMojo {
     }
 
     private void updateJar() throws IOException, URISyntaxException {
-        try (FileSystem fs = FileSystems.newFileSystem(absoluteJar.toPath(), null)) {
+        try (FileSystem fs = FileSystems.newFileSystem(absoluteJar.toPath(), (ClassLoader) null)) {
             for (File fileToZip : sources) {
                 if (verbose) {
                     System.out.append("Adding ").append(fileToZip.getName()).append(" to ")
