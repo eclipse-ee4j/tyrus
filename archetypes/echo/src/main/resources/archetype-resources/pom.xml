@@ -65,7 +65,7 @@
         <java.version>1.8</java.version>
         <tyrus.version>${project.version}</tyrus.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.plugin>3.13.0</maven.compiler.plugin>
+        <maven.compiler.plugin>3.14.0</maven.compiler.plugin>
         <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
     </properties>
 </project>
