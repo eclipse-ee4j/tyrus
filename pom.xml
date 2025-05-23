@@ -123,7 +123,7 @@
         <java11.build.outputDirectory>${project.basedir}/target11/classes</java11.build.outputDirectory>
         <java11.sourceDirectory>${project.basedir}/src/main/java11</java11.sourceDirectory>
 
-        <maven.compiler.plugin>3.13.0</maven.compiler.plugin>
+        <maven.compiler.plugin>3.14.0</maven.compiler.plugin>
         <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
         <maven.surefire.plugin.version>3.2.1</maven.surefire.plugin.version>
         <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
@@ -151,6 +151,8 @@
         <impljar.impl.version>${new_spec_version}-b${build_number}</impljar.impl.version>
 
         <netbeans.hint.license>gf-cddl-gpl</netbeans.hint.license>
+
+        <jar.updater.modules.skip>org.glassfish.tyrus.samples:*,*:*-project,*:tyrus-archetype*,*:*-documentation,org.glassfish.tyrus.tests:*e2e*,org.glassfish.tyrus.tests.servlet*:*,org.glassfish.tyrus.bundles:*,org.glassfish.tyrus.tests:*containers*</jar.updater.modules.skip>
     </properties>
 
     <modules>
@@ -298,6 +300,7 @@
                         <instructions>
                             <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                             <_nodefaultversion>false</_nodefaultversion>
+                            <Multi-Release>true</Multi-Release>
                         </instructions>
                     </configuration>
                 </plugin>
@@ -342,12 +345,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.1.0</version>
                     <dependencies>
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
                             <artifactId>checkstyle</artifactId>
-                            <version>8.18</version>
+                            <version>8.30</version>
                         </dependency>
                     </dependencies>
                 </plugin>
@@ -444,7 +447,7 @@
                                 <file>${legal.source.folder}/LICENSE.md</file>
                                 <file>${legal.source.folder}/NOTICE.md</file>
                             </files>
-                            <skip>org.glassfish.tyrus.samples:*,*:*-project,*:tyrus-archetype*,*:*-documentation,org.glassfish.tyrus.tests:*e2e*,org.glassfish.tyrus.tests.servlet*:*,org.glassfish.tyrus.bundles:*</skip>
+                            <skip>${jar.updater.modules.skip}</skip>
                             <dest>META-INF</dest>
                         </configuration>
                     </execution>
@@ -458,8 +461,36 @@
                                 <file>${legal.source.folder}/LICENSE.md</file>
                                 <file>${legal.source.folder}/NOTICE.md</file>
                             </files>
-                            <skip>org.glassfish.tyrus.samples:*,*:*-project,*:tyrus-archetype*,*:*-documentation,org.glassfish.tyrus.tests:*e2e*,org.glassfish.tyrus.tests.servlet*:*,org.glassfish.tyrus.bundles:*</skip>
+                            <skip>${jar.updater.modules.skip}</skip>
                             <dest>META-INF</dest>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copyModuleInfo</id>
+                        <phase>pre-integration-test</phase>
+                        <goals><goal>update</goal></goals>
+                        <configuration>
+                            <jar>${project.build.directory}/${project.build.finalName}.jar</jar>
+                            <files>
+                                <file>${project.basedir}/target11/classes/module-info.class</file>
+                            </files>
+                            <skip>${jar.updater.modules.skip}</skip>
+                            <dest>META-INF/versions/11</dest>
+                            <ignoreOnError>true</ignoreOnError>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copyModuleInfoSources</id>
+                        <phase>pre-integration-test</phase>
+                        <goals><goal>update</goal></goals>
+                        <configuration>
+                            <jar>${project.build.directory}/${project.build.finalName}-sources.jar</jar>
+                            <files>
+                                <file>${project.basedir}/src/main/java11/module-info.java</file>
+                            </files>
+                            <skip>${jar.updater.modules.skip}</skip>
+                            <dest>META-INF/versions/11</dest>
+                            <ignoreOnError>true</ignoreOnError>
                         </configuration>
                     </execution>
                 </executions>
@@ -652,7 +683,7 @@
             </build>
         </profile>
         <profile>
-            <id>clean11</id>
+            <id>clean.all</id>
             <build>
                 <plugins>
                     <plugin>
@@ -660,83 +691,11 @@
                         <configuration>
                             <filesets>
                                 <fileset>
+                                    <directory>${project.build.outputDirectory}</directory>
                                     <directory>${java11.build.outputDirectory}</directory>
                                 </fileset>
                             </filesets>
                         </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>copyJDK11FilesToMultiReleaseJar</id>
-            <activation>
-                <file>
-                    <!-- ${java11.build.outputDirectory} does not work here -->
-                    <exists>target11/classes/module-info.class</exists>
-                </file>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-resources-plugin</artifactId>
-                        <inherited>true</inherited>
-                        <executions>
-                            <execution>
-                                <id>copy-module-info-source</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}/generated-sources/rsrc-gen/META-INF/versions/11/</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${java11.sourceDirectory}/</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>copy-module-info-class</id>
-                                <phase>prepare-package</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.outputDirectory}/META-INF/versions/11</outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>${java11.build.outputDirectory}</directory>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>maven-bundle-plugin</artifactId>
-                        <version>5.1.4</version> <!-- 5.1.5  brings dependencies on JDK packages -->
-                        <extensions>true</extensions>
-                        <configuration>
-                            <instructions>
-                                <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-                                <_nodefaultversion>false</_nodefaultversion>
-                                <Include-Resource>{maven-resources},${project.build.directory}/legal</Include-Resource>
-                                <Multi-Release>true</Multi-Release>
-                            </instructions>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>osgi-bundle</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>bundle</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
