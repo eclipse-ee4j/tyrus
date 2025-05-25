@@ -475,7 +475,7 @@
                                 <file>${project.basedir}/target11/classes/module-info.class</file>
                             </files>
                             <skip>${jar.updater.modules.skip}</skip>
-                            <dest>META-INF/versions/9</dest>
+                            <dest>META-INF/versions/11</dest>
                             <ignoreOnError>true</ignoreOnError>
                         </configuration>
                     </execution>
