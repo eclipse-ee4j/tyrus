@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,6 +17,8 @@
 package org.glassfish.tyrus.servlet;
 
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -30,7 +32,6 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.websocket.DeploymentException;
 import jakarta.websocket.Endpoint;
-import jakarta.websocket.server.HandshakeRequest;
 import jakarta.websocket.server.ServerApplicationConfig;
 import jakarta.websocket.server.ServerContainer;
 import jakarta.websocket.server.ServerEndpoint;
@@ -84,27 +85,9 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
 
         classes.removeAll(FILTERED_CLASSES);
 
-        final Integer incomingBufferSize = getIntContextParam(ctx, TyrusHttpUpgradeHandler.FRAME_BUFFER_SIZE);
-        final Integer maxSessionsPerApp = getIntContextParam(ctx, TyrusWebSocketEngine.MAX_SESSIONS_PER_APP);
-        final Integer maxSessionsPerRemoteAddr = getIntContextParam(
-                ctx, TyrusWebSocketEngine.MAX_SESSIONS_PER_REMOTE_ADDR);
-        final Boolean parallelBroadcastEnabled = getBooleanContextParam(
-                ctx, TyrusWebSocketEngine.PARALLEL_BROADCAST_ENABLED);
-        final DebugContext.TracingType tracingType = getEnumContextParam(
-                ctx, TyrusWebSocketEngine.TRACING_TYPE, DebugContext.TracingType.class, DebugContext.TracingType.OFF);
-        final DebugContext.TracingThreshold tracingThreshold =
-                getEnumContextParam(ctx, TyrusWebSocketEngine.TRACING_THRESHOLD, DebugContext.TracingThreshold.class,
-                                    DebugContext.TracingThreshold.TRACE);
-        Boolean wsadlEnabled = getBooleanContextParam(ctx, TyrusWebSocketEngine.WSADL_SUPPORT);
-        if (wsadlEnabled == null) {
-            wsadlEnabled = false;
-        }
-        LOGGER.config("WSADL enabled: " + wsadlEnabled);
+        final TyrusServletContainerData data = new TyrusServletContainerData(ctx);
 
-        final ApplicationEventListener applicationEventListener = createApplicationEventListener(ctx);
-        final TyrusServerContainerImpl serverContainer = new TyrusServerContainerImpl(classes, applicationEventListener,
-                incomingBufferSize, maxSessionsPerApp, maxSessionsPerRemoteAddr, parallelBroadcastEnabled, tracingType,
-                tracingThreshold, ctx.getContextPath(), wsadlEnabled);
+        final TyrusServerContainerImpl serverContainer = new TyrusServerContainerImpl(classes, data, ctx.getContextPath());
         ctx.setAttribute(ServerContainer.class.getName(), serverContainer);
 
         final TyrusServletFilter filter = new TyrusServletFilter(serverContainer.getServletUpgrade());
@@ -117,103 +100,12 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
         reg.setAsyncSupported(true);
         reg.addMappingForUrlPatterns(null, true, "/*");
         LOGGER.info("Registering WebSocket filter for url pattern /*");
-        if (applicationEventListener != null) {
-            applicationEventListener.onApplicationInitialized(ctx.getContextPath());
+        if (data.applicationEventListener != null) {
+            data.applicationEventListener.onApplicationInitialized(ctx.getContextPath());
         }
     }
 
-    /**
-     * Get {@link Integer} parameter from {@link jakarta.servlet.ServletContext}.
-     *
-     * @param ctx       used to retrieve init parameter.
-     * @param paramName parameter name.
-     * @return parsed {@link Integer} value or {@code null} when the value is not integer or when the init parameter is
-     * not present.
-     */
-    private Integer getIntContextParam(ServletContext ctx, String paramName) {
-        String initParameter = ctx.getInitParameter(paramName);
-        if (initParameter != null) {
-            try {
-                return Integer.parseInt(initParameter);
-            } catch (NumberFormatException e) {
-                LOGGER.log(Level.CONFIG, "Invalid configuration value [" + paramName + " = " + initParameter + "], "
-                        + "integer expected");
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Get {@link java.lang.Boolean} parameter from {@link jakarta.servlet.ServletContext}.
-     *
-     * @param ctx       used to retrieve init parameter.
-     * @param paramName parameter name.
-     * @return parsed {@link java.lang.Boolean} value or {@code null} when the value is not boolean or when the init
-     * parameter is not present.
-     */
-    private Boolean getBooleanContextParam(ServletContext ctx, String paramName) {
-        String initParameter = ctx.getInitParameter(paramName);
-        if (initParameter != null) {
-            if (initParameter.equalsIgnoreCase("true")) {
-                return true;
-            }
-
-            if (initParameter.equalsIgnoreCase("false")) {
-                return false;
-            }
-
-            LOGGER.log(Level.CONFIG, "Invalid configuration value [" + paramName + " = " + initParameter + "], "
-                    + "boolean expected");
-            return null;
-        }
-
-        return null;
-    }
-
-    private <T extends Enum<T>> T getEnumContextParam(ServletContext ctx, String paramName, Class<T> type, T
-            defaultValue) {
-        String initParameter = ctx.getInitParameter(paramName);
-
-        if (initParameter == null) {
-            return defaultValue;
-        }
-
-        try {
-            return Enum.valueOf(type, initParameter.trim().toUpperCase(Locale.US));
-        } catch (Exception e) {
-            LOGGER.log(Level.CONFIG, "Invalid configuration value [" + paramName + " = " + initParameter + "]");
-        }
-
-        return defaultValue;
-    }
-
-    private ApplicationEventListener createApplicationEventListener(final ServletContext ctx) {
-        String listenerClassName = ctx.getInitParameter(ApplicationEventListener.APPLICATION_EVENT_LISTENER);
-        if (listenerClassName == null) {
-            return null;
-        }
-        try {
-            ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
-            Class listenerClass = Class.forName(listenerClassName, true, contextClassLoader);
-
-            Object o = listenerClass.newInstance();
-            if (o instanceof ApplicationEventListener) {
-                return (ApplicationEventListener) o;
-            } else {
-                LOGGER.log(Level.WARNING, "Class " + listenerClassName + " does not implement "
-                        + "ApplicationEventListener");
-            }
-        } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.WARNING, "ApplicationEventListener implementation " + listenerClassName + " not found", e);
-        } catch (InstantiationException | IllegalAccessException e) {
-            LOGGER.log(Level.WARNING, "ApplicationEventListener implementation " + listenerClassName + " could not "
-                    + "have been instantiated", e);
-        }
-        return null;
-    }
-
-    private static class TyrusServerContainerImpl extends TyrusServerContainer {
+    private static class TyrusServletContainerData {
         private final ApplicationEventListener applicationEventListener;
         private final Integer incomingBufferSize;
         private final Integer maxSessionsPerApp;
@@ -221,34 +113,151 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
         private final Boolean parallelBroadcastEnabled;
         private final DebugContext.TracingType tracingType;
         private final DebugContext.TracingThreshold tracingThreshold;
+        private final Map<String, Object> properties;
+        private Boolean wsadlEnabled;
+
+        private TyrusServletContainerData(ServletContext ctx) {
+            incomingBufferSize = getIntContextParam(ctx, TyrusHttpUpgradeHandler.FRAME_BUFFER_SIZE);
+            maxSessionsPerApp = getIntContextParam(ctx, TyrusWebSocketEngine.MAX_SESSIONS_PER_APP);
+            maxSessionsPerRemoteAddr = getIntContextParam(ctx, TyrusWebSocketEngine.MAX_SESSIONS_PER_REMOTE_ADDR);
+            parallelBroadcastEnabled = getBooleanContextParam(ctx, TyrusWebSocketEngine.PARALLEL_BROADCAST_ENABLED);
+            tracingType = getEnumContextParam(
+                    ctx, TyrusWebSocketEngine.TRACING_TYPE, DebugContext.TracingType.class, DebugContext.TracingType.OFF);
+            tracingThreshold = getEnumContextParam(ctx, TyrusWebSocketEngine.TRACING_THRESHOLD,
+                    DebugContext.TracingThreshold.class, DebugContext.TracingThreshold.TRACE);
+            wsadlEnabled = getBooleanContextParam(ctx, TyrusWebSocketEngine.WSADL_SUPPORT);
+            if (wsadlEnabled == null) {
+                wsadlEnabled = false;
+            }
+            LOGGER.config("WSADL enabled: " + wsadlEnabled);
+
+            applicationEventListener = createApplicationEventListener(ctx);
+            properties = getProperties(ctx);
+        }
+
+        /**
+         * Get {@link Integer} parameter from {@link jakarta.servlet.ServletContext}.
+         *
+         * @param ctx       used to retrieve init parameter.
+         * @param paramName parameter name.
+         * @return parsed {@link Integer} value or {@code null} when the value is not integer or when the init parameter is
+         * not present.
+         */
+        private static Integer getIntContextParam(ServletContext ctx, String paramName) {
+            String initParameter = ctx.getInitParameter(paramName);
+            if (initParameter != null) {
+                try {
+                    return Integer.parseInt(initParameter);
+                } catch (NumberFormatException e) {
+                    LOGGER.log(Level.CONFIG, "Invalid configuration value [" + paramName + " = " + initParameter + "], "
+                            + "integer expected");
+                }
+            }
+
+            return null;
+        }
+
+        /**
+         * Get {@link java.lang.Boolean} parameter from {@link jakarta.servlet.ServletContext}.
+         *
+         * @param ctx       used to retrieve init parameter.
+         * @param paramName parameter name.
+         * @return parsed {@link java.lang.Boolean} value or {@code null} when the value is not boolean or when the init
+         * parameter is not present.
+         */
+        private static Boolean getBooleanContextParam(ServletContext ctx, String paramName) {
+            String initParameter = ctx.getInitParameter(paramName);
+            if (initParameter != null) {
+                if (initParameter.equalsIgnoreCase("true")) {
+                    return true;
+                }
+
+                if (initParameter.equalsIgnoreCase("false")) {
+                    return false;
+                }
+
+                LOGGER.log(Level.CONFIG, "Invalid configuration value [" + paramName + " = " + initParameter + "], "
+                        + "boolean expected");
+                return null;
+            }
+
+            return null;
+        }
+
+        private static <T extends Enum<T>> T getEnumContextParam(ServletContext ctx, String paramName, Class<T> type, T
+                defaultValue) {
+            String initParameter = ctx.getInitParameter(paramName);
+
+            if (initParameter == null) {
+                return defaultValue;
+            }
+
+            try {
+                return Enum.valueOf(type, initParameter.trim().toUpperCase(Locale.US));
+            } catch (Exception e) {
+                LOGGER.log(Level.CONFIG, "Invalid configuration value [" + paramName + " = " + initParameter + "]");
+            }
+
+            return defaultValue;
+        }
+
+        private static ApplicationEventListener createApplicationEventListener(final ServletContext ctx) {
+            String listenerClassName = ctx.getInitParameter(ApplicationEventListener.APPLICATION_EVENT_LISTENER);
+            if (listenerClassName == null) {
+                return null;
+            }
+            try {
+                ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+                Class listenerClass = Class.forName(listenerClassName, true, contextClassLoader);
+
+                Object o = listenerClass.newInstance();
+                if (o instanceof ApplicationEventListener) {
+                    return (ApplicationEventListener) o;
+                } else {
+                    LOGGER.log(Level.WARNING, "Class " + listenerClassName + " does not implement "
+                            + "ApplicationEventListener");
+                }
+            } catch (ClassNotFoundException e) {
+                LOGGER.log(Level.WARNING, "ApplicationEventListener implementation " + listenerClassName + " not found", e);
+            } catch (InstantiationException | IllegalAccessException e) {
+                LOGGER.log(Level.WARNING, "ApplicationEventListener implementation " + listenerClassName + " could not "
+                        + "have been instantiated", e);
+            }
+            return null;
+        }
+
+        private static Map<String, Object> getProperties(ServletContext ctx) {
+            final Map<String, Object> properties = new HashMap<>();
+            Enumeration<String> nameEnumeration = ctx.getInitParameterNames();
+            while (nameEnumeration.hasMoreElements()) {
+                String name = nameEnumeration.nextElement();
+                properties.put(name, ctx.getInitParameter(name));
+            }
+            return properties;
+        }
+    }
+
+    private static class TyrusServerContainerImpl extends TyrusServerContainer {
+        private final TyrusServletContainerData containerData;
         private final String contextPath;
         private final WebSocketEngine engine;
         private final TyrusServletUpgrade tyrusServletUpgrade;
 
-        public TyrusServerContainerImpl(Set<Class<?>> set, ApplicationEventListener applicationEventListener,
-                Integer incomingBufferSize, Integer maxSessionsPerApp, Integer maxSessionsPerRemoteAddr,
-                Boolean parallelBroadcastEnabled, DebugContext.TracingType tracingType,
-                DebugContext.TracingThreshold tracingThreshold, String contextPath, boolean wsadlEnabled) {
+        public TyrusServerContainerImpl(Set<Class<?>> set, TyrusServletContainerData data,
+                                        String contextPath) {
             super(set);
-            this.applicationEventListener = applicationEventListener;
-            this.incomingBufferSize = incomingBufferSize;
-            this.maxSessionsPerApp = maxSessionsPerApp;
-            this.maxSessionsPerRemoteAddr = maxSessionsPerRemoteAddr;
-            this.parallelBroadcastEnabled = parallelBroadcastEnabled;
-            this.tracingType = tracingType;
-            this.tracingThreshold = tracingThreshold;
+            this.containerData = data;
             this.contextPath = contextPath;
             this.engine = TyrusWebSocketEngine.builder(this)
-                        .applicationEventListener(applicationEventListener)
-                        .incomingBufferSize(incomingBufferSize)
-                        .maxSessionsPerApp(maxSessionsPerApp)
-                        .maxSessionsPerRemoteAddr(maxSessionsPerRemoteAddr)
-                        .parallelBroadcastEnabled(parallelBroadcastEnabled)
-                        .tracingType(tracingType)
-                        .tracingThreshold(tracingThreshold)
+                        .applicationEventListener(data.applicationEventListener)
+                        .incomingBufferSize(data.incomingBufferSize)
+                        .maxSessionsPerApp(data.maxSessionsPerApp)
+                        .maxSessionsPerRemoteAddr(data.maxSessionsPerRemoteAddr)
+                        .parallelBroadcastEnabled(data.parallelBroadcastEnabled)
+                        .tracingType(data.tracingType)
+                        .tracingThreshold(data.tracingThreshold)
                         .build();
-            this.tyrusServletUpgrade = new TyrusServletUpgrade((TyrusWebSocketEngine) engine, wsadlEnabled);
-
+            this.tyrusServletUpgrade = new TyrusServletUpgrade((TyrusWebSocketEngine) engine, data.wsadlEnabled);
         }
 
         @Override
@@ -293,6 +302,11 @@ public class TyrusServletContainerInitializer implements ServletContainerInitial
 
         private TyrusServletUpgrade getServletUpgrade() {
             return tyrusServletUpgrade;
+        }
+
+        @Override
+        public Map<String, Object> getProperties() {
+            return containerData.properties;
         }
 
         private static String computeRequestPath(String path, Map<String, String> pathParams) {
