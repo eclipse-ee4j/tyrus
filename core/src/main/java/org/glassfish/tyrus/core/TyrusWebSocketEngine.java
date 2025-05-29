@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -140,6 +140,26 @@ public class TyrusWebSocketEngine implements WebSocketEngine {
      * @see org.glassfish.tyrus.core.TyrusSession#broadcast(java.nio.ByteBuffer)
      */
     public static final String PARALLEL_BROADCAST_ENABLED = "org.glassfish.tyrus.server.parallelBroadcastEnabled";
+
+    /**
+     * <p>
+     *     Defines the {@link java.util.concurrent.ThreadFactory} to be used by internal default Executor Services.
+     * </p>
+     * @since 2.0.8
+     */
+    public static String THREAD_FACTORY = "org.glassfish.tyrus.executorServiceThreadFactory";
+
+    /**
+     * <p>
+     *     Defines whether the virtual threads should be used by internal Executor Services in Tyrus on JDK 21+
+     *     when not using an exact number of threads by {@code FixedThreadPool}.
+     * </p>
+     * <p>
+     *     The default is {@code false} for this version of Tyrus.
+     * </p>
+     * @since 2.0.8
+     */
+    public static final String USE_VIRTUAL_THREADS = "org.glassfish.tyrus.executorServiceUseVirtualThreads";
 
     private static final int BUFFER_STEP_SIZE = 256;
     private static final Logger LOGGER = Logger.getLogger(TyrusWebSocketEngine.class.getName());

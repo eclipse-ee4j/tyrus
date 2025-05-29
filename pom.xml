@@ -120,11 +120,11 @@
         <glassfish.container.version>6.2.5</glassfish.container.version>
 
         <java.version>1.8</java.version>
-        <java11.build.outputDirectory>${project.basedir}/target11/classes</java11.build.outputDirectory>
+        <java11.build.outputDirectory>${project.basedir}/target11</java11.build.outputDirectory>
         <java11.sourceDirectory>${project.basedir}/src/main/java11</java11.sourceDirectory>
 
         <maven.compiler.plugin>3.14.0</maven.compiler.plugin>
-        <maven-javadoc-plugin.version>3.7.0</maven-javadoc-plugin.version>
+        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
         <maven.surefire.plugin.version>3.2.1</maven.surefire.plugin.version>
         <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
         <cyclonedx.mvn.plugin.version>2.8.0</cyclonedx.mvn.plugin.version>
@@ -173,6 +173,11 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.4.1</version>
+                </plugin>
                 <plugin>
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>3.1.0</version>
@@ -302,6 +307,7 @@
                             <_nodefaultversion>false</_nodefaultversion>
                             <Multi-Release>true</Multi-Release>
                             <_noimportjava>true</_noimportjava>
+                            <Require-Capability>osgi.ee;filter:="(&amp;(osgi.ee=JavaSE)(version=1.8))"</Require-Capability>
                         </instructions>
                     </configuration>
                 </plugin>
@@ -473,7 +479,7 @@
                         <configuration>
                             <jar>${project.build.directory}/${project.build.finalName}.jar</jar>
                             <files>
-                                <file>${project.basedir}/target11/classes/module-info.class</file>
+                                <file>${java11.build.outputDirectory}/module-info.class</file>
                             </files>
                             <skip>${jar.updater.modules.skip}</skip>
                             <dest>META-INF/versions/11</dest>
@@ -636,6 +642,16 @@
             <build>
                 <plugins>
                     <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${java11.build.outputDirectory}</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>build-helper-maven-plugin</artifactId>
                         <executions>
@@ -654,12 +670,26 @@
                         </executions>
                     </plugin>
                     <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <source>11</source>
-                            <target>11</target>
-                            <encoding>UTF-8</encoding>
-                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>base-compile</id>
+                                <goals><goal>compile</goal></goals>
+                                <configuration>
+                                    <outputDirectory>${java11.build.outputDirectory}</outputDirectory>
+                                    <release>11</release>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>default-compile</id>
+                                <configuration>
+                                    <excludes>
+                                        <exclude>module-info.java</exclude>
+                                    </excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                     <plugin>
                         <artifactId>maven-antrun-plugin</artifactId>
@@ -672,7 +702,6 @@
                                         <copy todir="${java11.build.outputDirectory}">
                                             <fileset dir="${project.build.outputDirectory}/" includes="module-info.class" />
                                         </copy>
-                                        <delete file="${project.build.outputDirectory}/module-info.class"/>
                                     </target>
                                 </configuration>
                                 <goals>
@@ -680,24 +709,6 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>clean.all</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-clean-plugin</artifactId>
-                        <configuration>
-                            <filesets>
-                                <fileset>
-                                    <directory>${project.build.outputDirectory}</directory>
-                                    <directory>${java11.build.outputDirectory}</directory>
-                                </fileset>
-                            </filesets>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>

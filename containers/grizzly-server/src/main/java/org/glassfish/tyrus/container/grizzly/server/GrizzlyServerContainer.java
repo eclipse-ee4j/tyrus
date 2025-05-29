@@ -219,6 +219,11 @@ public class GrizzlyServerContainer extends ServerContainerFactory {
                     applicationEventListener.onApplicationDestroyed();
                 }
             }
+
+            @Override
+            public Map<String, Object> getProperties() {
+                return localProperties;
+            }
         };
     }
 
