@@ -16,18 +16,10 @@
 
 package org.glassfish.tyrus.core.virtual;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Utility class for the virtual thread support.
@@ -118,100 +110,7 @@ public final class VirtualThreadSupport {
 
         @Override
         public ScheduledExecutorService getScheduledExecutorService(int nThreads) {
-            return new ScheduledExecutorService() {
-                final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-                final ExecutorService executorService = Executors.newThreadPerTaskExecutor(threadFactory);
-
-                @Override
-                public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-                    return scheduler.schedule(() -> executorService.submit(command).get(), delay, unit);
-                }
-
-                @Override
-                public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
-                    return scheduler.schedule(() -> executorService.submit(callable).get(), delay, unit);
-                }
-
-                @Override
-                public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay, long period, TimeUnit unit) {
-                    return scheduler.scheduleAtFixedRate(() -> executorService.execute(command), initialDelay, period, unit);
-                }
-
-                @Override
-                public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay, long delay, TimeUnit unit) {
-                    return scheduler.scheduleWithFixedDelay(() -> executorService.execute(command), initialDelay, delay, unit);
-                }
-
-                @Override
-                public void shutdown() {
-                    executorService.shutdown();
-                    scheduler.shutdown();
-                }
-
-                @Override
-                public List<Runnable> shutdownNow() {
-                    executorService.shutdown();
-                    return scheduler.shutdownNow();
-                }
-
-                @Override
-                public boolean isShutdown() {
-                    return scheduler.isShutdown();
-                }
-
-                @Override
-                public boolean isTerminated() {
-                    return scheduler.isTerminated();
-                }
-
-                @Override
-                public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
-                    return executorService.awaitTermination(timeout, unit) && scheduler.awaitTermination(timeout, unit);
-                }
-
-                @Override
-                public <T> Future<T> submit(Callable<T> task) {
-                    return executorService.submit(task);
-                }
-
-                @Override
-                public <T> Future<T> submit(Runnable task, T result) {
-                    return executorService.submit(task, result);
-                }
-
-                @Override
-                public Future<?> submit(Runnable task) {
-                    return executorService.submit(task);
-                }
-
-                @Override
-                public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks) throws InterruptedException {
-                    return executorService.invokeAll(tasks);
-                }
-
-                @Override
-                public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
-                        throws InterruptedException {
-                    return executorService.invokeAll(tasks, timeout, unit);
-                }
-
-                @Override
-                public <T> T invokeAny(Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {
-                    return executorService.invokeAny(tasks);
-                }
-
-                @Override
-                public <T> T invokeAny(Collection<? extends Callable<T>> tasks, long timeout, TimeUnit unit)
-                        throws InterruptedException, ExecutionException, TimeoutException {
-                    return executorService.invokeAny(tasks, timeout, unit);
-                }
-
-                @Override
-                public void execute(Runnable command) {
-                    executorService.execute(command);
-                }
-
-            };
+            return Executors.newScheduledThreadPool(nThreads);
         }
 
         @Override
@@ -228,7 +127,6 @@ public final class VirtualThreadSupport {
         public boolean isVirtual() {
             return true;
         }
-
     }
 
 
