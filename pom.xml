@@ -121,10 +121,11 @@
         <servlet.api.version>4.0.4</servlet.api.version>
         <spring.boot.version>2.6.7</spring.boot.version>
 
-        <maven.compiler.plugin>3.11.0</maven.compiler.plugin>
+        <maven.compiler.plugin>3.14.0</maven.compiler.plugin>
         <maven-javadoc-plugin.version>3.0.1</maven-javadoc-plugin.version>
-        <maven.surefire.plugin.version>3.2.1</maven.surefire.plugin.version>
+        <maven.surefire.plugin.version>3.5.3</maven.surefire.plugin.version>
         <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
+        <maven.bundle.plugin.version>4.1.0</maven.bundle.plugin.version>
 
         <api_package>javax.websocket</api_package>
         <impl_namespace>org.glassfish</impl_namespace>
@@ -140,7 +141,7 @@
         <packages.private>org.glassfish.*</packages.private>
 
         <!-- Non Final properties for impl jar -->
-        <apijar.bundle.version>1.1.2</apijar.bundle.version>
+        <apijar.bundle.version>1.1</apijar.bundle.version>
         <impljar.bundle.specversion>${spec_version}.99.b${build_number}</impljar.bundle.specversion>
         <impljar.maven.version>${new_impl_version}-b${build_number}</impljar.maven.version>
         <impljar.bundle.version>${spec_version}.99.b${build_number}</impljar.bundle.version>
@@ -289,12 +290,13 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.4</version> <!-- 5.1.5  brings dependencies on JDK packages -->
+                    <version>${maven.bundle.plugin.version}</version> <!-- 5.1.5  brings dependencies on JDK packages -->
                     <extensions>true</extensions>
                     <configuration>
                         <instructions>
                             <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                             <_nodefaultversion>false</_nodefaultversion>
+                            <_noimportjava>true</_noimportjava>
                         </instructions>
                     </configuration>
                 </plugin>
@@ -538,6 +540,15 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>felix_for_jdk17+</id>
+            <activation>
+                <jdk>[17,)</jdk>
+            </activation>
+            <properties>
+                <maven.bundle.plugin.version>5.1.9</maven.bundle.plugin.version>
+            </properties>
         </profile>
         <profile>
             <id>scan</id>
