@@ -524,6 +524,17 @@ public class SslContextConfigurator {
 
         try {
             TrustManagerFactory trustManagerFactory = null;
+            if ("SunMSCAPI".equals(System.getProperty(TRUST_STORE_PROVIDER))) {
+                try {
+                    KeyStore keyStore = KeyStore.getInstance(System.getProperty(TRUST_STORE_TYPE), "SunMSCAPI");
+                    keyStore.load(null, null);
+                    trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                    trustManagerFactory.init(keyStore);
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
             KeyManagerFactory keyManagerFactory = null;
 
             if (keyStoreBytes != null || keyStoreFile != null) {
