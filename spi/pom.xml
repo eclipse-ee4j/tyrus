@@ -40,12 +40,13 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <version>${maven.bundle.plugin.version}</version>
                 <inherited>true</inherited>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Export-Package>org.glassfish.tyrus.spi.*;version=${project.version}</Export-Package>
-                        <Import-Package>javax.websocket;version=${apijar.bundle.version},*</Import-Package>
+                        <Import-Package>!org.glassfish.tyrus.*,javax.websocket;version=${apijar.bundle.version},*</Import-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
                 </configuration>
