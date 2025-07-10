@@ -162,7 +162,6 @@
         <module>server</module>
         <module>spi</module>
         <module>tests</module>
-        <module>tools</module>
     </modules>
 
     <build>
@@ -557,6 +556,15 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>tools</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>tools</module>
+            </modules>
         </profile>
     </profiles>
 
