@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.glassfish.tyrus.tools</groupId>
         <artifactId>tyrus-tools-project</artifactId>
-        <version>1.22</version>
+        <version>1.99-SNAPSHOT</version>
     </parent>
 
     <groupId>org.glassfish.tyrus.tools.plugins</groupId>
