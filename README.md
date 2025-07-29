@@ -34,7 +34,7 @@ The [{{ site.latest20Version }} release](https://github.com/eclipse-ee4j/tyrus/r
 is the Jakarta EE 9 release of the Eclipse Tyrus project.
 
 
-## October 19, 2023 - Eclipse Tyrus {{ site.latestVersion }} Final Release ##
+## July 29, 2025 - Eclipse Tyrus {{ site.latestVersion }} Final Release ##
 
 The [{{ site.latestVersion }} release](https://github.com/eclipse-ee4j/tyrus/releases/tag/{{ site.latestVersion }})
 is the Jakarta EE 8 release of the Eclipse Tyrus project.
