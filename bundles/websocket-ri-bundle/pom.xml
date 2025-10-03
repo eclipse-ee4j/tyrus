@@ -247,6 +247,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <failOnError>false</failOnError>
+                    <outputDirectory>${project.build.directory}/apidocs</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>
