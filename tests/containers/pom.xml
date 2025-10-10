@@ -36,6 +36,14 @@
 
     <modules>
         <module>jdk-client</module>
-        <module>servlet</module>
     </modules>
+    <profiles>
+        <profile>
+            <id>JDK11+</id>
+            <activation><jdk>[11,)</jdk></activation>
+            <modules>
+                <module>servlet</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>

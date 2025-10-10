@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2011, 2024 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -68,10 +68,14 @@
 
     <developers>
         <developer>
+            <id>jan_supol</id>
             <name>Jan Supol</name>
             <organization>Oracle Corporation</organization>
-            <organizationUrl>http://www.oracle.com/</organizationUrl>
+            <organizationUrl>http://www.oracle.com</organizationUrl>
             <url>http://blog.supol.info</url>
+            <roles>
+                <role>developer</role>
+            </roles>
         </developer>
     </developers>
 
@@ -117,12 +121,18 @@
         <json-impl.version>1.1.4</json-impl.version>
         <servlet.api.version>6.0.0</servlet.api.version>
         <spring.boot.version>2.6.7</spring.boot.version>
+        <glassfish.container.version>7.0.25</glassfish.container.version>
 
+        <java.version>1.8</java.version>
+        <java11.build.outputDirectory>${project.basedir}/target11</java11.build.outputDirectory>
+        <java11.sourceDirectory>${project.basedir}/src/main/java11</java11.sourceDirectory>
 
-        <maven.compiler.plugin>3.11.0</maven.compiler.plugin>
-        <maven-javadoc-plugin.version>3.6.2</maven-javadoc-plugin.version>
-        <maven.surefire.plugin.version>3.2.1</maven.surefire.plugin.version>
+        <maven.compiler.plugin>3.14.0</maven.compiler.plugin>
+        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
+        <maven.surefire.plugin.version>3.5.3</maven.surefire.plugin.version>
         <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
+        <maven.bundle.plugin.version>4.1.0</maven.bundle.plugin.version>
+        <cyclonedx.mvn.plugin.version>2.8.0</cyclonedx.mvn.plugin.version>
 
         <api_package>jakarta.websocket</api_package>
         <impl_namespace>org.glassfish</impl_namespace>
@@ -146,6 +156,8 @@
         <impljar.impl.version>${new_spec_version}-b${build_number}</impljar.impl.version>
 
         <netbeans.hint.license>gf-cddl-gpl</netbeans.hint.license>
+
+        <jar.updater.modules.skip>org.glassfish.tyrus.samples:*,*:*-project,*:tyrus-archetype*,*:*-documentation,org.glassfish.tyrus.tests:*e2e*,org.glassfish.tyrus.tests.servlet*:*,org.glassfish.tyrus.bundles:*,org.glassfish.tyrus.tests:*containers*</jar.updater.modules.skip>
     </properties>
 
     <modules>
@@ -166,12 +178,17 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.4.1</version>
+                </plugin>
+                <plugin>
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.6.0</version>
+                    <version>3.7.1</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-source-plugin</artifactId>
@@ -179,7 +196,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.11.0</version>
+                    <version>${maven.compiler.plugin}</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-release-plugin</artifactId>
@@ -207,7 +224,7 @@
                 </plugin>
                 <plugin>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>3.4.0</version>
+                    <version>${maven.war.plugin.version}</version>
                     <configuration>
                         <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
@@ -286,13 +303,15 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>5.1.4</version> <!-- 5.1.5  brings dependencies on JDK packages -->
+                    <version>${maven.bundle.plugin.version}</version> <!-- 5.1.5  brings dependencies on JDK packages -->
                     <extensions>true</extensions>
                     <configuration>
                         <instructions>
                             <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                             <_nodefaultversion>false</_nodefaultversion>
-                            <Include-Resource>{maven-resources},${project.build.directory}/legal</Include-Resource>
+                            <Multi-Release>true</Multi-Release>
+                            <_noimportjava>true</_noimportjava>
+                            <Require-Capability>osgi.ee;filter:="(&amp;(osgi.ee=JavaSE)(version=1.8))"</Require-Capability>
                         </instructions>
                     </configuration>
                     <executions>
@@ -314,11 +333,14 @@
                         <doctitle>Tyrus ${project.version} API Documentation</doctitle>
                         <windowtitle>Tyrus ${project.version} API</windowtitle>
                         <links>
-                            <link>https://projects.eclipse.org/projects/ee4j.tyrus</link>
+                            <link>https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest/</link>
                         </links>
                         <excludePackageNames>
                             *.core.l10n.*:*.internal.*:org.glassfish.tyrus.core.wsadl.model
                         </excludePackageNames>
+                        <sourceFileExcludes>
+                            <sourceFileExclude>**/module-info.java</sourceFileExclude>
+                        </sourceFileExcludes>
                     </configuration>
                     <executions>
                         <execution>
@@ -339,6 +361,18 @@
                     <groupId>com.sun.tools.xjc.maven2</groupId>
                     <artifactId>maven-jaxb-plugin</artifactId>
                     <version>1.1.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.1.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>8.30</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -367,7 +401,7 @@
                 <executions>
                     <execution>
                         <id>attach-sources</id>
-                        <phase>verify</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
@@ -383,8 +417,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -407,14 +441,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.0</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.puppycrawl.tools</groupId>
-                        <artifactId>checkstyle</artifactId>
-                        <version>8.30</version>
-                    </dependency>
-                </dependencies>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -431,96 +457,73 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.glassfish.tyrus.tools.plugins</groupId>
+                <artifactId>tyrus-jar-updater</artifactId>
+                <version>1.0.0</version>
+                <executions>
+                    <execution>
+                        <id>copyLegal</id>
+                        <phase>pre-integration-test</phase>
+                        <goals><goal>update</goal></goals>
+                        <configuration>
+                            <jar>${project.build.directory}/${project.build.finalName}.jar</jar>
+                            <files>
+                                <file>${legal.source.folder}/LICENSE.md</file>
+                                <file>${legal.source.folder}/NOTICE.md</file>
+                            </files>
+                            <skip>${jar.updater.modules.skip}</skip>
+                            <dest>META-INF</dest>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copyLegalToSources</id>
+                        <phase>pre-integration-test</phase>
+                        <goals><goal>update</goal></goals>
+                        <configuration>
+                            <jar>${project.build.directory}/${project.build.finalName}-sources.jar</jar>
+                            <files>
+                                <file>${legal.source.folder}/LICENSE.md</file>
+                                <file>${legal.source.folder}/NOTICE.md</file>
+                            </files>
+                            <skip>${jar.updater.modules.skip}</skip>
+                            <dest>META-INF</dest>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copyModuleInfo</id>
+                        <phase>pre-integration-test</phase>
+                        <goals><goal>update</goal></goals>
+                        <configuration>
+                            <jar>${project.build.directory}/${project.build.finalName}.jar</jar>
+                            <files>
+                                <file>${java11.build.outputDirectory}/module-info.class</file>
+                            </files>
+                            <skip>${jar.updater.modules.skip}</skip>
+                            <dest>META-INF/versions/11</dest>
+                            <ignoreOnError>true</ignoreOnError>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copyModuleInfoSources</id>
+                        <phase>pre-integration-test</phase>
+                        <goals><goal>update</goal></goals>
+                        <configuration>
+                            <jar>${project.build.directory}/${project.build.finalName}-sources.jar</jar>
+                            <files>
+                                <file>${project.basedir}/src/main/java11/module-info.java</file>
+                            </files>
+                            <skip>${jar.updater.modules.skip}</skip>
+                            <dest>META-INF/versions/11</dest>
+                            <ignoreOnError>true</ignoreOnError>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
     <profiles>
-        <profile>
-            <id>copy-legal-docs</id>
-            <activation>
-                <file>
-                    <missing>${basedir}/src/test/java/org/glassfish/tyrus/test</missing>
-                </file>
-            </activation>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-resources-plugin</artifactId>
-                            <version>3.3.1</version>
-                            <extensions>true</extensions>
-                            <!-- Add legal information, NOTICE.md and LINCENSE.md to jars -->
-                            <executions>
-                                <execution>
-                                    <!-- copy the files to classes folder for maven-jar/war-plugin to grab it -->
-                                    <id>copy-legaldocs</id>
-                                    <goals>
-                                        <goal>copy-resources</goal>
-                                    </goals>
-                                    <phase>process-sources</phase>
-                                    <configuration>
-                                        <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                                        <resources>
-                                            <resource>
-                                                <directory>${legal.source.folder}</directory>
-                                                <targetPath>META-INF/</targetPath>
-                                                <includes>
-                                                    <include>NOTICE.md</include>
-                                                    <include>LICENSE.md</include>
-                                                </includes>
-                                            </resource>
-                                        </resources>
-                                    </configuration>
-                                </execution>
-                                <execution>
-                                    <!-- copy the files to source folder for maven-source-plugin to grab it -->
-                                    <id>copy-legaldocs-to-sources</id>
-                                    <goals>
-                                        <goal>copy-resources</goal>
-                                    </goals>
-                                    <phase>process-sources</phase>
-                                    <configuration>
-                                        <outputDirectory>${project.build.directory}/generated-sources/rsrc-gen</outputDirectory>
-                                        <resources>
-                                            <resource>
-                                                <directory>${legal.source.folder}</directory>
-                                                <targetPath>META-INF/</targetPath>
-                                                <includes>
-                                                    <include>NOTICE.md</include>
-                                                    <include>LICENSE.md</include>
-                                                </includes>
-                                            </resource>
-                                        </resources>
-                                    </configuration>
-                                </execution>
-                                <execution>
-                                    <!-- copy the files to legal folder for felix plugin to grab it -->
-                                    <id>copy-legaldocs-to-osgi-bundles</id>
-                                    <goals>
-                                        <goal>copy-resources</goal>
-                                    </goals>
-                                    <phase>process-sources</phase>
-                                    <configuration>
-                                        <outputDirectory>${project.build.directory}/legal</outputDirectory>
-                                        <resources>
-                                            <resource>
-                                                <directory>${legal.source.folder}</directory>
-                                                <targetPath>META-INF/</targetPath>
-                                                <includes>
-                                                    <include>NOTICE.md</include>
-                                                    <include>LICENSE.md</include>
-                                                </includes>
-                                            </resource>
-                                        </resources>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
         <profile>
             <id>release</id>
             <build>
@@ -592,6 +595,156 @@
                             <target>1.8</target>
                             <encoding>UTF-8</encoding>
                         </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>felix_for_jdk17+</id>
+            <activation>
+                <jdk>[17,)</jdk>
+            </activation>
+            <properties>
+                <maven.bundle.plugin.version>5.1.9</maven.bundle.plugin.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>scan</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>12.1.1</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>tools</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>tools</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>sbom</id>
+            <activation>
+                <property>
+                    <name>!skipSBOM</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.cyclonedx</groupId>
+                        <artifactId>cyclonedx-maven-plugin</artifactId>
+                        <version>${cyclonedx.mvn.plugin.version}</version>
+                        <inherited>true</inherited>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>makeAggregateBom</goal>
+                                </goals>
+                                <configuration>
+                                    <!--                            <schemaVersion>1.4</schemaVersion>-->
+                                    <projectType>framework</projectType>
+                                    <excludeTestProject>true</excludeTestProject>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>jdk11+</id>
+            <activation>
+                <jdk>[11,)</jdk>
+                <file><exists>src/main/java11/module-info.java</exists></file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${java11.build.outputDirectory}</directory>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>add.java11</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>add-source</goal>
+                                </goals>
+                                <configuration>
+                                    <sources>
+                                        <source>src/main/java11</source>
+                                    </sources>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>base-compile</id>
+                                <goals><goal>compile</goal></goals>
+                                <configuration>
+                                    <outputDirectory>${java11.build.outputDirectory}</outputDirectory>
+                                    <release>11</release>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>default-compile</id>
+                                <configuration>
+                                    <excludes>
+                                        <exclude>module-info.java</exclude>
+                                    </excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>test</phase>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${java11.build.outputDirectory}" />
+                                        <copy todir="${java11.build.outputDirectory}">
+                                            <fileset dir="${project.build.outputDirectory}/" includes="module-info.class" />
+                                        </copy>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
@@ -771,7 +924,7 @@
             <dependency>
                 <groupId>org.glassfish.main.extras</groupId>
                 <artifactId>glassfish-embedded-all</artifactId>
-                <version>${glassfish.version}</version>
+                <version>${glassfish.container.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.xml.bind</groupId>
