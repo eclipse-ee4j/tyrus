@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ public class MultiReleaseTest {
     @Test
     public void testIsJdkMultiRelease() throws IOException, XmlPullParserException {
         TestResult result = testJdkVersions("11", jdk11multiRelease(properties));
+        result.append(testJdkVersions("21", jdk21multiRelease(properties)));
         //Assertions.assertTrue(result.result(), "Some error occurred, see previous messages");
         Assert.assertTrue("Some error occurred, see previous messages", result.result());
     }
@@ -116,9 +118,21 @@ public class MultiReleaseTest {
 
     private static DependencyPair[] jdk11multiRelease(Properties properties) throws XmlPullParserException, IOException {
         String tyrusVersion = MavenUtil.getTyrusVersion(properties);
-        if (tyrusVersion.startsWith("2.0")) {
+        if (tyrusVersion.startsWith("2.")) {
             return MavenUtil.streamTyrusJars()
                     .map(d -> new DependencyPair(d.getGroupId(), d.getArtifactId()))
+                    .collect(Collectors.toList())
+                    .toArray(new DependencyPair[0]);
+        }
+        return new DependencyPair[]{};
+    }
+
+    private static DependencyPair[] jdk21multiRelease(Properties properties) throws XmlPullParserException, IOException {
+        String tyrusVersion = MavenUtil.getTyrusVersion(properties);
+        if (tyrusVersion.startsWith("2.")) {
+            return MavenUtil.streamTyrusJars()
+                    .map(d -> new DependencyPair(d.getGroupId(), d.getArtifactId()))
+                    .filter(dependencyPair -> dependencyPair.artifactId().equals("tyrus-core"))
                     .collect(Collectors.toList())
                     .toArray(new DependencyPair[0]);
         }
