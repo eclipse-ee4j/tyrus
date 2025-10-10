@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2024, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -118,7 +118,7 @@ public class MultiReleaseTest {
 
     private static DependencyPair[] jdk11multiRelease(Properties properties) throws XmlPullParserException, IOException {
         String tyrusVersion = MavenUtil.getTyrusVersion(properties);
-        if (tyrusVersion.startsWith("2.")) {
+        if (tyrusVersion.startsWith("2.0")) {
             return MavenUtil.streamTyrusJars()
                     .map(d -> new DependencyPair(d.getGroupId(), d.getArtifactId()))
                     .collect(Collectors.toList())

@@ -34,9 +34,7 @@
         <module>async</module>
         <module>autobahn-server</module>
         <module>basic</module>
-<!-- Until new GF with new grizzly is released
         <module>embedded-glassfish-test</module>
--->
         <module>dynamic-deploy</module>
         <module>noappconfig</module>
         <module>oneappconfig</module>

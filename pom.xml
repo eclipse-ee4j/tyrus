@@ -112,7 +112,6 @@
         <cdi-api.version>4.0.1</cdi-api.version>
         <ejb-api.version>4.0.1</ejb-api.version>
         <grizzly.version>4.0.2</grizzly.version>
-        <glassfish.version>7.0.9</glassfish.version>
         <inject.api.version>2.0.1</inject.api.version><!-- inherited from CDI, do not update unless inline with it -->
         <jaxb.api.version>4.0.1</jaxb.api.version>
         <jaxb.ri.version>4.0.4</jaxb.ri.version>
@@ -123,9 +122,7 @@
         <spring.boot.version>2.6.7</spring.boot.version>
         <glassfish.container.version>7.0.25</glassfish.container.version>
 
-        <java.version>1.8</java.version>
-        <java11.build.outputDirectory>${project.basedir}/target11</java11.build.outputDirectory>
-        <java11.sourceDirectory>${project.basedir}/src/main/java11</java11.sourceDirectory>
+        <java.version>11</java.version>
 
         <maven.compiler.plugin>3.14.0</maven.compiler.plugin>
         <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
@@ -309,7 +306,6 @@
                         <instructions>
                             <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                             <_nodefaultversion>false</_nodefaultversion>
-                            <Multi-Release>true</Multi-Release>
                             <_noimportjava>true</_noimportjava>
                             <Require-Capability>osgi.ee;filter:="(&amp;(osgi.ee=JavaSE)(version=1.8))"</Require-Capability>
                         </instructions>
@@ -490,34 +486,6 @@
                             <dest>META-INF</dest>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>copyModuleInfo</id>
-                        <phase>pre-integration-test</phase>
-                        <goals><goal>update</goal></goals>
-                        <configuration>
-                            <jar>${project.build.directory}/${project.build.finalName}.jar</jar>
-                            <files>
-                                <file>${java11.build.outputDirectory}/module-info.class</file>
-                            </files>
-                            <skip>${jar.updater.modules.skip}</skip>
-                            <dest>META-INF/versions/11</dest>
-                            <ignoreOnError>true</ignoreOnError>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copyModuleInfoSources</id>
-                        <phase>pre-integration-test</phase>
-                        <goals><goal>update</goal></goals>
-                        <configuration>
-                            <jar>${project.build.directory}/${project.build.finalName}-sources.jar</jar>
-                            <files>
-                                <file>${project.basedir}/src/main/java11/module-info.java</file>
-                            </files>
-                            <skip>${jar.updater.modules.skip}</skip>
-                            <dest>META-INF/versions/11</dest>
-                            <ignoreOnError>true</ignoreOnError>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
         </plugins>
@@ -584,22 +552,6 @@
             </modules>
         </profile>
         <profile>
-            <id>JDK_8_for_IDE</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <source>1.8</source>
-                            <target>1.8</target>
-                            <encoding>UTF-8</encoding>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
             <id>felix_for_jdk17+</id>
             <activation>
                 <jdk>[17,)</jdk>
@@ -662,87 +614,6 @@
                                     <projectType>framework</projectType>
                                     <excludeTestProject>true</excludeTestProject>
                                 </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>jdk11+</id>
-            <activation>
-                <jdk>[11,)</jdk>
-                <file><exists>src/main/java11/module-info.java</exists></file>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-clean-plugin</artifactId>
-                        <configuration>
-                            <filesets>
-                                <fileset>
-                                    <directory>${java11.build.outputDirectory}</directory>
-                                </fileset>
-                            </filesets>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>add.java11</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>add-source</goal>
-                                </goals>
-                                <configuration>
-                                    <sources>
-                                        <source>src/main/java11</source>
-                                    </sources>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>base-compile</id>
-                                <goals><goal>compile</goal></goals>
-                                <configuration>
-                                    <outputDirectory>${java11.build.outputDirectory}</outputDirectory>
-                                    <release>11</release>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>default-compile</id>
-                                <configuration>
-                                    <excludes>
-                                        <exclude>module-info.java</exclude>
-                                    </excludes>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <phase>test</phase>
-                                <configuration>
-                                    <target>
-                                        <mkdir dir="${java11.build.outputDirectory}" />
-                                        <copy todir="${java11.build.outputDirectory}">
-                                            <fileset dir="${project.build.outputDirectory}/" includes="module-info.class" />
-                                        </copy>
-                                    </target>
-                                </configuration>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
                             </execution>
                         </executions>
                     </plugin>

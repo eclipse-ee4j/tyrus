@@ -34,7 +34,6 @@
         <glassfish.home>${project.build.directory}/glassfish7</glassfish.home>
         <modules.dir>${glassfish.home}/glassfish/modules</modules.dir>
 <!--        <websocket-api.version>2.1.0-SNAPSHOT</websocket-api.version>-->
-        <glassfish.container.version>${glassfish.version}</glassfish.container.version>
         <junit.jupiter.version>5.7.2</junit.jupiter.version>
     </properties>
 
@@ -127,6 +126,12 @@
             <groupId>org.glassfish.main.web</groupId>
             <artifactId>web-core</artifactId>
             <version>${glassfish.container.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.grizzly</groupId>
+            <artifactId>grizzly-http</artifactId>
+            <version>${grizzly.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -309,4 +314,20 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>JDK 11</id>
+            <activation><jdk>[11,21)</jdk></activation>
+            <properties>
+                <glassfish.container.version>7.0.9</glassfish.container.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>JDK 21</id>
+            <activation><jdk>[21,)</jdk></activation>
+            <properties>
+                <glassfish.container.version>7.0.25</glassfish.container.version>
+            </properties>
+        </profile>
+    </profiles>
 </project>

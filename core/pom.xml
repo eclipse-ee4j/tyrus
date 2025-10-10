@@ -78,6 +78,7 @@
                             org.osgi.framework.*;version="!",
                             javax.naming,*
                         </Import-Package>
+                        <Multi-Release>true</Multi-Release>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
                     <excludeDependencies>org.osgi.core</excludeDependencies>
@@ -200,9 +201,6 @@
                         <artifactId>maven-clean-plugin</artifactId>
                         <configuration>
                             <filesets>
-                                <fileset>
-                                    <directory>${java11.build.outputDirectory}</directory>
-                                </fileset>
                                 <fileset>
                                     <directory>${java21.build.outputDirectory}</directory>
                                 </fileset>
