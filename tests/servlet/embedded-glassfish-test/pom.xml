@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2021, 2024 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2021, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0, which is available at
@@ -34,7 +34,7 @@
         <glassfish.home>${project.build.directory}/glassfish7</glassfish.home>
         <modules.dir>${glassfish.home}/glassfish/modules</modules.dir>
 <!--        <websocket-api.version>2.1.0-SNAPSHOT</websocket-api.version>-->
-        <glassfish.container.version>${glassfish.version}</glassfish.container.version>
+<!--        <glassfish.container.version>${glassfish.version}</glassfish.container.version>-->
         <junit.jupiter.version>5.7.2</junit.jupiter.version>
     </properties>
 
@@ -129,6 +129,11 @@
             <version>${glassfish.container.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.grizzly</groupId>
+            <artifactId>grizzly-http</artifactId>
+            <version>${grizzly.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -143,7 +148,7 @@
                         </goals>
                         <configuration>
                             <includes>
-                                <include>**/*TestIT</include>
+                                <include>**/WsServletTestIT</include>
                             </includes>
                             <dependenciesToScan>org.glassfish.tyrus.tests.servlet:tyrus-tests-servlet-embedded-gf</dependenciesToScan>
                             <systemPropertyVariables>
@@ -308,4 +313,20 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>JDK 11</id>
+            <activation><jdk>[11,21)</jdk></activation>
+            <properties>
+                <glassfish.container.version>7.0.9</glassfish.container.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>JDK 21</id>
+            <activation><jdk>[21,)</jdk></activation>
+            <properties>
+                <glassfish.container.version>7.0.25</glassfish.container.version>
+            </properties>
+        </profile>
+    </profiles>
 </project>
