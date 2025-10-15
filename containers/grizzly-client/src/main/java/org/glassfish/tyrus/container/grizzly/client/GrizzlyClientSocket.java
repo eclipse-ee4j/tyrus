@@ -760,9 +760,12 @@ public class GrizzlyClientSocket {
             // if we are trying to access "wss" scheme and we don't have sslEngineConfigurator instance
             // we should try to create ssl connection using JVM properties.
             if ("wss".equalsIgnoreCase(uri.getScheme())) {
-                final SSLContextConfigurator defaultConfig = new SSLContextConfigurator();
-                defaultConfig.retrieve(System.getProperties());
-                return new ExtendedSSLEngineConfigurator(defaultConfig.createSSLContext(), uri.getHost());
+                if (sslContext == null) {
+                    final SSLContextConfigurator defaultConfig = new SSLContextConfigurator();
+                    defaultConfig.retrieve(System.getProperties());
+                    sslContext = defaultConfig.createSSLContext(false);
+                }
+                return new ExtendedSSLEngineConfigurator(sslContext, uri.getHost());
             } else {
                 return null;
             }

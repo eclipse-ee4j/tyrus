@@ -148,7 +148,7 @@
                         </goals>
                         <configuration>
                             <includes>
-                                <include>**/WsServletTestIT</include>
+                                <include>**/*TestIT</include>
                             </includes>
                             <dependenciesToScan>org.glassfish.tyrus.tests.servlet:tyrus-tests-servlet-embedded-gf</dependenciesToScan>
                             <systemPropertyVariables>
