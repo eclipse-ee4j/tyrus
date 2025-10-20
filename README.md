@@ -23,7 +23,7 @@ broadcasting.
 The [{{ site.latest22Version }} release](https://github.com/eclipse-ee4j/tyrus/releases/tag/{{ site.latest22Version }})
 is the Jakarta EE 11 release of the Eclipse Tyrus project.
 
-## January 17, 2024 - Eclipse Tyrus {{ site.latest21Version }} Final Release ##
+## October 17, 2025 - Eclipse Tyrus {{ site.latest21Version }} Final Release ##
 
 The [{{ site.latest21Version }} release](https://github.com/eclipse-ee4j/tyrus/releases/tag/{{ site.latest21Version }})
 is the Jakarta EE 10 release of the Eclipse Tyrus project.
@@ -48,7 +48,7 @@ is the Jakarta EE 8 release of the Eclipse Tyrus project.
 
 #### Tyrus 2.1 (Jakarta EE 10)
 - [Tyrus 2.1.x documentation page](https://eclipse-ee4j.github.io/tyrus-project.github.io/documentation/latest/index/)
-- [Tyrus 2.1.x api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest/)
+- [Tyrus 2.1.x api-docs page](https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest/apidocs)
 
 
 #### Tyrus 2.0 (Jakarta EE 9)
