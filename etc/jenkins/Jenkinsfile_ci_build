@@ -18,7 +18,7 @@ pipeline {
                     }
                     steps {
                         sh '''
-                               mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true -Pstaging
+                               mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer clean install -Dmaven.javadoc.skip=true
                             '''
                     }
                 }
@@ -32,7 +32,7 @@ pipeline {
                     }
                     steps {
                         sh '''
-                                mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true -Pstaging
+                                mvn -U -C -Dtyrus.test.container.client=org.glassfish.tyrus.container.grizzly.client.GrizzlyClientContainer -Pbundles clean install -Dmaven.javadoc.skip=true
                             '''
                     }
                 }

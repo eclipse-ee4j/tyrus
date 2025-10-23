@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -17,15 +17,19 @@
 package org.glassfish.tyrus.core;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jakarta.websocket.WebSocketContainer;
+import org.glassfish.tyrus.core.collection.LazyValue;
+import org.glassfish.tyrus.core.collection.Values;
+import org.glassfish.tyrus.core.virtual.LoomishExecutors;
 
 /**
  * Base WebSocket container.
@@ -57,7 +61,7 @@ public abstract class BaseContainer extends ExecutorServiceProvider implements W
 
         if (managedExecutorService == null || managedScheduledExecutorService == null) {
             // at least one of the managed executor services is null, a local one will be created instead
-            threadFactory = new DaemonThreadFactory();
+            threadFactory = new DaemonThreadFactory(this::getProperties);
         } else {
             // only managed executor services will be used, the thread factory won't be needed.
             threadFactory = null;
@@ -81,7 +85,7 @@ public abstract class BaseContainer extends ExecutorServiceProvider implements W
         if (executorService == null) {
             synchronized (EXECUTORS_CLEAN_UP_LOCK) {
                 if (executorService == null) {
-                    executorService = Executors.newCachedThreadPool(threadFactory);
+                    executorService = VirtualThreadUtil.withConfig(getProperties(), threadFactory, null).newCachedThreadPool();
                 }
             }
         }
@@ -106,7 +110,8 @@ public abstract class BaseContainer extends ExecutorServiceProvider implements W
         if (scheduledExecutorService == null) {
             synchronized (EXECUTORS_CLEAN_UP_LOCK) {
                 if (scheduledExecutorService == null) {
-                    scheduledExecutorService = Executors.newScheduledThreadPool(10, threadFactory);
+                    scheduledExecutorService =
+                            VirtualThreadUtil.withConfig(getProperties(), threadFactory, null).getScheduledExecutorService(10);
                 }
             }
         }
@@ -147,7 +152,16 @@ public abstract class BaseContainer extends ExecutorServiceProvider implements W
         }
     }
 
-    private ExecutorService lookupManagedExecutorService() {
+    /**
+     * Container properties.
+     * <p>
+     * Used to set container specific configuration.
+     *
+     * @return map containing container properties.
+     */
+    public abstract Map<String, Object> getProperties();
+
+    private static ExecutorService lookupManagedExecutorService() {
         // Get the default ManagedExecutorService, if available
         try {
             // TYRUS-256: Tyrus client on Android
@@ -168,7 +182,7 @@ public abstract class BaseContainer extends ExecutorServiceProvider implements W
         return null;
     }
 
-    private ScheduledExecutorService lookupManagedScheduledExecutorService() {
+    private static ScheduledExecutorService lookupManagedScheduledExecutorService() {
         try {
             // TYRUS-256: Tyrus client on Android
             final Class<?> aClass = Class.forName("javax.naming.InitialContext");
@@ -193,14 +207,16 @@ public abstract class BaseContainer extends ExecutorServiceProvider implements W
         static final AtomicInteger poolNumber = new AtomicInteger(1);
         final AtomicInteger threadNumber = new AtomicInteger(1);
         final String namePrefix;
+        final LazyValue<LoomishExecutors> lazyExecutors;
 
-        DaemonThreadFactory() {
+        DaemonThreadFactory(Supplier<Map<String, Object>> mapSupplier) {
             namePrefix = "tyrus-" + poolNumber.getAndIncrement() + "-thread-";
+            lazyExecutors = Values.lazy(() -> VirtualThreadUtil.withConfig(mapSupplier.get(), null, null));
         }
 
         @Override
         public Thread newThread(@SuppressWarnings("NullableProblems") Runnable r) {
-            Thread t = new Thread(null, r, namePrefix + threadNumber.getAndIncrement(), 0);
+            Thread t = lazyExecutors.get().newThread(namePrefix + threadNumber.getAndIncrement(), r);
             if (!t.isDaemon()) {
                 t.setDaemon(true);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -18,6 +18,8 @@ package org.glassfish.tyrus.container.jdk.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
@@ -44,7 +46,7 @@ import javax.net.ssl.SSLEngine;
  * @deprecated Please use {@link org.glassfish.tyrus.client.SslEngineConfigurator}.
  */
 public class SslEngineConfigurator {
-    private final Object sync = new Object();
+    private final Lock sync = new ReentrantLock();
 
     protected volatile SslContextConfigurator sslContextConfiguration;
 
@@ -170,10 +172,13 @@ public class SslEngineConfigurator {
      */
     public SSLEngine createSSLEngine() {
         if (sslContext == null) {
-            synchronized (sync) {
+            sync.lock();
+            try {
                 if (sslContext == null) {
                     sslContext = sslContextConfiguration.createSSLContext();
                 }
+            } finally {
+                sync.unlock();
             }
         }
 
@@ -297,10 +302,13 @@ public class SslEngineConfigurator {
 
     public SSLContext getSslContext() {
         if (sslContext == null) {
-            synchronized (sync) {
+            sync.lock();
+            try {
                 if (sslContext == null) {
                     sslContext = sslContextConfiguration.createSSLContext();
                 }
+            } finally {
+                sync.unlock();
             }
         }
 

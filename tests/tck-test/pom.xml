@@ -38,10 +38,10 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <tyrus.version>2.2.0-M1</tyrus.version> <!-- the public version that pass the tck -->
-        <glassfish.container.version>8.0.0-M3</glassfish.container.version>
+        <glassfish.container.version>8.0.0-M9</glassfish.container.version>
         <glassfish.home>${project.build.directory}/glassfish8</glassfish.home>
         <modules.dir>${glassfish.home}/glassfish/modules</modules.dir>
-        <jakarta.platform.version>10.0.0</jakarta.platform.version>
+        <jakarta.platform.version>11.0.0-M3</jakarta.platform.version>
         <junit.jupiter.version>5.7.2</junit.jupiter.version>
         <jakarta.websocket.version>2.2.0</jakarta.websocket.version>
         <tck.artifactId>websocket-tck-spec-tests</tck.artifactId>
