@@ -42,4 +42,28 @@ final class DependencyResolver {
         request.setRepositories(remoteRepos);
         return repoSystem.resolveArtifact(repoSession, request).getArtifact();
     }
+
+    static Artifact resolveSource(org.apache.maven.model.Dependency d, List<RemoteRepository> remoteRepos,
+                                  RepositorySystem repoSystem, RepositorySystemSession repoSession)
+            throws ArtifactResolutionException {
+        DefaultArtifact artifact = new DefaultArtifact(
+                d.getGroupId(), d.getArtifactId(), "sources", d.getType(), d.getVersion()
+        );
+        ArtifactRequest request = new ArtifactRequest();
+        request.setArtifact(artifact);
+        request.setRepositories(remoteRepos);
+        return repoSystem.resolveArtifact(repoSession, request).getArtifact();
+    }
+
+    static Artifact resolveJavadoc(org.apache.maven.model.Dependency d, List<RemoteRepository> remoteRepos,
+                                   RepositorySystem repoSystem, RepositorySystemSession repoSession)
+            throws ArtifactResolutionException {
+        DefaultArtifact artifact = new DefaultArtifact(
+                d.getGroupId(), d.getArtifactId(), "javadoc", d.getType(), d.getVersion()
+        );
+        ArtifactRequest request = new ArtifactRequest();
+        request.setArtifact(artifact);
+        request.setRepositories(remoteRepos);
+        return repoSystem.resolveArtifact(repoSession, request).getArtifact();
+    }
 }

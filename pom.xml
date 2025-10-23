@@ -319,7 +319,7 @@
                         <doctitle>Tyrus ${project.version} API Documentation</doctitle>
                         <windowtitle>Tyrus ${project.version} API</windowtitle>
                         <links>
-                            <link>https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest/</link>
+                            <link>https://eclipse-ee4j.github.io/tyrus-project.github.io/apidocs/latest22x/</link>
                         </links>
                         <excludePackageNames>
                             *.core.l10n.*:*.internal.*:org.glassfish.tyrus.core.wsadl.model
