@@ -27,7 +27,7 @@
 
     <groupId>org.glassfish.tyrus.tools.plugins</groupId>
     <artifactId>tyrus-jar-updater</artifactId>
-    <version>1.0.0</version>
+    <version>2.2.1</version>
     <packaging>maven-plugin</packaging>
     <name>Tyrus Jar Updater</name>
 
