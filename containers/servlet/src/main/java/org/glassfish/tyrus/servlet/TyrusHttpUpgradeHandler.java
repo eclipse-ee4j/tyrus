@@ -281,6 +281,7 @@ public class TyrusHttpUpgradeHandler implements HttpUpgradeHandler, ReadListener
                 connection.close(new CloseReason(CloseReason.CloseCodes.getCloseCode(closeCode), closeReason));
                 closed = true;
                 wc.close();
+                upgradeInfo = null;
             } catch (Exception e) {
                 LOGGER.log(Level.CONFIG, e.getMessage(), e);
             }
@@ -293,6 +294,7 @@ public class TyrusHttpUpgradeHandler implements HttpUpgradeHandler, ReadListener
                 connection.close(CloseReasons.create(CloseReason.CloseCodes.getCloseCode(closeCode), closeReason));
                 closed = true;
                 wc.close();
+                upgradeInfo = null;
             } catch (Exception e) {
                 LOGGER.log(Level.CONFIG, e.getMessage(), e);
             }
