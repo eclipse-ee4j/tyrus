@@ -380,7 +380,7 @@ public class GrizzlyClientSocket {
                     } catch (Exception e) {
                         closeTransport(privateTransport);
                         throw Exceptions.deploymentException(String.format("Connection to '%s' failed.", requestURI),
-                                                      e.getCause());
+                                                      e);
                     }
                 }
 
