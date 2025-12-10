@@ -74,7 +74,7 @@ import org.glassfish.grizzly.utils.Charsets;
  * @author Alexey Stashok
  * @author Pavel Bucek
  */
-class GrizzlyServerFilter extends BaseFilter {
+public class GrizzlyServerFilter extends BaseFilter {
 
     private static final Logger LOGGER = Grizzly.logger(GrizzlyServerFilter.class);
 

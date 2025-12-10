@@ -36,7 +36,7 @@ public class WebSocketAddOn implements AddOn {
     private final ServerContainer serverContainer;
     private final String contextPath;
 
-    WebSocketAddOn(ServerContainer serverContainer, String contextPath) {
+    public WebSocketAddOn(ServerContainer serverContainer, String contextPath) {
         this.serverContainer = serverContainer;
         this.contextPath = contextPath;
     }
