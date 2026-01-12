@@ -73,9 +73,8 @@
                         <plugin>
                             <groupId>org.eclipse.jetty</groupId>
                             <artifactId>jetty-maven-plugin</artifactId>
-                            <version>9.2.1.v20140609</version>
+                            <version>11.0.26</version>
                             <configuration>
-                                <scanIntervalSeconds>10</scanIntervalSeconds>
                                 <stopPort>${tyrus.test.port2}</stopPort>
                                 <stopKey>STOP</stopKey>
                                 <stopWait>5</stopWait>
@@ -94,10 +93,6 @@
                                     <goals>
                                         <goal>start</goal>
                                     </goals>
-                                    <configuration>
-                                        <scanIntervalSeconds>0</scanIntervalSeconds>
-                                        <daemon>true</daemon>
-                                    </configuration>
                                 </execution>
                                 <execution>
                                     <id>stop-jetty</id>
