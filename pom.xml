@@ -111,7 +111,7 @@
         <cdi-api.version>4.1.0</cdi-api.version>
         <ejb-api.version>4.0.1</ejb-api.version>
         <grizzly.version>4.0.2</grizzly.version>
-        <glassfish.version>8.0.0-JDK17-M6</glassfish.version>
+        <glassfish.version>7.1.0</glassfish.version>
         <inject.api.version>2.0.1</inject.api.version><!-- inherited from CDI, do not update unless inline with it -->
         <jaxb.api.version>4.0.2</jaxb.api.version>
         <jaxb.ri.version>4.0.5</jaxb.ri.version>
@@ -154,6 +154,8 @@
         <netbeans.hint.license>gf-cddl-gpl</netbeans.hint.license>
 
         <jar.updater.modules.skip>org.glassfish.tyrus.samples:*,*:*-project,*:tyrus-archetype*,*:*-documentation,org.glassfish.tyrus.tests:*e2e*,org.glassfish.tyrus.tests.servlet*:*,org.glassfish.tyrus.bundles:*,org.glassfish.tyrus.tests:*containers*</jar.updater.modules.skip>
+
+        <tyrus.test.port>8025</tyrus.test.port>
     </properties>
 
     <modules>
