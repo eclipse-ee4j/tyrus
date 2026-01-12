@@ -152,7 +152,7 @@
                             </includes>
                             <dependenciesToScan>org.glassfish.tyrus.tests.servlet:tyrus-tests-servlet-embedded-gf</dependenciesToScan>
                             <systemPropertyVariables>
-                                <tyrus.test.port>8080</tyrus.test.port>
+                                <tyrus.test.port>${tyrus.test.port}</tyrus.test.port>
                                 <junit.log.traceflag>true</junit.log.traceflag>
                             </systemPropertyVariables>
                             <environmentVariables>

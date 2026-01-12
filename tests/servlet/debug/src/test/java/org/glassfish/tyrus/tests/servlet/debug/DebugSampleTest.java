@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -219,7 +220,8 @@ public class DebugSampleTest extends TestContainer {
                     onOpenLatch.countDown();
                 }
 
-            }, ClientEndpointConfig.Builder.create().build(), URI.create("ws://localhost:8025/testAuthentication"));
+            }, ClientEndpointConfig.Builder.create().build(),
+                URI.create("ws://localhost:" + getPort() + "/testAuthentication"));
 
             assertTrue(onOpenLatch.await(3, TimeUnit.SECONDS));
         } catch (Exception e) {

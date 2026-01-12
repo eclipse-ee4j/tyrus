@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -57,9 +58,9 @@ import static org.junit.Assert.*;
  */
 public class RetryAfterTest extends TestContainer {
 
-    private static final int REDIRECTION_PORT = 8026;
     private static final HttpStatus SERVICE_UNAVAILABLE = HttpStatus.SERVICE_UNAVAILABLE_503;
     private static final String CONTEXT_ROOT = "/retry-after-echo";
+    private final int redirectionPort = getPort() + 1;
 
     public RetryAfterTest() {
         setContextPath(CONTEXT_ROOT);
@@ -104,9 +105,8 @@ public class RetryAfterTest extends TestContainer {
         HttpServer httpServer = null;
         try {
 
-            httpServer = startHttpServer(
-                    REDIRECTION_PORT,
-                    new MultipleRetryAfterHandler(1, retryAfter, "ws://localhost:8025/retry-after-echo/echo"));
+            httpServer = startHttpServer(redirectionPort,
+                new MultipleRetryAfterHandler(1, retryAfter, "ws://localhost:" + getPort() + "/retry-after-echo/echo"));
 
             final ClientManager client = ClientManager.createClient();
             final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
@@ -134,7 +134,7 @@ public class RetryAfterTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create("ws://localhost:8026/retry-after-echo/echo"));
+            }, cec, URI.create("ws://localhost:" + redirectionPort + "/retry-after-echo/echo"));
 
             assertTrue("Message has not been received", messageLatch.await(1, TimeUnit.SECONDS));
         } finally {
@@ -263,10 +263,8 @@ public class RetryAfterTest extends TestContainer {
         HttpServer httpServer = null;
         try {
 
-            httpServer = startHttpServer(
-                    REDIRECTION_PORT,
-                    new MultipleRetryAfterHandler(numberOfRetries, retryAfter,
-                                                  "ws://localhost:8025/retry-after-echo/echo"));
+            httpServer = startHttpServer(redirectionPort, new MultipleRetryAfterHandler(numberOfRetries, retryAfter,
+                "ws://localhost:" + getPort() + "/retry-after-echo/echo"));
 
             final ClientManager client = ClientManager.createClient();
             final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
@@ -293,7 +291,7 @@ public class RetryAfterTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create("ws://localhost:8026/retry-after-echo/echo"));
+            }, cec, URI.create("ws://localhost:" + redirectionPort + "/retry-after-echo/echo"));
 
             fail("Connection to the endpoint should fail");
         } catch (Exception e) {
@@ -319,9 +317,8 @@ public class RetryAfterTest extends TestContainer {
         HttpServer httpServer = null;
         try {
 
-            httpServer = startHttpServer(
-                    REDIRECTION_PORT, new MultipleRetryAfterHandler(numberOfRetries, retryAfter,
-                                                                    "ws://localhost:8025/retry-after-echo/echo"));
+            httpServer = startHttpServer(redirectionPort, new MultipleRetryAfterHandler(numberOfRetries, retryAfter,
+                "ws://localhost:" + getPort() + "/retry-after-echo/echo"));
 
             final ClientManager client = ClientManager.createClient();
             final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
@@ -348,7 +345,7 @@ public class RetryAfterTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create("ws://localhost:8026/retry-after-echo/echo"));
+            }, cec, URI.create("ws://localhost:" + redirectionPort + "/retry-after-echo/echo"));
 
             fail("Connection to the endpoint should fail");
         } catch (Exception e) {
@@ -387,9 +384,8 @@ public class RetryAfterTest extends TestContainer {
         HttpServer httpServer = null;
         try {
 
-            httpServer = startHttpServer(
-                    REDIRECTION_PORT,
-                    new MultipleRetryAfterHandler(2, retryAfter, "ws://localhost:8025/retry-after-echo/echo"));
+            httpServer = startHttpServer(redirectionPort,
+                new MultipleRetryAfterHandler(2, retryAfter, "ws://localhost:" + getPort() + "/retry-after-echo/echo"));
 
             final ClientManager client = ClientManager.createClient();
             final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
@@ -417,7 +413,7 @@ public class RetryAfterTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create("ws://localhost:8026/retry-after-echo/echo"));
+            }, cec, URI.create("ws://localhost:" + redirectionPort + "/retry-after-echo/echo"));
 
             assertTrue("Message has not been received", messageLatch.await(1, TimeUnit.SECONDS));
         } finally {
@@ -448,9 +444,8 @@ public class RetryAfterTest extends TestContainer {
         HttpServer httpServer = null;
         try {
 
-            httpServer = startHttpServer(
-                    REDIRECTION_PORT, new MultipleRetryAfterHandler(6, retryAfter,
-                                                                    "ws://localhost:8025/retry-after-echo/echo"));
+            httpServer = startHttpServer(redirectionPort,
+                new MultipleRetryAfterHandler(6, retryAfter, "ws://localhost:" + getPort() + "/retry-after-echo/echo"));
 
             final ClientManager client = ClientManager.createClient();
             final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
@@ -492,7 +487,7 @@ public class RetryAfterTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create("ws://localhost:8026/retry-after-echo/echo"));
+            }, cec, URI.create("ws://localhost:" + redirectionPort + "/retry-after-echo/echo"));
 
             assertTrue("Message has not been received", messageLatch.await(1, TimeUnit.SECONDS));
             assertTrue("User-defined ReconnectHandler was not called", reconnectHandlerLatch.await(1, TimeUnit

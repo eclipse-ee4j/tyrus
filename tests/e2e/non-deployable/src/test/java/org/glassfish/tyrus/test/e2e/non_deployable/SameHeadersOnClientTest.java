@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -81,7 +82,7 @@ public class SameHeadersOnClientTest extends TestContainer {
                         responseLatch.countDown();
                     }
                 }
-            }).build(), URI.create("ws://localhost:8025/testSameHeader"));
+            }).build(), URI.create("ws://localhost:" + getPort() + "/testSameHeader"));
 
             assertTrue(responseLatch.await(5, TimeUnit.SECONDS));
         } catch (Exception e) {
@@ -97,6 +98,7 @@ public class SameHeadersOnClientTest extends TestContainer {
     private HttpServer getHandshakeServer() throws IOException {
         HttpServer server = HttpServer.createSimpleServer("/testSameHeader", getHost(), getPort());
         server.getServerConfiguration().addHttpHandler(new HttpHandler() {
+            @Override
             public void service(Request request, Response response) throws Exception {
                 response.setStatus(101);
 

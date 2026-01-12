@@ -64,6 +64,9 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <tyrus.test.port2>8026</tyrus.test.port2>
+            </properties>
             <build>
                 <pluginManagement>
                     <plugins>
@@ -73,14 +76,14 @@
                             <version>9.2.1.v20140609</version>
                             <configuration>
                                 <scanIntervalSeconds>10</scanIntervalSeconds>
-                                <stopPort>8026</stopPort>
+                                <stopPort>${tyrus.test.port2}</stopPort>
                                 <stopKey>STOP</stopKey>
                                 <stopWait>5</stopWait>
                                 <webApp>
                                     <contextPath>/</contextPath>
                                 </webApp>
                                 <httpConnector>
-                                    <port>8025</port>
+                                    <port>${tyrus.test.port}</port>
                                     <idleTimeout>10000</idleTimeout>
                                 </httpConnector>
                             </configuration>
