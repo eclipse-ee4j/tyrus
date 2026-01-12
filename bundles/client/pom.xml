@@ -66,7 +66,7 @@
                             jakarta.websocket;version=${apijar.bundle.version}
                         </Export-Package>
                         <Import-Package>
-                            org.glassfish.grizzly.*;version="[3.0,5)",*
+                            org.glassfish.grizzly.*;version="3",*
                         </Import-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>

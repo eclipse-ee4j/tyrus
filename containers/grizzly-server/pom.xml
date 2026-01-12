@@ -62,7 +62,7 @@
                         </Export-Package>
                         <Import-Package>
                             jakarta.xml.bind.*;version="[3.0,5)",
-                            org.glassfish.grizzly.*;version="[3.0,5)",
+                            org.glassfish.grizzly.*;version="3",
                             *
                         </Import-Package>
                     </instructions>
