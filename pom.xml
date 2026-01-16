@@ -48,6 +48,53 @@
         <tag>HEAD</tag>
     </scm>
 
+    <repositories>
+        <repository>
+            <id>central</id>
+            <url>https://repo1.maven.org/maven2</url>
+            <releases>
+                <checksumPolicy>fail</checksumPolicy>
+            </releases>
+        </repository>
+        <repository>
+            <id>central-portal-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <!-- TODO: Can be removed after it would be removed from parent too -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <name>Disabled Sonatype Nexus</name>
+            <url>http://localhost</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <name>Disabled Sonatype Nexus</name>
+            <url>http://localhost</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </distributionManagement>
+
     <licenses>
         <license>
             <name>Eclipse Public License 2.0</name>
@@ -156,6 +203,11 @@
         <jar.updater.modules.skip>org.glassfish.tyrus.samples:*,*:*-project,*:tyrus-archetype*,*:*-documentation,org.glassfish.tyrus.tests:*e2e*,org.glassfish.tyrus.tests.servlet*:*,org.glassfish.tyrus.bundles:*,org.glassfish.tyrus.tests:*containers*</jar.updater.modules.skip>
 
         <tyrus.test.port>8025</tyrus.test.port>
+
+        <!-- Do not autopublish by default -->
+        <release.autopublish>false</release.autopublish>
+        <!-- By default block until everything is really published -->
+        <release.waitUntil>published</release.waitUntil>
     </properties>
 
     <modules>
@@ -362,6 +414,33 @@
                         </dependency>
                     </dependencies>
                 </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.7.0</version>
+                    <configuration>
+                        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>injected-nexus-deploy</id>
+                            <phase>none</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>0.10.0</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <autoPublish>${release.autopublish}</autoPublish>
+                        <centralSnapshotsUrl>https://central.sonatype.com/repository/maven-snapshots</centralSnapshotsUrl>
+                        <deploymentName>GlassFish Tyrus ${project.version}</deploymentName>
+                        <publishingServerId>central</publishingServerId>
+                        <waitUntil>${release.waitUntil}</waitUntil>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -485,6 +564,19 @@
     </build>
 
     <profiles>
+        <!-- See parent, maven release plugin uses this profile for the deployment -->
+        <profile>
+            <id>oss-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Initiates the release on Jenkins CI -->
         <profile>
             <id>release</id>
             <build>
