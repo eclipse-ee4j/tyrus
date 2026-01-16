@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2021, 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -49,7 +50,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public abstract class ServletTestBase {
 
     private static final String defaultHost = "localhost";
-    private static final int defaultPort = 8025;
+    private static final int defaultPort = Integer.getInteger("glassfish.httpPort", 8025);
     private String contextPath;
 
     protected abstract String getScheme();
@@ -226,7 +227,7 @@ public abstract class ServletTestBase {
      * @return port used for creating remote endpoint {@link URI}.
      */
     protected int getPort() {
-        final String port = System.getProperty("tyrus.test.port");
+        final String port = System.getProperty("glassfish.httpPort");
         if (port != null) {
             try {
                 return Integer.parseInt(port);

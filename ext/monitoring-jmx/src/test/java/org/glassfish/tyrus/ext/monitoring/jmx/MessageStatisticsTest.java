@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -51,6 +52,9 @@ import static org.junit.Assert.fail;
  * @author Petr Janouch
  */
 public class MessageStatisticsTest extends TestContainer {
+
+    private final int serverPort1 = getPort();
+    private final int serverPort2 = serverPort1 + 1;
 
     @ServerEndpoint("/jmxStatisticsServerEndpoint1")
     public static class ServerEndpoint1 {
@@ -170,7 +174,7 @@ public class MessageStatisticsTest extends TestContainer {
                     new TestApplicationEventListener(applicationMonitor, null, null, messageSentLatch,
                                                      messageReceivedLatch, null);
             server1Properties.put(ApplicationEventListener.APPLICATION_EVENT_LISTENER, application1EventListener);
-            server1 = new Server("localhost", 8025, "/jmxTestApp", server1Properties, ServerEndpoint1.class,
+            server1 = new Server("localhost", serverPort1, "/jmxTestApp", server1Properties, ServerEndpoint1.class,
                                  ServerEndpoint2.class);
             server1.start();
 
@@ -179,28 +183,28 @@ public class MessageStatisticsTest extends TestContainer {
                     new TestApplicationEventListener(new ApplicationMonitor(monitorOnSessionLevel), null, null,
                                                      messageSentLatch, messageReceivedLatch, null);
             server2Properties.put(ApplicationEventListener.APPLICATION_EVENT_LISTENER, application2EventListener);
-            server2 = new Server("localhost", 8026, "/jmxTestApp2", server2Properties, ServerEndpoint2.class,
+            server2 = new Server("localhost", serverPort2, "/jmxTestApp2", server2Properties, ServerEndpoint2.class,
                                  ServerEndpoint3.class);
             server2.start();
 
             ClientManager client = createClient();
             Session session1 = client.connectToServer(AnnotatedClientEndpoint.class,
-                                                      new URI("ws", null, "localhost", 8025,
+                                                      new URI("ws", null, "localhost", serverPort1,
                                                               "/jmxTestApp/jmxStatisticsServerEndpoint1", null, null));
             Session session2 = client.connectToServer(AnnotatedClientEndpoint.class,
-                                                      new URI("ws", null, "localhost", 8025,
+                                                      new URI("ws", null, "localhost", serverPort1,
                                                               "/jmxTestApp/jmxStatisticsServerEndpoint2", null, null));
             Session session3 = client.connectToServer(AnnotatedClientEndpoint.class,
-                                                      new URI("ws", null, "localhost", 8025,
+                                                      new URI("ws", null, "localhost", serverPort1,
                                                               "/jmxTestApp/jmxStatisticsServerEndpoint2", null, null));
             Session session4 = client.connectToServer(AnnotatedClientEndpoint.class,
-                                                      new URI("ws", null, "localhost", 8026,
+                                                      new URI("ws", null, "localhost", serverPort2,
                                                               "/jmxTestApp2/jmxStatisticsServerEndpoint2", null, null));
             Session session5 = client.connectToServer(AnnotatedClientEndpoint.class,
-                                                      new URI("ws", null, "localhost", 8026,
+                                                      new URI("ws", null, "localhost", serverPort2,
                                                               "/jmxTestApp2/jmxStatisticsServerEndpoint3", null, null));
             Session session6 = client.connectToServer(AnnotatedClientEndpoint.class,
-                                                      new URI("ws", null, "localhost", 8026,
+                                                      new URI("ws", null, "localhost", serverPort2,
                                                               "/jmxTestApp2/jmxStatisticsServerEndpoint3", null, null));
 
             session1.getBasicRemote().sendText(getText(1));

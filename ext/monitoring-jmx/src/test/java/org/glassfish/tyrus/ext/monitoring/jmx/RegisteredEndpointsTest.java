@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -46,6 +47,9 @@ import static org.junit.Assert.fail;
  */
 public class RegisteredEndpointsTest extends TestContainer {
 
+    private final int serverPort1 = getPort();
+    private final int serverPort2 = serverPort1 + 1;
+
     @ServerEndpoint("/jmxServerEndpoint1")
     public static class AnnotatedServerEndpoint1 {
     }
@@ -66,14 +70,14 @@ public class RegisteredEndpointsTest extends TestContainer {
             Map<String, Object> server1Properties = new HashMap<String, Object>();
             ApplicationEventListener application1EventListener = new SessionAwareApplicationMonitor();
             server1Properties.put(ApplicationEventListener.APPLICATION_EVENT_LISTENER, application1EventListener);
-            server1 = new Server("localhost", 8025, "/jmxTestApp", server1Properties, AnnotatedServerEndpoint1.class,
+            server1 = new Server("localhost", serverPort1, "/jmxTestApp", server1Properties, AnnotatedServerEndpoint1.class,
                                  AnnotatedServerEndpoint2.class);
             server1.start();
 
             Map<String, Object> server2Properties = new HashMap<String, Object>();
             server2Properties
                     .put(ApplicationEventListener.APPLICATION_EVENT_LISTENER, new SessionAwareApplicationMonitor());
-            server2 = new Server("localhost", 8026, "/jmxTestApp2", server2Properties, AnnotatedServerEndpoint2.class,
+            server2 = new Server("localhost", serverPort2, "/jmxTestApp2", server2Properties, AnnotatedServerEndpoint2.class,
                                  AnnotatedServerEndpoint3.class);
             server2.start();
 

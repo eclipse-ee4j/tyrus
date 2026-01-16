@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -61,10 +62,10 @@ import static org.junit.Assert.assertTrue;
  */
 public class RedirectTest extends TestContainer {
 
-    private static final int REDIRECTION_PORT = 8026;
-    private static final String REDIRECTION_URI = "ws://localhost:" + REDIRECTION_PORT;
+    private final int redirectionPort = getPort() + 1;
+    private final String redirectionUri = "ws://localhost:" + redirectionPort;
     private static final String REDIRECTION_PATH = "/redirect";
-    private static final List<HttpStatus> statuses =
+    private static final List<HttpStatus> STATUSES =
             Arrays.asList(HttpStatus.MULTIPLE_CHOICES_300, HttpStatus.MOVED_PERMANENTLY_301, HttpStatus.FOUND_302,
                           HttpStatus.SEE_OTHER_303, HttpStatus.TEMPORARY_REDIRECT_307,
                           HttpStatus.PERMANENT_REDIRECT_308);
@@ -81,7 +82,7 @@ public class RedirectTest extends TestContainer {
         try {
             server = startServer(RedirectedEchoEndpoint.class);
 
-            for (HttpStatus httpstatus : statuses) {
+            for (HttpStatus httpstatus : STATUSES) {
                 testRedirect(httpstatus);
             }
         } finally {
@@ -96,8 +97,8 @@ public class RedirectTest extends TestContainer {
         HttpServer httpServer = null;
         try {
 
-            httpServer = startHttpRedirectionServer(REDIRECTION_PORT, httpStatus,
-                                                    "ws://localhost:8025/redirect-echo/echo");
+            httpServer = startHttpRedirectionServer(redirectionPort, httpStatus,
+                "ws://localhost:" + getPort() + "/redirect-echo/echo");
 
             final ClientManager client = ClientManager.createClient();
             final ClientEndpointConfig cec = ClientEndpointConfig.Builder.create().build();
@@ -124,7 +125,7 @@ public class RedirectTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create(REDIRECTION_URI + REDIRECTION_PATH));
+            }, cec, URI.create(redirectionUri + REDIRECTION_PATH));
 
             messageLatch.await(1, TimeUnit.SECONDS);
             assertEquals(0, messageLatch.getCount());
@@ -142,7 +143,7 @@ public class RedirectTest extends TestContainer {
         try {
             server = startServer(RedirectedEchoEndpoint.class);
 
-            for (HttpStatus httpstatus : statuses) {
+            for (HttpStatus httpstatus : STATUSES) {
                 testRelativePath(httpstatus);
             }
         } finally {
@@ -156,18 +157,19 @@ public class RedirectTest extends TestContainer {
             AuthenticationException, DeploymentException {
         HttpServer httpServer = null;
         try {
-            httpServer = createHttpServer(REDIRECTION_PORT);
+            httpServer = createHttpServer(redirectionPort);
             httpServer.getServerConfiguration().addHttpHandler(
                     new RedirectHandler(httpStatus, REDIRECTION_PATH + 1), REDIRECTION_PATH + 0);
             httpServer.getServerConfiguration().addHttpHandler(
-                    new RedirectHandler(httpStatus, REDIRECTION_URI + REDIRECTION_PATH + 2), REDIRECTION_PATH + 1);
+                    new RedirectHandler(httpStatus, redirectionUri + REDIRECTION_PATH + 2), REDIRECTION_PATH + 1);
             httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, "/la/la/la/.././../.."
                     + REDIRECTION_PATH + 3), REDIRECTION_PATH + 2);
             httpServer.getServerConfiguration().addHttpHandler(
-                    new RedirectHandler(httpStatus, "http://127.0.0.1:8026" + REDIRECTION_PATH + 4),
-                    REDIRECTION_PATH + 3);
+                new RedirectHandler(httpStatus, "http://127.0.0.1:" + redirectionPort + REDIRECTION_PATH + 4),
+                REDIRECTION_PATH + 3);
             httpServer.getServerConfiguration().addHttpHandler(
-                    new RedirectHandler(httpStatus, "ws://localhost:8025/redirect-echo/echo"), REDIRECTION_PATH + 4);
+                new RedirectHandler(httpStatus, "ws://localhost:" + getPort() + "/redirect-echo/echo"),
+                REDIRECTION_PATH + 4);
             httpServer.start();
 
             final ClientManager client = createClient();
@@ -194,7 +196,7 @@ public class RedirectTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create(REDIRECTION_URI + REDIRECTION_PATH + 0));
+            }, cec, URI.create(redirectionUri + REDIRECTION_PATH + 0));
 
             messageLatch.await(1, TimeUnit.SECONDS);
             assertEquals(0, messageLatch.getCount());
@@ -224,8 +226,8 @@ public class RedirectTest extends TestContainer {
             AuthenticationException {
         HttpServer httpServer = null;
         try {
-            httpServer = startHttpRedirectionServer(REDIRECTION_PORT, httpStatus,
-                                                    "ws://localhost:8025/redirect-echo/echo");
+            httpServer = startHttpRedirectionServer(redirectionPort, httpStatus,
+                "ws://localhost:" + getPort() + "/redirect-echo/echo");
 
             final CountDownLatch messageLatch = new CountDownLatch(1);
 
@@ -252,7 +254,7 @@ public class RedirectTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create(REDIRECTION_URI + REDIRECTION_PATH));
+            }, cec, URI.create(redirectionUri + REDIRECTION_PATH));
 
             messageLatch.await(1, TimeUnit.SECONDS);
             assertTrue("Redirect for this 3xx code is not supported. HandshakeException must be thrown.", false);
@@ -273,7 +275,7 @@ public class RedirectTest extends TestContainer {
         try {
             server = startServer(RedirectedEchoEndpoint.class);
 
-            for (HttpStatus httpstatus : statuses) {
+            for (HttpStatus httpstatus : STATUSES) {
                 testRedirectNotAllowed(httpstatus);
             }
         } finally {
@@ -287,8 +289,8 @@ public class RedirectTest extends TestContainer {
             AuthenticationException {
         HttpServer httpServer = null;
         try {
-            httpServer = startHttpRedirectionServer(REDIRECTION_PORT, httpStatus,
-                                                    "ws://localhost:8025/redirect-echo/echo");
+            httpServer = startHttpRedirectionServer(redirectionPort, httpStatus,
+                "ws://localhost:" + getPort() + "/redirect-echo/echo");
 
             final CountDownLatch messageLatch = new CountDownLatch(1);
 
@@ -315,7 +317,7 @@ public class RedirectTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create(REDIRECTION_URI + REDIRECTION_PATH));
+            }, cec, URI.create(redirectionUri + REDIRECTION_PATH));
 
             messageLatch.await(1, TimeUnit.SECONDS);
             assertTrue("Redirect is not allowed. RedirectException must be thrown.", false);
@@ -336,7 +338,7 @@ public class RedirectTest extends TestContainer {
         try {
             server = startServer(RedirectedEchoEndpoint.class);
 
-            for (HttpStatus httpstatus : statuses) {
+            for (HttpStatus httpstatus : STATUSES) {
                 testRedirectNotAllowedByDefault(httpstatus);
             }
         } finally {
@@ -351,8 +353,8 @@ public class RedirectTest extends TestContainer {
         HttpServer httpServer = null;
         try {
 
-            httpServer = startHttpRedirectionServer(REDIRECTION_PORT, httpStatus,
-                                                    "ws://localhost:8025/redirect-echo/echo");
+            httpServer = startHttpRedirectionServer(redirectionPort, httpStatus,
+                "ws://localhost:" + getPort() + "/redirect-echo/echo");
 
             final CountDownLatch messageLatch = new CountDownLatch(1);
 
@@ -377,7 +379,7 @@ public class RedirectTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create(REDIRECTION_URI + REDIRECTION_PATH));
+            }, cec, URI.create(redirectionUri + REDIRECTION_PATH));
 
             messageLatch.await(1, TimeUnit.SECONDS);
             assertTrue("Redirect is not allowed. RedirectException must be thrown.", false);
@@ -398,7 +400,7 @@ public class RedirectTest extends TestContainer {
         try {
             server = startServer(RedirectedEchoEndpoint.class);
 
-            for (HttpStatus httpstatus : statuses) {
+            for (HttpStatus httpstatus : STATUSES) {
                 testRedirectLoop(httpstatus);
             }
         } finally {
@@ -412,7 +414,7 @@ public class RedirectTest extends TestContainer {
             AuthenticationException {
         HttpServer httpServer = null;
         try {
-            httpServer = startHttpRedirectionServer(REDIRECTION_PORT, httpStatus, REDIRECTION_URI + REDIRECTION_PATH);
+            httpServer = startHttpRedirectionServer(redirectionPort, httpStatus, redirectionUri + REDIRECTION_PATH);
 
             final CountDownLatch messageLatch = new CountDownLatch(1);
 
@@ -438,7 +440,7 @@ public class RedirectTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create(REDIRECTION_URI + REDIRECTION_PATH));
+            }, cec, URI.create(redirectionUri + REDIRECTION_PATH));
 
             assertTrue("Redirect loop must cause RedirectException", false);
         } catch (DeploymentException e) {
@@ -458,7 +460,7 @@ public class RedirectTest extends TestContainer {
         try {
             server = startServer(RedirectedEchoEndpoint.class);
 
-            for (HttpStatus httpstatus : statuses) {
+            for (HttpStatus httpstatus : STATUSES) {
                 testMaxRedirectionExceed(httpstatus);
             }
         } finally {
@@ -472,18 +474,18 @@ public class RedirectTest extends TestContainer {
             AuthenticationException {
         HttpServer httpServer = null;
         try {
-            httpServer = createHttpServer(REDIRECTION_PORT);
-            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, REDIRECTION_URI
+            httpServer = createHttpServer(redirectionPort);
+            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, redirectionUri
                     + REDIRECTION_PATH + 1), REDIRECTION_PATH + 0);
-            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, REDIRECTION_URI
+            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, redirectionUri
                     + REDIRECTION_PATH + 2), REDIRECTION_PATH + 1);
-            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, REDIRECTION_URI
+            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, redirectionUri
                     + REDIRECTION_PATH + 3), REDIRECTION_PATH + 2);
-            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, REDIRECTION_URI
+            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, redirectionUri
                     + REDIRECTION_PATH + 4), REDIRECTION_PATH + 3);
-            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, REDIRECTION_URI
+            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, redirectionUri
                     + REDIRECTION_PATH + 5), REDIRECTION_PATH + 4);
-            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, REDIRECTION_URI
+            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, redirectionUri
                     + REDIRECTION_PATH + 6), REDIRECTION_PATH + 5);
             httpServer.start();
 
@@ -508,7 +510,7 @@ public class RedirectTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create(REDIRECTION_URI + REDIRECTION_PATH + 0));
+            }, cec, URI.create(redirectionUri + REDIRECTION_PATH + 0));
 
             assertTrue("Too much redirection must cause RedirectException", false);
         } catch (DeploymentException e) {
@@ -527,7 +529,7 @@ public class RedirectTest extends TestContainer {
         try {
             server = startServer(RedirectedEchoEndpoint.class);
 
-            for (HttpStatus httpstatus : statuses) {
+            for (HttpStatus httpstatus : STATUSES) {
                 testMaxRedirectionConfig(httpstatus);
             }
         } finally {
@@ -541,12 +543,12 @@ public class RedirectTest extends TestContainer {
             AuthenticationException {
         HttpServer httpServer = null;
         try {
-            httpServer = createHttpServer(REDIRECTION_PORT);
-            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, REDIRECTION_URI
+            httpServer = createHttpServer(redirectionPort);
+            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, redirectionUri
                     + REDIRECTION_PATH + 1), REDIRECTION_PATH + 0);
-            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, REDIRECTION_URI
+            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, redirectionUri
                     + REDIRECTION_PATH + 2), REDIRECTION_PATH + 1);
-            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, REDIRECTION_URI
+            httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, redirectionUri
                     + REDIRECTION_PATH + 3), REDIRECTION_PATH + 2);
             httpServer.start();
 
@@ -573,7 +575,7 @@ public class RedirectTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create(REDIRECTION_URI + REDIRECTION_PATH + 0));
+            }, cec, URI.create(redirectionUri + REDIRECTION_PATH + 0));
 
             assertTrue("Too much redirection must cause RedirectException", false);
         } catch (DeploymentException e) {
@@ -592,7 +594,7 @@ public class RedirectTest extends TestContainer {
         try {
             server = startServer(RedirectedEchoEndpoint.class);
 
-            for (HttpStatus httpstatus : statuses) {
+            for (HttpStatus httpstatus : STATUSES) {
                 testMaxRedirectionConfigNeg(httpstatus);
             }
         } finally {
@@ -600,7 +602,7 @@ public class RedirectTest extends TestContainer {
                 server.stop();
             }
         }
-        for (HttpStatus httpstatus : statuses) {
+        for (HttpStatus httpstatus : STATUSES) {
             testMaxRedirectionConfigNeg(httpstatus);
         }
     }
@@ -611,9 +613,9 @@ public class RedirectTest extends TestContainer {
         HttpServer httpServer = null;
         try {
 
-            httpServer = createHttpServer(REDIRECTION_PORT);
+            httpServer = createHttpServer(redirectionPort);
             httpServer.getServerConfiguration().addHttpHandler(
-                    new RedirectHandler(httpStatus, REDIRECTION_URI + REDIRECTION_PATH + 1), REDIRECTION_PATH + 0);
+                    new RedirectHandler(httpStatus, redirectionUri + REDIRECTION_PATH + 1), REDIRECTION_PATH + 0);
             httpServer.start();
 
             final ClientManager client = createClient();
@@ -639,7 +641,7 @@ public class RedirectTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create(REDIRECTION_URI + REDIRECTION_PATH + 0));
+            }, cec, URI.create(redirectionUri + REDIRECTION_PATH + 0));
 
             assertTrue("Too much redirection must cause RedirectException", false);
         } catch (DeploymentException e) {
@@ -658,7 +660,7 @@ public class RedirectTest extends TestContainer {
         try {
             server = startServer(RedirectedEchoEndpoint.class);
 
-            for (HttpStatus httpstatus : statuses) {
+            for (HttpStatus httpstatus : STATUSES) {
                 testRedirectMissingLocation(httpstatus);
             }
         } finally {
@@ -674,7 +676,7 @@ public class RedirectTest extends TestContainer {
         HttpServer httpServer = null;
         try {
 
-            httpServer = createHttpServer(REDIRECTION_PORT);
+            httpServer = createHttpServer(redirectionPort);
             httpServer.getServerConfiguration().addHttpHandler(new BadRedirectHandler(httpStatus), REDIRECTION_PATH);
             httpServer.start();
 
@@ -700,7 +702,7 @@ public class RedirectTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create(REDIRECTION_URI + REDIRECTION_PATH));
+            }, cec, URI.create(redirectionUri + REDIRECTION_PATH));
 
             assertTrue("Missing location must cause RedirectException", false);
         } catch (DeploymentException e) {
@@ -719,7 +721,7 @@ public class RedirectTest extends TestContainer {
         try {
             server = startServer(RedirectedEchoEndpoint.class);
 
-            for (HttpStatus httpstatus : statuses) {
+            for (HttpStatus httpstatus : STATUSES) {
                 testRedirectEmptyLocation(httpstatus);
             }
         } finally {
@@ -735,7 +737,7 @@ public class RedirectTest extends TestContainer {
         HttpServer httpServer = null;
         try {
 
-            httpServer = createHttpServer(REDIRECTION_PORT);
+            httpServer = createHttpServer(redirectionPort);
             httpServer.getServerConfiguration().addHttpHandler(new RedirectHandler(httpStatus, ""), REDIRECTION_PATH);
             httpServer.start();
 
@@ -761,7 +763,7 @@ public class RedirectTest extends TestContainer {
                         // do nothing
                     }
                 }
-            }, cec, URI.create(REDIRECTION_URI + REDIRECTION_PATH));
+            }, cec, URI.create(redirectionUri + REDIRECTION_PATH));
 
             assertTrue("Missing location must cause RedirectException", false);
         } catch (DeploymentException e) {

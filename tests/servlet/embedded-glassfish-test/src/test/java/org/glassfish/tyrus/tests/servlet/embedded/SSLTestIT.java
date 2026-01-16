@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2022 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,15 +19,8 @@ package org.glassfish.tyrus.tests.servlet.embedded;
 
 import jakarta.websocket.ClientEndpointConfig;
 import jakarta.websocket.DeploymentException;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit5.ArquillianExtension;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManagerFactory;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +31,16 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit5.ArquillianExtension;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 @ExtendWith(ArquillianExtension.class)
 public class SSLTestIT extends ServletTestBase {
@@ -74,7 +78,7 @@ public class SSLTestIT extends ServletTestBase {
     @Override
     protected ClientEndpointConfig createClientEndpointConfig() throws DeploymentException {
         final String password = "changeit";
-        final String keyStore = System.getenv("GLASSFISH_HOME") + "/glassfish/domains/domain1/config/keystore.jks";
+        final File keyStore = getKeyStoreFile();
 
         try {
             KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -101,5 +105,18 @@ public class SSLTestIT extends ServletTestBase {
                 | NoSuchAlgorithmException | KeyManagementException e) {
             throw new DeploymentException(e.getMessage(), e);
         }
+    }
+
+    private File getKeyStoreFile() throws DeploymentException {
+        final File cfgDir = new File(System.getProperty("glassfish.home") + "/glassfish/domains/domain1/config");
+        final File pkcsFile = new File(cfgDir, "keystore.p12");
+        if (pkcsFile.exists()) {
+            return pkcsFile;
+        }
+        final File jksFile = new File(cfgDir, "keystore.jks");
+        if (jksFile.exists()) {
+            return jksFile;
+        }
+        throw new DeploymentException("Could not find supported keystore file in directory " + cfgDir);
     }
 }

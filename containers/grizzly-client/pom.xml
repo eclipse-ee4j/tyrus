@@ -61,7 +61,7 @@
                     <instructions>
                         <Export-Package>org.glassfish.tyrus.container.grizzly.client.*;version=${project.version}
                         </Export-Package>
-                        <Import-Package>org.glassfish.grizzly.*;version="[3.0,5)",*</Import-Package>
+                        <Import-Package>org.glassfish.grizzly.*;version="3",*</Import-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
                 </configuration>

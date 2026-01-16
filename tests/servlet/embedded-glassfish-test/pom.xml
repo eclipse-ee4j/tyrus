@@ -31,9 +31,9 @@
     <name>Tyrus Servlet Tests on Glassfish</name>
 
     <properties>
-        <glassfish.home>${project.build.directory}/glassfish8</glassfish.home>
+        <glassfish.directoryName>glassfish7</glassfish.directoryName>
+        <glassfish.home>${project.build.directory}/${glassfish.directoryName}</glassfish.home>
         <modules.dir>${glassfish.home}/glassfish/modules</modules.dir>
-<!--        <websocket-api.version>2.1.0-SNAPSHOT</websocket-api.version>-->
         <glassfish.container.version>${glassfish.version}</glassfish.container.version>
         <junit.jupiter.version>5.7.2</junit.jupiter.version>
     </properties>
@@ -96,20 +96,14 @@
         <dependency>
             <groupId>org.jboss.arquillian.junit5</groupId>
             <artifactId>arquillian-junit5-container</artifactId>
-            <version>1.7.0.Alpha10</version>
+            <version>1.10.0.Final</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-glassfish-managed-6</artifactId>
-            <version>1.0.0.Alpha1</version>
+            <groupId>ee.omnifish.arquillian</groupId>
+            <artifactId>arquillian-glassfish-server-managed</artifactId>
+            <version>2.1.2</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.glassfish.hk2</groupId>
-                    <artifactId>hk2-locator</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
@@ -152,12 +146,11 @@
                             </includes>
                             <dependenciesToScan>org.glassfish.tyrus.tests.servlet:tyrus-tests-servlet-embedded-gf</dependenciesToScan>
                             <systemPropertyVariables>
-                                <tyrus.test.port>8080</tyrus.test.port>
+                                <glassfish.home>${glassfish.home}</glassfish.home>
+                                <glassfish.httpPort>${tyrus.test.port}</glassfish.httpPort>
+                                <glassfish.version>${glassfish.container.version}</glassfish.version>
                                 <junit.log.traceflag>true</junit.log.traceflag>
                             </systemPropertyVariables>
-                            <environmentVariables>
-                                <GLASSFISH_HOME>${glassfish.home}</GLASSFISH_HOME>
-                            </environmentVariables>
                         </configuration>
                     </execution>
                 </executions>

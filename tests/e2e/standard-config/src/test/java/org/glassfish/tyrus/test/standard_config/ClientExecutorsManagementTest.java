@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation.
  * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -56,6 +57,8 @@ import static org.junit.Assert.fail;
  * @author Petr Janouch
  */
 public class ClientExecutorsManagementTest extends TestContainer {
+
+    private final int port = getPort() + 1;
 
     /**
      * Test basic executor services life cycle.
@@ -159,8 +162,8 @@ public class ClientExecutorsManagementTest extends TestContainer {
             HttpServer lazyServer = getLazyServer(blockResponseLatch);
             clientManager.getProperties().put(ClientProperties.HANDSHAKE_TIMEOUT, 2000);
             try {
-                clientManager.connectToServer(
-                        AnnotatedClientEndpoint.class, URI.create("ws://localhost:8026/lazyServer"));
+                clientManager.connectToServer(AnnotatedClientEndpoint.class,
+                    URI.create("ws://localhost:" + port + "/lazyServer"));
                 fail();
             } catch (Exception e) {
                 // exception is expected
@@ -342,9 +345,10 @@ public class ClientExecutorsManagementTest extends TestContainer {
     }
 
     private HttpServer getLazyServer(final CountDownLatch blockResponseLatch) throws IOException {
-        HttpServer server = HttpServer.createSimpleServer("/lazyServer", "localhost", 8026);
+        HttpServer server = HttpServer.createSimpleServer("/lazyServer", "localhost", port);
         server.getServerConfiguration().addHttpHandler(
                 new HttpHandler() {
+                    @Override
                     public void service(Request request, Response response) throws Exception {
                         blockResponseLatch.await(1, TimeUnit.MINUTES);
                     }

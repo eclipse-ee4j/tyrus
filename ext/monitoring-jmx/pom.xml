@@ -70,7 +70,7 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.glassfish.tyrus.ext.monitoring.jmx.*;version=${project.version}</Export-Package>
-                        <Import-Package>org.glassfish.grizzly.*;version="[3.0,5)",*</Import-Package>
+                        <Import-Package>org.glassfish.grizzly.*;version="3",*</Import-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
                 </configuration>

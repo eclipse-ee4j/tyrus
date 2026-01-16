@@ -1,5 +1,5 @@
 <!--
-
+    Copyright 2026 Contributors to the Eclipse Foundation.
     Copyright (c) 2011, 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -111,7 +111,7 @@
         <cdi-api.version>4.1.0</cdi-api.version>
         <ejb-api.version>4.0.1</ejb-api.version>
         <grizzly.version>4.0.2</grizzly.version>
-        <glassfish.version>8.0.0-JDK17-M6</glassfish.version>
+        <glassfish.version>7.1.0</glassfish.version>
         <inject.api.version>2.0.1</inject.api.version><!-- inherited from CDI, do not update unless inline with it -->
         <jaxb.api.version>4.0.2</jaxb.api.version>
         <jaxb.ri.version>4.0.5</jaxb.ri.version>
@@ -127,7 +127,7 @@
         <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
         <maven.surefire.plugin.version>3.5.3</maven.surefire.plugin.version>
         <maven.war.plugin.version>3.4.0</maven.war.plugin.version>
-        <maven.bundle.plugin.version>5.1.9</maven.bundle.plugin.version>
+        <maven.bundle.plugin.version>6.0.0</maven.bundle.plugin.version>
         <cyclonedx.mvn.plugin.version>2.8.0</cyclonedx.mvn.plugin.version>
 
         <api_package>jakarta.websocket</api_package>
@@ -154,6 +154,8 @@
         <netbeans.hint.license>gf-cddl-gpl</netbeans.hint.license>
 
         <jar.updater.modules.skip>org.glassfish.tyrus.samples:*,*:*-project,*:tyrus-archetype*,*:*-documentation,org.glassfish.tyrus.tests:*e2e*,org.glassfish.tyrus.tests.servlet*:*,org.glassfish.tyrus.bundles:*,org.glassfish.tyrus.tests:*containers*</jar.updater.modules.skip>
+
+        <tyrus.test.port>8025</tyrus.test.port>
     </properties>
 
     <modules>
@@ -299,7 +301,7 @@
                 <plugin>
                     <groupId>org.apache.felix</groupId>
                     <artifactId>maven-bundle-plugin</artifactId>
-                    <version>${maven.bundle.plugin.version}</version> <!-- 5.1.5  brings dependencies on JDK packages -->
+                    <version>${maven.bundle.plugin.version}</version>
                     <extensions>true</extensions>
                     <configuration>
                         <instructions>
