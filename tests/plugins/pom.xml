@@ -1,5 +1,5 @@
 <!--
-
+    Copyright 2026 Contributors to the Eclipse Foundation.
     Copyright (c) 2025 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
@@ -37,6 +37,26 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <configuration>
+                        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>injected-nexus-deploy</id>
+                            <phase>none</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
     <profiles>
         <profile>

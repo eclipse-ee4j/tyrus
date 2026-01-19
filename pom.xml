@@ -381,6 +381,7 @@
                         <sourceFileExcludes>
                             <sourceFileExclude>**/module-info.java</sourceFileExclude>
                         </sourceFileExcludes>
+                        <doclint>none</doclint>
                     </configuration>
                     <executions>
                         <execution>
