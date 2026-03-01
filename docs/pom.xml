@@ -17,8 +17,9 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.glassfish.tyrus</groupId>
         <artifactId>tyrus-project</artifactId>
@@ -27,16 +28,15 @@
 
     <artifactId>tyrus-documentation</artifactId>
     <packaging>pom</packaging>
+
     <name>Tyrus Documentation</name>
 
-    <profiles>
-        <profile>
-            <id>release</id>
-            <properties>
-                <javanet.repository.id>releases</javanet.repository.id>
-            </properties>
-        </profile>
-    </profiles>
+    <properties>
+        <assembly.directory>${project.build.directory}/assembly</assembly.directory>
+        <src.dir>${basedir}/target/gen-src</src.dir>
+        <javanet.repository.id>snapshots</javanet.repository.id>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -73,8 +73,8 @@
                         <groupId>net.sf.docbook</groupId>
                         <artifactId>docbook-xml</artifactId>
                         <version>5.0-all</version>
-                        <classifier>resources</classifier>
                         <type>zip</type>
+                        <classifier>resources</classifier>
                         <scope>runtime</scope>
                     </dependency>
                 </dependencies>
@@ -167,11 +167,12 @@
         </plugins>
     </build>
 
-    <properties>
-        <assembly.directory>${project.build.directory}/assembly</assembly.directory>
-        <src.dir>${basedir}/target/gen-src</src.dir>
-        <javanet.repository.id>snapshots</javanet.repository.id>
-    </properties>
-
-
+    <profiles>
+        <profile>
+            <id>release</id>
+            <properties>
+                <javanet.repository.id>releases</javanet.repository.id>
+            </properties>
+        </profile>
+    </profiles>
 </project>
