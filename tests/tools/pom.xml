@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
@@ -16,35 +17,19 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.glassfish.tyrus.tests</groupId>
         <artifactId>tyrus-tests-project</artifactId>
-        <version>2.2.99-SNAPSHOT</version>
+        <version>2.3.99-SNAPSHOT</version>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>tyrus-test-tools</artifactId>
     <packaging>bundle</packaging>
-    <name>Tyrus Test Tools</name>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <inherited>true</inherited>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Export-Package>org.glassfish.tyrus.test.tools.*;version=${project.version}</Export-Package>
-<!--                        <Import-Package>jakarta.websocket;version=${apijar.bundle.version},jakarta.websocket.server;version=${apijar.bundle.version},*</Import-Package>-->
-                    </instructions>
-                    <unpackBundle>true</unpackBundle>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+    <name>Tyrus Test Tools</name>
 
     <dependencies>
         <dependency>
@@ -86,4 +71,22 @@
             <artifactId>junit</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <inherited>true</inherited>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Export-Package>org.glassfish.tyrus.test.tools.*;version=${project.version}</Export-Package>
+<!--                        <Import-Package>jakarta.websocket;version=${apijar.bundle.version},jakarta.websocket.server;version=${apijar.bundle.version},*</Import-Package>-->
+                    </instructions>
+                    <unpackBundle>true</unpackBundle>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

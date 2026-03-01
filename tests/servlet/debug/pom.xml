@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (c) 2014, 2025 Oracle and/or its affiliates. All rights reserved.
@@ -16,14 +17,15 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <artifactId>tyrus-tests-servlet-project</artifactId>
         <groupId>org.glassfish.tyrus.tests.servlet</groupId>
-        <version>2.2.99-SNAPSHOT</version>
+        <artifactId>tyrus-tests-servlet-project</artifactId>
+        <version>2.3.99-SNAPSHOT</version>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
     <artifactId>tyrus-tests-servlet-debug</artifactId>
     <packaging>war</packaging>
 
@@ -51,5 +53,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>

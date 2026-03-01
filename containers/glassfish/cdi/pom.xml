@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
@@ -16,17 +17,17 @@
 
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.glassfish.tyrus</groupId>
         <artifactId>tyrus-containers-glassfish-project</artifactId>
-        <version>2.2.99-SNAPSHOT</version>
+        <version>2.3.99-SNAPSHOT</version>
     </parent>
 
-    <packaging>bundle</packaging>
     <artifactId>tyrus-container-glassfish-cdi</artifactId>
+    <packaging>bundle</packaging>
 
     <name>Tyrus CDI Component Provider</name>
 
@@ -36,8 +37,8 @@
             <artifactId>tyrus-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>jakarta.enterprise</groupId>
-            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <groupId>jakarta.cdi</groupId>
+            <artifactId>jakarta.cdi-api</artifactId>
             <exclusions>
                 <exclusion>
                     <groupId>jakarta.inject</groupId>
@@ -51,6 +52,7 @@
             <version>${inject.api.version}</version>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -61,10 +63,10 @@
                 <configuration>
                     <instructions>
                         <Export-Package>org.glassfish.tyrus.gf.cdi;version=${project.version}</Export-Package>
-                        <Import-Package>jakarta.enterprise.context.spi;version="[3.0,5)",jakarta.enterprise.inject.spi;version="[3.0,5)",*</Import-Package>
+                        <Import-Package>jakarta.enterprise.context.spi;version="[3.0,6)",jakarta.enterprise.inject.spi;version="[3.0,6)",*</Import-Package>
                     </instructions>
                     <unpackBundle>true</unpackBundle>
-                    <excludeDependencies>jakarta.enterprise.cdi-api</excludeDependencies>
+                    <excludeDependencies>jakarta.cdi.jakarta.cdi-api</excludeDependencies>
                 </configuration>
             </plugin>
         </plugins>

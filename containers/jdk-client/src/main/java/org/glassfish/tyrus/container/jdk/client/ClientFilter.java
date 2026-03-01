@@ -21,10 +21,12 @@ import java.net.SocketAddress;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -301,6 +303,54 @@ class ClientFilter extends Filter {
                 }
                 return sb.toString();
             }
+
+            @Override
+            public X509Certificate[] getUserX509CertificateChain() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public String getLocalAddress() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public String getLocalHostName() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public int getLocalPort() {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public String getRemoteAddress() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public String getRemoteHostName() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public int getRemotePort() {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public Locale getPreferredLocale() {
+                // TODO Auto-generated method stub
+                return null;
+            }
         };
     }
 
@@ -330,6 +380,54 @@ class ClientFilter extends Filter {
                 headers.put("ProxyConnection", Collections.singletonList("keep-alive"));
                 headers.put("Connection", Collections.singletonList("keep-alive"));
                 return headers;
+            }
+
+            @Override
+            public X509Certificate[] getUserX509CertificateChain() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public String getLocalAddress() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public String getLocalHostName() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public int getLocalPort() {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public String getRemoteAddress() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public String getRemoteHostName() {
+                // TODO Auto-generated method stub
+                return null;
+            }
+
+            @Override
+            public int getRemotePort() {
+                // TODO Auto-generated method stub
+                return 0;
+            }
+
+            @Override
+            public Locale getPreferredLocale() {
+                // TODO Auto-generated method stub
+                return null;
             }
         };
     }

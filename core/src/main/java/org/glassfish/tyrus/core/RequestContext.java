@@ -18,10 +18,12 @@ package org.glassfish.tyrus.core;
 
 import java.net.URI;
 import java.security.Principal;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -404,5 +406,54 @@ public final class RequestContext extends UpgradeRequest {
              */
             public boolean isUserInRole(String role);
         }
+    }
+
+
+    @Override
+    public String getLocalAddress() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getLocalHostName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public int getLocalPort() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public Locale getPreferredLocale() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getRemoteAddress() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getRemoteHostName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public int getRemotePort() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public X509Certificate[] getUserX509CertificateChain() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
