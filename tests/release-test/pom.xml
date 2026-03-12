@@ -38,7 +38,7 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.version>3.8.6</maven.version>
-        <maven.resolver.version>1.7.3</maven.resolver.version><!-- 1.8.2 does not work-->
+        <maven.resolver.version>1.7.3</maven.resolver.version><!-- 1.8.2 and 2.0.16 do not work-->
         <httpclient.version>4.5.14</httpclient.version>
     </properties>
 
