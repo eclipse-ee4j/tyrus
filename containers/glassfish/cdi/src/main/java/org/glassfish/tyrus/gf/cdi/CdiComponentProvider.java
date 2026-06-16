@@ -1,4 +1,5 @@
 /*
+ * Copyright (c) 2026 Contributors to the Eclipse Foundation
  * Copyright (c) 2013, 2025 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -23,9 +24,11 @@ import java.util.logging.Logger;
 
 import jakarta.enterprise.context.spi.CreationalContext;
 import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.Bean;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.enterprise.inject.spi.InjectionTarget;
 import jakarta.enterprise.inject.spi.InjectionTargetFactory;
+import jakarta.inject.Singleton;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
@@ -67,6 +70,16 @@ public class CdiComponentProvider extends ComponentProvider {
         }
     }
 
+    /**
+     * Constructor used for testing, which avoids the JNDI lookup of the {@link BeanManager}.
+     *
+     * @param beanManager the bean manager to use, or {@code null} to simulate an environment without CDI.
+     */
+    CdiComponentProvider(BeanManager beanManager) {
+        this.beanManager = beanManager;
+        this.managerRetrieved = (beanManager != null);
+    }
+
     @Override
     public boolean isApplicable(Class<?> c) {
         Annotation[] annotations = c.getAnnotations();
@@ -86,21 +99,63 @@ public class CdiComponentProvider extends ComponentProvider {
     @SuppressWarnings("unchecked")
     @Override
     public <T> Object create(Class<T> c) {
-        if (managerRetrieved) {
-            T managedObject;
-            AnnotatedType annotatedType = beanManager.createAnnotatedType(c);
-            InjectionTargetFactory<T> injectionTargetFactory = beanManager.getInjectionTargetFactory(annotatedType);
-            InjectionTarget<T> it = injectionTargetFactory.createInjectionTarget(null);
-            CreationalContext cc = beanManager.createCreationalContext(null);
-            managedObject = (T) it.produce(cc);
-            it.inject(managedObject, cc);
-            it.postConstruct(managedObject);
-            cdiBeanToContext.put(managedObject, new CdiInjectionContext(it, cc));
-
-            return managedObject;
-        } else {
+        if (!managerRetrieved) {
             return null;
         }
+
+        // If the endpoint is a managed bean with a normal scope (e.g.
+        // @ApplicationScoped, @SessionScoped) or @Singleton, return the shared
+        // contextual reference so that WebSocket lifecycle callbacks, injected
+        // collaborators and CDI event observers all operate on the same bean
+        // instance. Producing a fresh instance per connection (as done below for
+        // dependent beans) would otherwise desynchronize the endpoint state from
+        // the contextual bean seen by observers and other injection points.
+        // See https://github.com/eclipse-ee4j/tyrus/issues/961
+        Bean<?> bean = resolveBean(c);
+        if (bean != null && isShared(bean)) {
+            // Not registered in cdiBeanToContext on purpose: a shared bean must
+            // not be destroyed when a single connection is closed - its lifecycle
+            // is managed by the CDI container.
+            CreationalContext<?> cc = beanManager.createCreationalContext(bean);
+            return beanManager.getReference(bean, c, cc);
+        }
+
+        // Dependent-scoped (or non-bean) endpoints keep the per-connection
+        // instance and are cleaned up by destroy() when the connection closes.
+        T managedObject;
+        AnnotatedType annotatedType = beanManager.createAnnotatedType(c);
+        InjectionTargetFactory<T> injectionTargetFactory = beanManager.getInjectionTargetFactory(annotatedType);
+        InjectionTarget<T> it = injectionTargetFactory.createInjectionTarget(null);
+        CreationalContext cc = beanManager.createCreationalContext(null);
+        managedObject = (T) it.produce(cc);
+        it.inject(managedObject, cc);
+        it.postConstruct(managedObject);
+        cdiBeanToContext.put(managedObject, new CdiInjectionContext(it, cc));
+
+        return managedObject;
+    }
+
+    /**
+     * Resolves the unique managed {@link Bean} for the given endpoint class, or {@code null} when the class is not a
+     * managed bean or cannot be unambiguously resolved (in which case a per-connection instance is created instead).
+     */
+    private Bean<?> resolveBean(Class<?> c) {
+        try {
+            return beanManager.resolve(beanManager.getBeans(c));
+        } catch (Exception e) {
+            // e.g. AmbiguousResolutionException - fall back to a per-connection instance
+            LOGGER.fine(e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * @return {@code true} if instances of the given bean are shared, i.e. the bean has a normal scope (such as
+     * {@code @ApplicationScoped} or {@code @SessionScoped}) or is a {@code @Singleton}.
+     */
+    private boolean isShared(Bean<?> bean) {
+        Class<? extends Annotation> scope = bean.getScope();
+        return beanManager.isNormalScope(scope) || Singleton.class.equals(scope);
     }
 
     @Override
