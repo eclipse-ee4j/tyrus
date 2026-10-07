@@ -43,6 +43,22 @@ public final class ClientProperties {
     /**
      * Property usable in {@link ClientManager#getProperties()}.
      * <p>
+     * Value must be {@code int} and represents the timeout in milliseconds for establishing the underlying TCP
+     * (or TLS) socket connection, before any WebSocket handshake data is exchanged. Default value is 30000
+     * (30 seconds).
+     * <p>
+     * Without this timeout, a connection attempt whose underlying socket connect never completes nor fails -
+     * for example when a network device silently drops the connection attempt - would hang indefinitely, since
+     * {@link #HANDSHAKE_TIMEOUT} only bounds the time waiting for the handshake response after the socket has
+     * already connected.
+     *
+     * @see #HANDSHAKE_TIMEOUT
+     */
+    public static final String SOCKET_CONNECT_TIMEOUT = "org.glassfish.tyrus.client.socketConnectTimeout";
+
+    /**
+     * Property usable in {@link ClientManager#getProperties()}.
+     * <p>
      * Value must be {@link org.glassfish.tyrus.client.ClientManager.ReconnectHandler} instance.
      *
      * @see ClientProperties#RETRY_AFTER_SERVICE_UNAVAILABLE

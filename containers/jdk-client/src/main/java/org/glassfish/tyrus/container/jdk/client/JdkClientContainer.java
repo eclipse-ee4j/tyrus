@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -73,6 +74,11 @@ public class JdkClientContainer implements ClientContainer {
      * turned on.
      */
     private static final int INPUT_BUFFER_SIZE = 2048;
+    /**
+     * Default value (in milliseconds) for {@link ClientProperties#SOCKET_CONNECT_TIMEOUT}, used when the property
+     * is not set.
+     */
+    private static final int DEFAULT_SOCKET_CONNECT_TIMEOUT = 30_000;
     private static final Logger LOGGER = Logger.getLogger(JdkClientContainer.class.getName());
 
     @Override
@@ -103,6 +109,11 @@ public class JdkClientContainer implements ClientContainer {
 
         final InetAddress bindingAddress =
                 Utils.getProperty(properties, ClientProperties.SOCKET_BINDING, InetAddress.class);
+
+        final Integer configuredConnectTimeout =
+                Utils.getProperty(properties, ClientProperties.SOCKET_CONNECT_TIMEOUT, Integer.class);
+        final int connectTimeout =
+                configuredConnectTimeout == null ? DEFAULT_SOCKET_CONNECT_TIMEOUT : configuredConnectTimeout;
 
         final ThreadPoolConfig finalThreadPoolConfig = threadPoolConfig;
         final Callable<Void> jdkConnector = new Callable<Void>() {
@@ -154,7 +165,7 @@ public class JdkClientContainer implements ClientContainer {
                     if (proxy.type() == Proxy.Type.DIRECT) {
                         SocketAddress serverAddress = getServerAddress(uri);
                         try {
-                            connectSynchronously(clientFilter, serverAddress, false);
+                            connectSynchronously(clientFilter, serverAddress, false, connectTimeout);
                             // connected.
                             return null;
                         } catch (Throwable throwable) {
@@ -174,7 +185,7 @@ public class JdkClientContainer implements ClientContainer {
                         }
 
                         try {
-                            connectSynchronously(clientFilter, proxyAddress, true);
+                            connectSynchronously(clientFilter, proxyAddress, true, connectTimeout);
                             // connected.
                             return null;
                         } catch (Throwable t) {
@@ -318,10 +329,14 @@ public class JdkClientContainer implements ClientContainer {
 
     /**
      * {@link org.glassfish.tyrus.container.jdk.client.ClientFilter#connect(java.net.SocketAddress, boolean,
-     * CompletionHandler)} is asynchronous, this method will block until it either succeeds or fails.
+     * CompletionHandler)} is asynchronous, this method will block until it either succeeds, fails, or
+     * {@code connectTimeout} elapses.
+     *
+     * @param connectTimeout maximum time to wait for the connection to be established, in milliseconds. See
+     *                       {@link ClientProperties#SOCKET_CONNECT_TIMEOUT}.
      */
-    private void connectSynchronously(ClientFilter clientFilter, final SocketAddress address, boolean proxy) throws
-            Throwable {
+    private void connectSynchronously(ClientFilter clientFilter, final SocketAddress address, boolean proxy,
+                                      int connectTimeout) throws Throwable {
         final AtomicReference<Throwable> exception = new AtomicReference<>(null);
         final CountDownLatch connectLatch = new CountDownLatch(1);
 
@@ -339,7 +354,15 @@ public class JdkClientContainer implements ClientContainer {
                 }
             });
 
-            connectLatch.await();
+            boolean connected = connectLatch.await(connectTimeout, TimeUnit.MILLISECONDS);
+            if (!connected) {
+                // Abort the still pending connection attempt. If the underlying socket connect completes or
+                // fails concurrently with this timeout being detected, the result below still reports a
+                // timeout, since waiting any longer for a definitive answer would defeat the point of the
+                // timeout.
+                clientFilter.close();
+                throw new IOException("Connecting to " + address + " timed out after " + connectTimeout + " ms");
+            }
 
             Throwable throwable = exception.get();
             if (throwable != null) {
