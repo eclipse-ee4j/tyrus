@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -59,12 +59,19 @@ class TaskQueueFilter extends Filter {
     }
 
     private void processTask() {
-        final Task task = taskQueue.poll();
-        if (task == null) {
+        while (true) {
+            final Task task = taskQueue.poll();
+            if (task != null) {
+                task.execute(this);
+                return;
+            }
             taskLock.set(false);
-            return;
+            // A task queued after poll() found the queue empty could not take the lock, because this thread still held
+            // it. Take the lock again and process that task, otherwise nothing runs it until the next write or close.
+            if (taskQueue.isEmpty() || !taskLock.compareAndSet(false, true)) {
+                return;
+            }
         }
-        task.execute(this);
     }
 
     @Override
