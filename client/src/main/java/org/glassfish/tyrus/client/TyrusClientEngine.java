@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2023 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -189,6 +189,11 @@ public class TyrusClientEngine implements ClientEngine {
                                               .secure("wss".equalsIgnoreCase(requestUri.getScheme())).build();
                 Handshake.updateHostAndOrigin(requestContext);
 
+                if (!isSameHost(connectToServerUriParam, requestUri)) {
+                    // credentials belong to the host from the connect URI, do not forward them to another host
+                    requestContext.getHeaders().remove(UpgradeRequest.AUTHORIZATION);
+                }
+
                 clientEngineState = TyrusClientEngineState.UPGRADE_REQUEST_CREATED;
                 logUpgradeRequest(requestContext);
                 return requestContext;
@@ -342,6 +347,13 @@ public class TyrusClientEngine implements ClientEngine {
             return UPGRADE_INFO_FAILED;
         }
 
+        if (redirectLocation != null && !isSameHost(connectToServerUriParam, redirectLocation)) {
+            clientEngineState = TyrusClientEngineState.FAILED;
+            listener.onError(new AuthenticationException(LocalizationMessages.AUTHENTICATION_REDIRECTED_HOST(
+                    redirectLocation.getHost(), connectToServerUriParam.getHost())));
+            return UPGRADE_INFO_FAILED;
+        }
+
         AuthConfig authConfig = Utils.getProperty(properties, ClientProperties.AUTH_CONFIG,
                                                   AuthConfig.class,
                                                   AuthConfig.Builder.create().build());
@@ -464,6 +476,11 @@ public class TyrusClientEngine implements ClientEngine {
         clientEngineState = TyrusClientEngineState.REDIRECT_REQUIRED;
         redirectLocation = location;
         return UPGRADE_INFO_ANOTHER_REQUEST_REQUIRED;
+    }
+
+    private static boolean isSameHost(URI original, URI redirected) {
+        final String originalHost = original.getHost();
+        return originalHost != null && originalHost.equalsIgnoreCase(redirected.getHost());
     }
 
     @Override

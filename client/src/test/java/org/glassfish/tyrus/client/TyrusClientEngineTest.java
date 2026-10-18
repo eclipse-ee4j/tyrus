@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -46,6 +46,7 @@ import org.glassfish.tyrus.spi.UpgradeResponse;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -62,6 +63,8 @@ public class TyrusClientEngineTest {
     public static final String ENDPOINT_URI_WS_PORT = "ws://localhost:80/echo";
     public static final String ENDPOINT_URI_HTTPS_PORT = "https://localhost:443/echo";
     public static final String ENDPOINT_URI_WSS_PORT = "wss://localhost:443/echo";
+    public static final String ENDPOINT_URI_WS_OTHER_HOST = "ws://otherhost/echo";
+    public static final String ENDPOINT_URI_WS_OTHER_HOST_PORT = "ws://otherhost:80/echo";
 
     @Test
     public void testBasicFlow() throws DeploymentException, HandshakeException {
@@ -270,6 +273,63 @@ public class TyrusClientEngineTest {
         clientUpgradeInfo = engine.processResponse(getUpgradeResponse(generateServerKey(secWebsocketKey)), null, null);
         assertTrue("Another request should be required",
                    clientUpgradeInfo.getUpgradeStatus() == ClientEngine.ClientUpgradeStatus.SUCCESS);
+    }
+
+    @Test
+    public void testAuthAndRedirectToOtherHostFlow() throws DeploymentException, HandshakeException {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(ClientProperties.REDIRECT_ENABLED, true);
+        properties.put(ClientProperties.CREDENTIALS, new Credentials("username", "password"));
+        ClientEngine engine = getClientEngine(properties);
+
+        UpgradeRequest upgradeRequest = engine.createUpgradeRequest(null);
+        assertNotNull("We must get UpgradeRequest instance", upgradeRequest);
+
+        ClientEngine.ClientUpgradeInfo clientUpgradeInfo =
+                engine.processResponse(getAuthenticateResponse(), null, null);
+        assertTrue(clientUpgradeInfo.getUpgradeStatus().toString(), clientUpgradeInfo.getUpgradeStatus()
+                == ClientEngine.ClientUpgradeStatus.ANOTHER_UPGRADE_REQUEST_REQUIRED);
+
+        upgradeRequest = engine.createUpgradeRequest(null);
+        assertNotNull("We must get UpgradeRequest instance", upgradeRequest);
+        assertNotNull("Authorization header must be sent to the original host",
+                      upgradeRequest.getHeader(UpgradeRequest.AUTHORIZATION));
+
+        clientUpgradeInfo = engine.processResponse(getRedirectionsResponse(ENDPOINT_URI_WS_OTHER_HOST), null, null);
+        assertTrue("Another request should be required", clientUpgradeInfo.getUpgradeStatus()
+                == ClientEngine.ClientUpgradeStatus.ANOTHER_UPGRADE_REQUEST_REQUIRED);
+
+        upgradeRequest = engine.createUpgradeRequest(null);
+        assertNotNull("We must get UpgradeRequest instance", upgradeRequest);
+        assertEquals("Redirected request URI is wrong", ENDPOINT_URI_WS_OTHER_HOST_PORT,
+                     upgradeRequest.getRequestUri());
+        assertNull("Authorization header must not be sent to another host",
+                   upgradeRequest.getHeader(UpgradeRequest.AUTHORIZATION));
+    }
+
+    @Test
+    public void testRedirectToOtherHostAndAuthFlow() throws DeploymentException, HandshakeException {
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put(ClientProperties.REDIRECT_ENABLED, true);
+        properties.put(ClientProperties.CREDENTIALS, new Credentials("username", "password"));
+        ClientEngine engine = getClientEngine(properties);
+
+        UpgradeRequest upgradeRequest = engine.createUpgradeRequest(null);
+        assertNotNull("We must get UpgradeRequest instance", upgradeRequest);
+
+        ClientEngine.ClientUpgradeInfo clientUpgradeInfo =
+                engine.processResponse(getRedirectionsResponse(ENDPOINT_URI_WS_OTHER_HOST), null, null);
+        assertTrue("Another request should be required", clientUpgradeInfo.getUpgradeStatus()
+                == ClientEngine.ClientUpgradeStatus.ANOTHER_UPGRADE_REQUEST_REQUIRED);
+
+        upgradeRequest = engine.createUpgradeRequest(null);
+        assertNotNull("We must get UpgradeRequest instance", upgradeRequest);
+        assertEquals("Redirected request URI is wrong", ENDPOINT_URI_WS_OTHER_HOST_PORT,
+                     upgradeRequest.getRequestUri());
+
+        clientUpgradeInfo = engine.processResponse(getAuthenticateResponse(), null, null);
+        assertTrue("Credentials must not be offered to another host",
+                   clientUpgradeInfo.getUpgradeStatus() == ClientEngine.ClientUpgradeStatus.UPGRADE_REQUEST_FAILED);
     }
 
     @Test
