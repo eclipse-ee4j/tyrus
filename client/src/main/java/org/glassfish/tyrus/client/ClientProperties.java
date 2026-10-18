@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -214,6 +214,10 @@ public final class ClientProperties {
      * <li>{@code 307 - Temporary Redirect (since HTTP/1.1)}</li>
      * <li>{@code 308 - Permanent Redirect (Experimental RFC; RFC 7238)}</li>
      * </ul>
+     * <p>
+     * Credentials are bound to the host of the {@link URI} passed to {@code connectToServer}: when a redirect points
+     * to a different host, the {@code Authorization} header is not forwarded there and an HTTP 401 response from that
+     * host fails the handshake instead of being answered with {@link #CREDENTIALS}.
      *
      * @see #REDIRECT_THRESHOLD
      */
