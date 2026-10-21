@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -22,11 +22,13 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.Deflater;
 
 import javax.websocket.ClientEndpointConfig;
 import javax.websocket.DeploymentException;
@@ -39,11 +41,16 @@ import javax.websocket.Session;
 import javax.websocket.server.ServerEndpointConfig;
 
 import org.glassfish.tyrus.client.ClientManager;
+import org.glassfish.tyrus.core.extension.ExtendedExtension;
+import org.glassfish.tyrus.core.frame.Frame;
 import org.glassfish.tyrus.server.Server;
 import org.glassfish.tyrus.server.TyrusServerConfiguration;
 import org.glassfish.tyrus.test.tools.TestContainer;
 
 import org.junit.Test;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -141,6 +148,46 @@ public class PerMessageDeflateExtensionTest extends TestContainer {
             stopServer(server);
         }
 
+    }
+
+    @Test
+    public void testInflatedFrameSizeLimit() {
+        final ExtendedExtension.ExtensionContext context = new ExtendedExtension.ExtensionContext() {
+            private final Map<String, Object> properties = new HashMap<String, Object>();
+
+            @Override
+            public Map<String, Object> getProperties() {
+                return properties;
+            }
+        };
+
+        final PerMessageDeflateExtension extension = new PerMessageDeflateExtension();
+        extension.onExtensionNegotiation(context, Collections.<Extension.Parameter>emptyList());
+
+        final byte[] small = "Always pass on what you have learned.".getBytes(Charset.forName("UTF-8"));
+        Frame frame = extension.processIncoming(context, compressedFrame(small));
+        assertFalse(frame.isRsv1());
+        assertArrayEquals(small, frame.getPayloadData());
+
+        // 8 MiB of zeros deflates to a few kB, but must not be inflated past the frame size limit.
+        final Frame bomb = compressedFrame(new byte[8 * 1024 * 1024]);
+        frame = extension.processIncoming(context, bomb);
+        assertTrue(frame.isRsv1());
+        assertEquals(bomb.getPayloadLength(), frame.getPayloadLength());
+
+        extension.destroy(context);
+    }
+
+    private static Frame compressedFrame(byte[] data) {
+        final Deflater deflater = new Deflater(9, true);
+        deflater.setInput(data);
+        final byte[] buffer = new byte[data.length + 64];
+        final int length = deflater.deflate(buffer, 0, buffer.length, Deflater.SYNC_FLUSH);
+        deflater.end();
+
+        // strip the 0x00 0x00 0xff 0xff tail, as permessage-deflate does on the wire
+        return Frame.builder().fin(true).rsv1(true).opcode((byte) 0x02)
+                    .payloadData(Arrays.copyOf(buffer, length - 4)).build();
     }
 
     public static class LoggingClientEndpointConfigurator extends ClientEndpointConfig.Configurator {

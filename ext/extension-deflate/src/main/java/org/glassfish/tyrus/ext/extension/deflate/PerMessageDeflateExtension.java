@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -58,6 +58,35 @@ public class PerMessageDeflateExtension implements ExtendedExtension {
 
     private static final byte[] TAIL = {0x00, 0x00, (byte) 0xff, (byte) 0xff};
 
+    /**
+     * Default limit of the decompressed payload of a single frame, same as the default payload part of
+     * {@code org.glassfish.tyrus.incomingBufferSize}.
+     */
+    public static final int DEFAULT_MAX_INFLATED_FRAME_SIZE = 4 * 1024 * 1024;
+
+    private static final int TOO_BIG = -2;
+
+    private final int maxInflatedFrameSize;
+
+    /**
+     * Create extension with {@link #DEFAULT_MAX_INFLATED_FRAME_SIZE} limit of decompressed frame payload.
+     */
+    public PerMessageDeflateExtension() {
+        this(DEFAULT_MAX_INFLATED_FRAME_SIZE);
+    }
+
+    /**
+     * Create extension with given limit of decompressed frame payload.
+     * <p>
+     * Incoming frame which would decompress to more than {@code maxInflatedFrameSize} bytes is not decompressed and
+     * the connection is closed with protocol error.
+     *
+     * @param maxInflatedFrameSize maximal size of decompressed frame payload in bytes.
+     */
+    public PerMessageDeflateExtension(int maxInflatedFrameSize) {
+        this.maxInflatedFrameSize = maxInflatedFrameSize;
+    }
+
     @Override
     public Frame processIncoming(ExtensionContext context, Frame frame) {
         final Inflater decompresser = (Inflater) context.getProperties().get(INFLATER);
@@ -75,17 +104,22 @@ public class PerMessageDeflateExtension implements ExtendedExtension {
             List<PartialResultWithLength<byte[]>> wholeResult = new ArrayList<PartialResultWithLength<byte[]>>();
             int wholeResultLength = 0;
 
-            int tmp = processCompressed(decompresser, frame.getPayloadData(), payloadLength, wholeResult);
+            int tmp = processCompressed(decompresser, frame.getPayloadData(), payloadLength, wholeResult,
+                                        maxInflatedFrameSize);
             if (tmp == -1) {
                 return frame;
+            } else if (tmp == TOO_BIG) {
+                return inflatedFrameTooBig(frame, wholeResult);
             } else {
                 wholeResultLength += tmp;
             }
 
             if (frame.isFin()) {
-                tmp = processCompressed(decompresser, TAIL, 4, wholeResult);
+                tmp = processCompressed(decompresser, TAIL, 4, wholeResult, maxInflatedFrameSize - wholeResultLength);
                 if (tmp == -1) {
                     return frame;
+                } else if (tmp == TOO_BIG) {
+                    return inflatedFrameTooBig(frame, wholeResult);
                 } else {
                     wholeResultLength += tmp;
                 }
@@ -108,7 +142,7 @@ public class PerMessageDeflateExtension implements ExtendedExtension {
     }
 
     private int processCompressed(Inflater decompresser, byte[] compressed, int length,
-                                  List<PartialResultWithLength<byte[]>> partialResults) {
+                                  List<PartialResultWithLength<byte[]>> partialResults, int maxLength) {
         decompresser.setInput(compressed, 0, length);
         int decompressedLength = 0;
         do {
@@ -124,12 +158,26 @@ public class PerMessageDeflateExtension implements ExtendedExtension {
             if (partialResultLength != 0) {
                 partialResults.add(new PartialResultWithLength<byte[]>(partialResultLength, result));
                 decompressedLength += partialResultLength;
+                if (decompressedLength > maxLength) {
+                    return TOO_BIG;
+                }
             } else {
                 BYTE_ARRAY_POOL.recycle(result);
             }
         } while (decompresser.getRemaining() > 0);
 
         return decompressedLength;
+    }
+
+    private Frame inflatedFrameTooBig(Frame frame, List<PartialResultWithLength<byte[]>> partialResults) {
+        LOGGER.fine("Decompressed frame payload exceeds " + maxInflatedFrameSize + " bytes.");
+
+        for (PartialResultWithLength<byte[]> partialResult : partialResults) {
+            BYTE_ARRAY_POOL.recycle(partialResult.getResult());
+        }
+
+        // keep RSV1 set, so the frame is rejected by ProtocolHandler and the connection is closed.
+        return Frame.builder(frame).rsv1(true).build();
     }
 
     @Override
