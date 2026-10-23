@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -466,7 +466,7 @@ public class Utils {
         }
     }
 
-    private static final List<String> FILTERED_HEADERS = Arrays.asList(UpgradeRequest.AUTHORIZATION);
+    private static final List<String> FILTERED_HEADERS = Arrays.asList(UpgradeRequest.AUTHORIZATION, "Proxy-Authorization");
 
     /**
      * Converts upgrade request to a HTTP-formatted string.
@@ -521,7 +521,7 @@ public class Utils {
         message.append(key);
         message.append(": ");
         for (String filteredHeader : FILTERED_HEADERS) {
-            if (filteredHeader.equals(key)) {
+            if (filteredHeader.equalsIgnoreCase(key)) {
                 value = "*****";
             }
         }
