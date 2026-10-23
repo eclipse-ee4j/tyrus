@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -16,10 +16,13 @@
 
 package org.glassfish.tyrus.core;
 
+import java.net.URI;
 import java.text.ParseException;
+import java.util.Collections;
 import java.util.Date;
 
 import org.junit.Test;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -68,5 +71,16 @@ public class UtilsTest {
         } catch (ParseException e) {
             // ok
         }
+    }
+
+    @Test
+    public void testStringifyUpgradeRequestHidesAuthorization() {
+        RequestContext requestContext = RequestContext.Builder.create().requestURI(URI.create("/echo")).build();
+        requestContext.getHeaders().put("authorization", Collections.singletonList("Basic dXNlcjpzZWNyZXQ="));
+        requestContext.getHeaders().put("PROXY-AUTHORIZATION", Collections.singletonList("Basic cHJveHk6c2VjcmV0"));
+
+        String stringified = Utils.stringifyUpgradeRequest(requestContext);
+        assertFalse(stringified, stringified.contains("dXNlcjpzZWNyZXQ="));
+        assertFalse(stringified, stringified.contains("cHJveHk6c2VjcmV0"));
     }
 }
