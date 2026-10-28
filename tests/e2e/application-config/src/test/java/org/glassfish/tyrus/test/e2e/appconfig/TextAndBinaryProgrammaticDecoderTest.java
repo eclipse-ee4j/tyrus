@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -50,9 +50,9 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Pavel Bucek (pavel.bucek at oracle.com)
  */
-public class TextAndBinaryProgrammaticDecoder extends TestContainer {
+public class TextAndBinaryProgrammaticDecoderTest extends TestContainer {
 
-    public TextAndBinaryProgrammaticDecoder() {
+    public TextAndBinaryProgrammaticDecoderTest() {
         this.setContextPath("/e2e-test-appconfig");
     }
 
