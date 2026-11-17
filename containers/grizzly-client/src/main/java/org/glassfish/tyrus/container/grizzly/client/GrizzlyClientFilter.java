@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -414,7 +414,7 @@ class GrizzlyClientFilter extends BaseFilter {
 
         StringBuilder sb = new StringBuilder();
         final URI uri = URI.create(request.getRequestUri());
-        sb.append(uri.getPath());
+        sb.append(uri.getRawPath());
         final String query = uri.getQuery();
         if (query != null) {
             sb.append('?').append(isDoubleEncodedQuery(query) ? query : uri.getRawQuery());
@@ -442,6 +442,13 @@ class GrizzlyClientFilter extends BaseFilter {
 
     private static boolean isDoubleEncodedQuery(String query) {
         final int size = query.length();
+        for (int i = 0; i < size; i++) {
+            final char c = query.charAt(i);
+            // a decoded CR, LF, space or other control character must never reach the request line
+            if (c <= ' ' || c >= 0x7f) {
+                return false;
+            }
+        }
         int index = -1;
         while ((index = query.indexOf('%', index + 1)) != -1 && index < size - 2) {
             char c1 = query.charAt(index + 1);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2026 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0, which is available at
@@ -39,6 +39,7 @@ import org.glassfish.tyrus.client.ClientProperties;
 import org.glassfish.tyrus.core.CloseReasons;
 import org.glassfish.tyrus.core.TyrusUpgradeResponse;
 import org.glassfish.tyrus.core.Utils;
+import org.glassfish.tyrus.core.uri.internal.UriComponent;
 import org.glassfish.tyrus.spi.ClientEngine;
 import org.glassfish.tyrus.spi.CompletionHandler;
 import org.glassfish.tyrus.spi.Connection;
@@ -291,10 +292,10 @@ class ClientFilter extends Filter {
             public String getRequestUri() {
                 StringBuilder sb = new StringBuilder();
                 final URI uri = URI.create(upgradeRequest.getRequestUri());
-                sb.append(uri.getPath());
+                sb.append(uri.getRawPath());
                 final String query = uri.getQuery();
                 if (query != null) {
-                    sb.append('?').append(query);
+                    sb.append('?').append(isDoubleEncodedQuery(query) ? query : uri.getRawQuery());
                 }
                 if (sb.length() == 0) {
                     sb.append('/');
@@ -302,6 +303,26 @@ class ClientFilter extends Filter {
                 return sb.toString();
             }
         };
+    }
+
+    private static boolean isDoubleEncodedQuery(String query) {
+        final int size = query.length();
+        for (int i = 0; i < size; i++) {
+            final char c = query.charAt(i);
+            // a decoded CR, LF, space or other control character must never reach the request line
+            if (c <= ' ' || c >= 0x7f) {
+                return false;
+            }
+        }
+        int index = -1;
+        while ((index = query.indexOf('%', index + 1)) != -1 && index < size - 2) {
+            char c1 = query.charAt(index + 1);
+            char c2 = query.charAt(index + 2);
+            if (UriComponent.isHexCharacter(c1) && UriComponent.isHexCharacter(c2)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private JdkUpgradeRequest createProxyUpgradeRequest(final URI uri) {
